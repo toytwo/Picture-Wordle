@@ -9,5 +9,6 @@ public class Main {
         f.setExtendedState(JFrame.MAXIMIZED_BOTH); 
         f.setUndecorated(true);
         f.setVisible(true);
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }

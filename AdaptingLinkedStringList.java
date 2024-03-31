@@ -6,26 +6,26 @@ import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+/**
+ * @author Jackson Alexman
+ * @version Created: 3/27/2024 Updated: 3/30/2024
+ */
 public class AdaptingLinkedStringList {
-    private Node current;
+    /**
+     * Parts of words typed by the user : The words from the wordbank that contain that part
+     */
+    private Dictionary<String,String[]> parts;
+    /**
+     * The current part typed by the user 
+     */
+    private String part;
+    /**
+     * The entire unedited guessable word list
+     */
     private String[] fullWordList;
 
-    private class Node{
-        public String letters;
-        public String[] wordList;
-        public Dictionary<String,Node> next;
-        public Node previous;
-
-        public Node(String letters, String[] wordList){
-            this.letters = letters;
-            this.wordList = wordList;
-            this.next = new Hashtable<>();
-            this.previous = null;
-        }
-    }
-
     public AdaptingLinkedStringList(){
-        // Specify the path to your file
+        // Get the wordlist
         String filePath = "WordList.txt";
 
         try {
@@ -40,9 +40,6 @@ public class AdaptingLinkedStringList {
             while ((line = reader.readLine()) != null) {
                 // Split the line into words using whitespace as delimiter
                 String[] words = line.split("\\s+");
-                for(int i=0; i<words.length; i++){
-                    words[i] = words[i].toLowerCase();
-                }
                 
                 // Add each word to the ArrayList
                 wordsList.addAll(Arrays.asList(words));
@@ -58,31 +55,71 @@ public class AdaptingLinkedStringList {
             System.err.println("Error reading file: " + e.getMessage());
         }
 
-        reset();
+        // Initialize the instance variables
+        this.parts = new Hashtable<String,String[]>();
+        this.part = "";
+
+        // Add "" to the start of array because the first element of the array needs to be what is currently typed
+        ArrayList<String> tempArray = new ArrayList<>(Arrays.asList(fullWordList));
+        tempArray.add(0,part);
+        this.parts.put(this.part, tempArray.toArray(new String[0]));
     }
 
-    public void addLetter(String letter){
-        String newLetters = (current.letters+letter).toLowerCase();
-        // New entry
-        if(current.next.get(newLetters) == null){
-            current.next.put(newLetters,new Node(newLetters, pareWordList(current.wordList,newLetters)));
-            Node previous = current;
-            current = current.next.get(newLetters);
-            current.previous = previous;
+    /**
+     * Checks the parts dictionary to see if the newPart has already been pared. If not, it pares it and all of it's subparts.
+     * @param newPart The new part to be checked
+     */
+    public void updateLetters(String newPart){
+        newPart = newPart.toLowerCase();
+        // No Update
+        if(part.equals(newPart)){
+            return;
         }
+        // New Entry
+        if(parts.get(newPart) == null){
+            int i = newPart.length()-1;
+            String[] subPartWordList = null;
+            while(i>=0){
+                // Check to see if any subPart of this part has been pared
+                subPartWordList = parts.get(newPart.substring(0,i));
+                if(subPartWordList == null){
+                    i--;
+                    continue;
+                }
+                else{
+                    i++; // Pare the next index because paring found at current
+                    break;
+                }
+            } 
+
+            // Pare every part that makes up this part that hasn't already been pared
+            String subPart = "";
+            while(i<=newPart.length()){
+                subPart = newPart.substring(0, i++);
+                subPartWordList = pareWordList(subPartWordList, subPart);
+                parts.put(subPart, subPartWordList);
+            }
+            part = newPart;
+        }
+        // Previous Entry
         else{
-            current = current.next.get(newLetters);
+            part = newPart;
         }
-        
     }
 
-    private String[] pareWordList(String[] wordList, String part) {
+    /**
+     * 
+     * @param wordList The part of the word list to pare
+     * @param partToPare The part to pare the word list with
+     * @return A pared word list
+     */
+    private String[] pareWordList(String[] wordList, String partToPare) {
         ArrayList<String> newWordList = new ArrayList<>();
-        // Show the user what they have typed so far but don't include the last letter typed because it will already be there
-        newWordList.add(part.substring(0, part.length()-1));
-        // Add all words with that part
+        // The first word in the list should always be the part in order to display it in the editor
+        newWordList.add(partToPare);
+        // Add all the words that contain the part
         for(String word : wordList){
-            if(word.contains(part)){
+            if(word.toLowerCase().contains(partToPare)){
                 newWordList.add(word);
             }
         }
@@ -90,21 +127,31 @@ public class AdaptingLinkedStringList {
         return newWordList.toArray(new String[0]);
     }
 
-    public void removeLastLetter(){
-        if(current.previous != null){
-            current = current.previous;
-        }
-    }
-
-    public void reset(){
-        current = new Node("", fullWordList);
-    }
-
+    /**
+     * @return The current word list based on the current part
+     */
     public String[] getWordList(){
-        return this.current.wordList;
+        return this.parts.get(this.part);
     }
 
-    public String getLetters(){
-        return this.current.letters;
+    /**
+     * @return The current part
+     */
+    public String getPart(){
+        return this.part;
+    }
+
+    /**
+     * @return Check if the current part is in the wordlist 
+     */
+    public boolean isPartInWordList(){
+        // Skip the first index because part is stored at the first index
+        for (int i = 1; i < this.getWordList().length; i++) {
+            if(this.part.equals(this.getWordList()[i].toLowerCase())){
+                return true;
+            }
+        }
+
+        return false;
     }
 }
