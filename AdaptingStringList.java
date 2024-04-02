@@ -3,14 +3,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
 /**
  * @author Jackson Alexman
- * @version Created: 3/27/2024 Updated: 3/30/2024
+ * @version Created: 3/27/2024 Updated: 4/01/2024
  */
-public class AdaptingLinkedStringList {
+public class AdaptingStringList {
     /**
      * Parts of words typed by the user : The words from the wordbank that contain that part
      */
@@ -24,7 +25,7 @@ public class AdaptingLinkedStringList {
      */
     private String[] fullWordList;
 
-    public AdaptingLinkedStringList(){
+    public AdaptingStringList(){
         // Get the wordlist
         String filePath = "WordList.txt";
 
@@ -108,23 +109,44 @@ public class AdaptingLinkedStringList {
     }
 
     /**
-     * 
      * @param wordList The part of the word list to pare
      * @param partToPare The part to pare the word list with
      * @return A pared word list
      */
     private String[] pareWordList(String[] wordList, String partToPare) {
-        ArrayList<String> newWordList = new ArrayList<>();
+        ArrayList<String> finalWordList = new ArrayList<>();
+        Dictionary<Integer,ArrayList<String>> partPositionInWords = new Hashtable<Integer,ArrayList<String>>();
         // The first word in the list should always be the part in order to display it in the editor
-        newWordList.add(partToPare);
+        finalWordList.add(partToPare);
         // Add all the words that contain the part
         for(String word : wordList){
             if(word.toLowerCase().contains(partToPare)){
-                newWordList.add(word);
+                int index = word.toLowerCase().indexOf(partToPare);
+                if(partPositionInWords.get(index) == null){
+                    partPositionInWords.put(index, new ArrayList<String>());
+                }
+                partPositionInWords.get(index).add(word);
             }
         }
+        // Add the words to the array sorted by how close the part is to the start of the word
+        int i = 0;
+        while(partPositionInWords.size()>0){
+            // Get all the words with the part at index i in the word
+            ArrayList<String> subFinalWordList = partPositionInWords.get(i);
+            partPositionInWords.remove(i++);
+            // Sort them alphabetically and add them to the word list
+            try{
+                // Sometimes this errors because there are no words with the part at that index but there are words with the part at a larger index
+                Collections.sort(subFinalWordList);
+            }
+            catch(NullPointerException e){
+                continue;
+            }
+            
+            finalWordList.addAll(subFinalWordList);
+        }
 
-        return newWordList.toArray(new String[0]);
+        return finalWordList.toArray(new String[0]);
     }
 
     /**
