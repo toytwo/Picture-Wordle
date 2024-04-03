@@ -7,17 +7,13 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.GridBagLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import javax.swing.plaf.basic.ComboPopup;
-import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.Timer;
-import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.GridBagConstraints;
 import java.awt.Component;
@@ -64,6 +60,7 @@ public abstract class GuessPanel{
      * @param maxGuesses The max number of guesses that can be made. Also determines the number of guess rows. 
      * @param ratio The number of guesses per reveal.
      */
+    @SuppressWarnings("unchecked")
     public GuessPanel(double ratio, int maxGuesses, String targetWord){
         this.ratio = ratio;
         this.maxGuesses = maxGuesses;
@@ -76,142 +73,142 @@ public abstract class GuessPanel{
     }
 
     public void setupContentArea(){
-         // General Constraints
-         GridBagConstraints constraints = new GridBagConstraints();
-         constraints.gridy = -1; // Y position in the grid (-1 because we add 1 every time so first will be -1+1=0)
-         constraints.fill = GridBagConstraints.HORIZONTAL; // Fill horizontally
- 
-         // Use empty boxes to center the textfield and have it take up 2/3 of the width of the panel
-         Component leftRigidArea = Box.createRigidArea(new Dimension(0, 0));
-         Component rightRigidArea = Box.createRigidArea(new Dimension(0, 0));
- 
-         for(int i = 0; i < maxGuesses; i++){
-            guessFields[i] = new JComboBox<String>();
-            // Update the wordbank if the user selects one of the popup list options
-            guessFields[i].addItemListener(new ItemListener() {
+        // General Constraints
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridy = -1; // Y position in the grid (-1 because we add 1 every time so first will be -1+1=0)
+        constraints.fill = GridBagConstraints.HORIZONTAL; // Fill horizontally
+
+        // Use empty boxes to center the textfield and have it take up 2/3 of the width of the panel
+        Component leftRigidArea = Box.createRigidArea(new Dimension(0, 0));
+        Component rightRigidArea = Box.createRigidArea(new Dimension(0, 0));
+
+        for(int i = 0; i < maxGuesses; i++){
+        guessFields[i] = new JComboBox<String>();
+        // Update the wordbank if the user selects one of the popup list options
+        guessFields[i].addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                // Update the word bank if a different item in the popup has been selected and the word bank isn't being updated
+                // because updating the word bank changes the selected item in the popup
+                if (e.getStateChange() == ItemEvent.SELECTED && !updatingWordBank) {
+                    // Update the word bank
+                    updateWordBank((String) guessFields[guessNumber].getSelectedItem());
+                }
+            }
+        });
+        // Change the dropdown button to a guess button
+        guessFields[i].setUI(new MetalComboBoxUI(){
+        @Override
+        protected JButton createArrowButton() {
+        // Return the guess button
+        JButton makeGuessButton = new JButton();
+        // Make a guess when clicking the button
+        makeGuessButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            makeGuess();
+        }
+        
+        });
+        makeGuessButton.setText("Guess");
+        // Make the button visible
+        makeGuessButton.setVisible(true);
+        return makeGuessButton;
+        }
+        });
+        
+            // Allow the user to type in the combobox
+            guessFields[i].setEditable(true);
+            // Only enable the first guessField
+            guessFields[i].setEnabled(i==0);
+
+            // Set a custom renderer for the combo box so that the part that is typed doesn't show in the popup list of elements
+            guessFields[i].setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                // Get the component from the default renderer
+                JLabel rendererComponent = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+                // Check if the item is the one to be hidden
+                if (wordBank.getPart().equals(value)) {
+                    // Set an empty string to hide it visually
+                    rendererComponent.setText("");
+                }
+
+                return rendererComponent;
+            }
+            });
+            // The Key Listener must be added to the editor component of the combobox, not the combobox itself
+            JTextField editor = (JTextField) guessFields[i].getEditor().getEditorComponent();
+            editor.addKeyListener(new KeyListener() {
                 @Override
-                public void itemStateChanged(ItemEvent e) {
-                    // Update the word bank if a different item in the popup has been selected and the word bank isn't being updated
-                    // because updating the word bank changes the selected item in the popup
-                    if (e.getStateChange() == ItemEvent.SELECTED && !updatingWordBank) {
-                        // Update the word bank
-                        updateWordBank((String) guessFields[guessNumber].getSelectedItem());
+                public void keyTyped(KeyEvent e) {/* Do Nothing */}
+    
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    // Cycle to the next guessField
+                    if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                        makeGuess();
+                    }
+                    else{
+                        // Create a timer to delay retrieving the text. Without the delay, the last letter typed isn't recorded.
+                        Timer timer = new Timer(1, new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                // Update the wordbank
+                                updateWordBank(editor.getText());
+
+                                // If the popup has been disabled, enable it
+                                if(!guessFields[guessNumber].isPopupVisible()){
+                                    guessFields[guessNumber].setPopupVisible(true);
+                                }
+                            };
+                        });
+                        // Make the timer only activate once
+                        timer.setRepeats(false);
+                        timer.start();
                     }
                 }
-            });
-            // Change the dropdown button to a guess button
-            guessFields[i].setUI(new MetalComboBoxUI(){
+    
             @Override
-            protected JButton createArrowButton() {
-            // Return the guess button
-            JButton makeGuessButton = new JButton();
-            // Make a guess when clicking the button
-            makeGuessButton.addActionListener(new ActionListener() {
+            public void keyReleased(KeyEvent e) {/* Do Nothing */}
+                
+            });
+            constraints.gridy++;
+
+            // Create empty component for left space
+            constraints.gridx = 0; // X position in the grid
+            constraints.gridwidth = 1; // Number of cells wide
+            constraints.weightx = 1.0 / 6.0; // 1/6 of the width
+            guessPanel.add(leftRigidArea, constraints);
+
+            // Create the textfield
+            constraints.gridx = 1; // X position in the grid
+            constraints.gridwidth = 1; // Number of cells wide
+            constraints.weightx = 2.0/3.0; // 2/3 of the width
+            guessPanel.add(guessFields[i],constraints);
+            guessFields[i].setVisible(true);
+
+            // Create empty component for right space
+            constraints.gridx = 2; // X position in the grid
+            constraints.gridwidth = 1; // Number of cells wide
+            constraints.weightx = 1.0 / 6.0; // 1/6 of the width
+            guessPanel.add(rightRigidArea, constraints);
+        }
+        // Add an empty item so the editor starts empty
+        guessFields[guessNumber].addItem("");
+        for(String word : wordBank.getWordList()){
+            guessFields[guessNumber].addItem(word);
+        }  
+        // Enable the popup after a delay. Without the delay the popup doesn't show.
+        Timer timer = new Timer(350, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                makeGuess();
-            }
-            
-            });
-            makeGuessButton.setText("Guess");
-            // Make the button visible
-            makeGuessButton.setVisible(true);
-            return makeGuessButton;
-            }
-            });
-            
-             // Allow the user to type in the combobox
-             guessFields[i].setEditable(true);
-             // Only enable the first guessField
-             guessFields[i].setEnabled(i==0);
- 
-             // Set a custom renderer for the combo box so that the part that is typed doesn't show in the popup list of elements
-             guessFields[i].setRenderer(new DefaultListCellRenderer() {
-             @Override
-             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                 // Get the component from the default renderer
-                 JLabel rendererComponent = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
- 
-                 // Check if the item is the one to be hidden
-                 if (wordBank.getPart().equals(value)) {
-                     // Set an empty string to hide it visually
-                     rendererComponent.setText("");
-                 }
- 
-                 return rendererComponent;
-             }
-             });
-             // The Key Listener must be added to the editor component of the combobox, not the combobox itself
-             JTextField editor = (JTextField) guessFields[i].getEditor().getEditorComponent();
-             editor.addKeyListener(new KeyListener() {
-                 @Override
-                 public void keyTyped(KeyEvent e) {/* Do Nothing */}
-     
-                 @Override
-                 public void keyPressed(KeyEvent e) {
-                     // Cycle to the next guessField
-                     if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                        makeGuess();
-                     }
-                     else{
-                         // Create a timer to delay retrieving the text. Without the delay, the last letter typed isn't recorded.
-                         Timer timer = new Timer(1, new ActionListener() {
-                             @Override
-                             public void actionPerformed(ActionEvent e) {
-                                 // Update the wordbank
-                                 updateWordBank(editor.getText());
- 
-                                 // If the popup has been disabled, enable it
-                                 if(!guessFields[guessNumber].isPopupVisible()){
-                                     guessFields[guessNumber].setPopupVisible(true);
-                                 }
-                             };
-                         });
-                         // Make the timer only activate once
-                         timer.setRepeats(false);
-                         timer.start();
-                     }
-                 }
-     
-             @Override
-             public void keyReleased(KeyEvent e) {/* Do Nothing */}
-                 
-             });
-             constraints.gridy++;
- 
-             // Create empty component for left space
-             constraints.gridx = 0; // X position in the grid
-             constraints.gridwidth = 1; // Number of cells wide
-             constraints.weightx = 1.0 / 6.0; // 1/6 of the width
-             guessPanel.add(leftRigidArea, constraints);
- 
-             // Create the textfield
-             constraints.gridx = 1; // X position in the grid
-             constraints.gridwidth = 1; // Number of cells wide
-             constraints.weightx = 2.0/3.0; // 2/3 of the width
-             guessPanel.add(guessFields[i],constraints);
-             guessFields[i].setVisible(true);
- 
-             // Create empty component for right space
-             constraints.gridx = 2; // X position in the grid
-             constraints.gridwidth = 1; // Number of cells wide
-             constraints.weightx = 1.0 / 6.0; // 1/6 of the width
-             guessPanel.add(rightRigidArea, constraints);
-         }
-         // Add an empty item so the editor starts empty
-         guessFields[guessNumber].addItem("");
-         for(String word : wordBank.getWordList()){
-             guessFields[guessNumber].addItem(word);
-         }  
-         // Enable the popup after a delay. Without the delay the popup doesn't show.
-         Timer timer = new Timer(350, new ActionListener() {
-             @Override
-             public void actionPerformed(ActionEvent e) {
-                 guessFields[guessNumber].setPopupVisible(true);
-             };
-         });
-         timer.setRepeats(false);
-         timer.start();
+                guessFields[guessNumber].setPopupVisible(true);
+            };
+        });
+        timer.setRepeats(false);
+        timer.start();
     }
 
     /**
@@ -280,5 +277,5 @@ public abstract class GuessPanel{
         // Only activate once
         timer.setRepeats(false);
         timer.start();
-    }   
+    } 
 }

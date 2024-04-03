@@ -117,7 +117,7 @@ public class AdaptingStringList {
         ArrayList<String> finalWordList = new ArrayList<>();
         Dictionary<Integer,ArrayList<String>> partPositionInWords = new Hashtable<Integer,ArrayList<String>>();
         // The first word in the list should always be the part in order to display it in the editor
-        finalWordList.add(partToPare);
+        finalWordList.add(partToPare.substring(0, 1).toUpperCase()+partToPare.substring(1));
         // Add all the words that contain the part
         for(String word : wordList){
             if(word.toLowerCase().contains(partToPare)){

@@ -61,8 +61,8 @@ public class Game{
         JSplitPane splitPane = new JSplitPane();
         splitPane.setLeftComponent(revealPanel);
         splitPane.setRightComponent(guessPanel.getPanel());
-        splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-        splitPane.setDividerLocation(580);
+        splitPane.setDividerLocation(1200);
+        // splitPane.setDividerSize(0);
 
         guessPanel.setupContentArea();
         revealPanel.setupContentArea();
