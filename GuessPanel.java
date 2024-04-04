@@ -21,7 +21,7 @@ import java.awt.Dimension;
 
 /**
  * @author Jackson Alexman
- * @version Created: 3/27/2024 Updated: 3/30/2024
+ * @version Updated 4/4/2024
  */
 
 public abstract class GuessPanel{
@@ -84,6 +84,29 @@ public abstract class GuessPanel{
 
         for(int i = 0; i < maxGuesses; i++){
         guessFields[i] = new JComboBox<String>();
+
+        // Customize the gridBagLayout
+        constraints.gridy++;
+
+        // Create empty component for left space
+        constraints.gridx = 0; // X position in the grid
+        constraints.gridwidth = 1; // Number of cells wide
+        constraints.weightx = 1.0 / 6.0; // 1/6 of the width
+        guessPanel.add(leftRigidArea, constraints);
+
+        // Create the textfield
+        constraints.gridx = 1; // X position in the grid
+        constraints.gridwidth = 1; // Number of cells wide
+        constraints.weightx = 2.0/3.0; // 2/3 of the width
+        guessPanel.add(guessFields[i],constraints);
+        guessFields[i].setVisible(true);
+
+        // Create empty component for right space
+        constraints.gridx = 2; // X position in the grid
+        constraints.gridwidth = 1; // Number of cells wide
+        constraints.weightx = 1.0 / 6.0; // 1/6 of the width
+        guessPanel.add(rightRigidArea, constraints);
+
         // Update the wordbank if the user selects one of the popup list options
         guessFields[i].addItemListener(new ItemListener() {
             @Override
@@ -171,29 +194,8 @@ public abstract class GuessPanel{
                 }
     
             @Override
-            public void keyReleased(KeyEvent e) {/* Do Nothing */}
-                
+            public void keyReleased(KeyEvent e) {/* Do Nothing */}    
             });
-            constraints.gridy++;
-
-            // Create empty component for left space
-            constraints.gridx = 0; // X position in the grid
-            constraints.gridwidth = 1; // Number of cells wide
-            constraints.weightx = 1.0 / 6.0; // 1/6 of the width
-            guessPanel.add(leftRigidArea, constraints);
-
-            // Create the textfield
-            constraints.gridx = 1; // X position in the grid
-            constraints.gridwidth = 1; // Number of cells wide
-            constraints.weightx = 2.0/3.0; // 2/3 of the width
-            guessPanel.add(guessFields[i],constraints);
-            guessFields[i].setVisible(true);
-
-            // Create empty component for right space
-            constraints.gridx = 2; // X position in the grid
-            constraints.gridwidth = 1; // Number of cells wide
-            constraints.weightx = 1.0 / 6.0; // 1/6 of the width
-            guessPanel.add(rightRigidArea, constraints);
         }
         // Add an empty item so the editor starts empty
         guessFields[guessNumber].addItem("");

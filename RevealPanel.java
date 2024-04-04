@@ -2,6 +2,11 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
+/**
+ * @author Jackson Alexman
+ * @version Updated 4/4/2024
+ */
+
 public class RevealPanel extends JPanel{
     protected BufferedImage image;
     protected int width;
@@ -18,11 +23,10 @@ public class RevealPanel extends JPanel{
         if (image != null) {
             // Calculate the position to center the image horizontally
             int panelWidth = getWidth();
-            int partialWidth = (int) (panelWidth * 2.0 / 3.0);
-            int x = (panelWidth-partialWidth) / 2;
+            int panelHeight = getHeight();
+            int x = (panelWidth-panelHeight) / 2;
             
             // Draw the scaled image with the height matching the panel height
-            int panelHeight = getHeight();
             g.drawImage(image, x, 0, panelHeight, panelHeight, this);
         }
     }
