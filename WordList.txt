@@ -1424,9 +1424,6 @@ Helmet
 Luxury
 Catch
 Rug
-<<<<<<< Updated upstream
-Disco
-=======
 Disco
 Treehouse
 Helicopter
@@ -1448,4 +1445,4 @@ Hammer
 Snake
 Kite
 Sunglasses
->>>>>>> Stashed changes
+Fish
