@@ -153,7 +153,11 @@ public abstract class GuessPanel{
                 JLabel rendererComponent = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
                 // Check if the item is the one to be hidden
+<<<<<<< Updated upstream
                 if (wordBank.getPart().equals(value)) {
+=======
+                if (wordBank.getPart().toLowerCase().equals(((String) value).toLowerCase())) {
+>>>>>>> Stashed changes
                     // Set an empty string to hide it visually
                     rendererComponent.setText("");
                 }
@@ -202,11 +206,30 @@ public abstract class GuessPanel{
         for(String word : wordBank.getWordList()){
             guessFields[guessNumber].addItem(word);
         }  
+<<<<<<< Updated upstream
         // Enable the popup after a delay. Without the delay the popup doesn't show.
         Timer timer = new Timer(350, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 guessFields[guessNumber].setPopupVisible(true);
+=======
+        // Enable the code after a delay. Without the delay the code doesn't run properly.
+        Timer timer = new Timer(350, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Set the text cursor to the guessField
+                guessFields[guessNumber].requestFocus();
+                // Wait 100 seconds before enabling the popup. Without the delay, the popup does not show.
+                Timer timer = new Timer(100, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        guessFields[guessNumber].setPopupVisible(true);
+                    };
+                });
+                // Only activate once
+                timer.setRepeats(false);
+                timer.start();
+>>>>>>> Stashed changes
             };
         });
         timer.setRepeats(false);
@@ -245,7 +268,11 @@ public abstract class GuessPanel{
         // Correct Guess
         if(guessOutcome){
             System.out.println("Guessed the word");
+<<<<<<< Updated upstream
             System.exit(0);
+=======
+            Main.playAgain();
+>>>>>>> Stashed changes
         }
         // Incorrect Guess
         else{
