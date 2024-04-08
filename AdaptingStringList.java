@@ -125,7 +125,7 @@ public class AdaptingStringList {
                 if(partPositionInWords.get(index) == null){
                     partPositionInWords.put(index, new ArrayList<String>());
                 }
-                partPositionInWords.get(index).add(word);
+                partPositionInWords.get(index).add(word.substring(0, 1).toUpperCase()+word.substring(1));
             }
         }
         // Add the words to the array sorted by how close the part is to the start of the word

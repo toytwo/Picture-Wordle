@@ -4,7 +4,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -21,15 +20,9 @@ import java.awt.Dimension;
 
 /**
  * @author Jackson Alexman
- * @version Updated 4/4/2024
+ * @version Updated: 4/07/2024
  */
-
-public abstract class GuessPanel{
-    protected JPanel guessPanel;
-    /**
-     * The number of guesses per reveal.
-     */
-    protected double ratio;
+public abstract class GuessPanel extends InteractivePanel{
     /**
      * The number of guesses made.
      */
@@ -37,7 +30,7 @@ public abstract class GuessPanel{
     /** 
      * The max number of guesses that can be made. Also determines the number of guess rows. 
      */
-    protected int maxGuesses;
+    protected int MAX_GUESSES;
     /**
      * The text field for each guess.
      */
@@ -46,10 +39,6 @@ public abstract class GuessPanel{
      * The word bank of guessable words.
      */
     protected AdaptingStringList wordBank;
-    /**
-     * The word to be guessed
-     */
-    protected String targetWord;
     /**
      * If the word bank is being updated
      */
@@ -61,14 +50,12 @@ public abstract class GuessPanel{
      * @param ratio The number of guesses per reveal.
      */
     @SuppressWarnings("unchecked")
-    public GuessPanel(double ratio, int maxGuesses, String targetWord){
-        this.ratio = ratio;
-        this.maxGuesses = maxGuesses;
-        this.guessPanel = new JPanel(new GridBagLayout());
+    public GuessPanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_GUESSES){
+        super(new GridBagLayout(), targetWord, SWAP_THRESHOLD, doSwapThreshold);
+        this.MAX_GUESSES = MAX_GUESSES;
         this.guessNumber = 0;
-        this.targetWord = targetWord;
         this.wordBank = new AdaptingStringList();
-        this.guessFields = new JComboBox[maxGuesses];
+        this.guessFields = new JComboBox[MAX_GUESSES];
         this.updatingWordBank = false;
     }
 
@@ -82,7 +69,7 @@ public abstract class GuessPanel{
         Component leftRigidArea = Box.createRigidArea(new Dimension(0, 0));
         Component rightRigidArea = Box.createRigidArea(new Dimension(0, 0));
 
-        for(int i = 0; i < maxGuesses; i++){
+        for(int i = 0; i < MAX_GUESSES; i++){
         guessFields[i] = new JComboBox<String>();
 
         // Customize the gridBagLayout
@@ -92,20 +79,20 @@ public abstract class GuessPanel{
         constraints.gridx = 0; // X position in the grid
         constraints.gridwidth = 1; // Number of cells wide
         constraints.weightx = 1.0 / 6.0; // 1/6 of the width
-        guessPanel.add(leftRigidArea, constraints);
+        this.add(leftRigidArea, constraints);
 
         // Create the textfield
         constraints.gridx = 1; // X position in the grid
         constraints.gridwidth = 1; // Number of cells wide
         constraints.weightx = 2.0/3.0; // 2/3 of the width
-        guessPanel.add(guessFields[i],constraints);
+        this.add(guessFields[i],constraints);
         guessFields[i].setVisible(true);
 
         // Create empty component for right space
         constraints.gridx = 2; // X position in the grid
         constraints.gridwidth = 1; // Number of cells wide
         constraints.weightx = 1.0 / 6.0; // 1/6 of the width
-        guessPanel.add(rightRigidArea, constraints);
+        this.add(rightRigidArea, constraints);
 
         // Update the wordbank if the user selects one of the popup list options
         guessFields[i].addItemListener(new ItemListener() {
@@ -225,13 +212,9 @@ public abstract class GuessPanel{
     }
 
     /**
-     * @return The guessPanel for this GuessPanelType
+     * Pares the Word Bank to only display words containing newPart and displays them based on how close the part is to the start of the word alphabetically.
+     * @param newPart The String to pare the WordBank list with
      */
-    public JPanel getPanel(){
-        return this.guessPanel;
-    }
-
-
     public void updateWordBank(String newPart){
         this.updatingWordBank = true;
 
@@ -267,7 +250,7 @@ public abstract class GuessPanel{
         guessFields[guessNumber].setEnabled(false);
         guessNumber++;
         // If the user has used all guesses
-        if(guessNumber>maxGuesses){
+        if(guessNumber>MAX_GUESSES){
             return;
         }
         // Update the wordbank
@@ -290,5 +273,5 @@ public abstract class GuessPanel{
         // Only activate once
         timer.setRepeats(false);
         timer.start();
-    } 
+    }
 }

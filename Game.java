@@ -8,9 +8,8 @@ import javax.swing.JFrame;
 
 /**
  * @author Jackson Alexman
- * @version Updated 4/4/2024
+ * @version Updated: 4/07/2024
  */
-
 public class Game extends JFrame{
     /**
      * The chosen GuessPanel for this Game
@@ -59,9 +58,18 @@ public class Game extends JFrame{
         }
 
         this.targetWord = fileName.substring(0,fileName.indexOf("."));
-        this.guessPanel = new SimpleGuess(1,5,this.targetWord);
-        this.revealPanel = new RevealByColor(image);
         this.difficulty = difficulty;
+
+        switch(guessPanel){
+            case 0: this.guessPanel = new SimpleGuess(this.targetWord,1,false,5); break;
+            default: this.guessPanel = new SimpleGuess(this.targetWord,1,false,5); break;
+        }
+
+        switch(revealPanel){
+            case 0: this.revealPanel = new SimpleReveal(image,targetWord,1,false); break;
+            case 1: this.revealPanel = new RevealByColor(image,targetWord,1,false, 10); break;
+            default: this.revealPanel = new SimpleReveal(image,targetWord,1,false); break;
+        }
 
         this.startGame();
     }
@@ -88,7 +96,7 @@ public class Game extends JFrame{
         constraints.gridx = 1; // X position in the grid
         constraints.gridwidth = 1; // Number of cells wide
         constraints.weightx = 1.0-REVEAL_PANEL_SCREEN_PERCENTAGE; // Fraction of the width
-        this.add(guessPanel.getPanel(),constraints);
+        this.add(guessPanel,constraints);
 
         guessPanel.setupContentArea();
         revealPanel.setupContentArea();
