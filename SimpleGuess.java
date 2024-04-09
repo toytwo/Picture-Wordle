@@ -1,6 +1,6 @@
 /**
  * @author Jackson Alexman
- * @version Updated: 4/07/2024
+ * @version Updated: 4/08/2024
  */
 public class SimpleGuess extends GuessPanel {
     /**
@@ -10,6 +10,11 @@ public class SimpleGuess extends GuessPanel {
      */
     public SimpleGuess(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_GUESSES){
         super(targetWord,SWAP_THRESHOLD,doSwapThreshold,MAX_GUESSES);
+    }
+
+    @Override
+    public void setupContentArea() {
+        super.setupContentArea();
     }
 
     @Override

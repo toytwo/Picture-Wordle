@@ -20,7 +20,7 @@ import java.awt.Dimension;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/07/2024
+ * @version Updated: 4/08/2024
  */
 public abstract class GuessPanel extends InteractivePanel{
     /**
@@ -65,26 +65,20 @@ public abstract class GuessPanel extends InteractivePanel{
         constraints.gridy = -1; // Y position in the grid (-1 because we add 1 every time so first will be -1+1=0)
         constraints.fill = GridBagConstraints.HORIZONTAL; // Fill horizontally
 
-        // Use empty boxes to center the textfield and have it take up 2/3 of the width of the panel
-        Component leftRigidArea = Box.createRigidArea(new Dimension(0, 0));
+        // Use empty boxes to left align the textfield and have it take up 5/6 of the width of the panel
         Component rightRigidArea = Box.createRigidArea(new Dimension(0, 0));
 
+        // Create each guessField
         for(int i = 0; i < MAX_GUESSES; i++){
         guessFields[i] = new JComboBox<String>();
-
         // Customize the gridBagLayout
+        
         constraints.gridy++;
 
-        // Create empty component for left space
-        constraints.gridx = 0; // X position in the grid
-        constraints.gridwidth = 1; // Number of cells wide
-        constraints.weightx = 1.0 / 6.0; // 1/6 of the width
-        this.add(leftRigidArea, constraints);
-
         // Create the textfield
-        constraints.gridx = 1; // X position in the grid
-        constraints.gridwidth = 1; // Number of cells wide
-        constraints.weightx = 2.0/3.0; // 2/3 of the width
+        constraints.gridx = 0; // X position in the grid
+        constraints.gridwidth = 2; // Number of cells wide
+        constraints.weightx = 5.0/6.0; // 5/6 of the width
         this.add(guessFields[i],constraints);
         guessFields[i].setVisible(true);
 

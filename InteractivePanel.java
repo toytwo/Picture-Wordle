@@ -3,9 +3,8 @@ import javax.swing.JPanel;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/07/2024
+ * @version Updated: 4/08/2024
  */
-
 public abstract class InteractivePanel extends JPanel {
     /**
      * The number of actions per swap.
