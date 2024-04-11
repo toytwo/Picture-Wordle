@@ -7,13 +7,16 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FlashlightPanel extends JPanel implements MouseListener, MouseMotionListener {
     private BufferedImage image;
     private int radius;
     private int x, y;
     private Ellipse2D oval;
-    private java.util.List<Area> revealedAreas;
+    private List<Area> revealedAreas;
+    private int ovalCount;
 
     public FlashlightPanel() {
         try {
@@ -21,34 +24,36 @@ public class FlashlightPanel extends JPanel implements MouseListener, MouseMotio
         } catch (IOException e) {
             e.printStackTrace();
         }
-        radius = 50;
+        radius = 70;
         x = -1;
         y = -1;
-        revealedAreas = new java.util.ArrayList<>();
-
+        revealedAreas = new ArrayList<>();
         addMouseListener(this);
         addMouseMotionListener(this);
     }
 
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(750, 750); // Set the preferred size to 1000x1000
+    }
+
     public void mouseClicked(MouseEvent e) {
         if (oval != null) {
-            revealedAreas.add(new Area(oval));
+            revealedAreas.add(new Area(oval)); // Add the clicked oval to the list of revealed areas
 
+            ovalCount++;
+            System.out.println(ovalCount);
             repaint();
         }
     }
 
-    public void mousePressed(MouseEvent e) {
-    }
+    public void mousePressed(MouseEvent e) {}
 
-    public void mouseReleased(MouseEvent e) {
-    }
+    public void mouseReleased(MouseEvent e) {}
 
-    public void mouseEntered(MouseEvent e) {
-    }
+    public void mouseEntered(MouseEvent e) {}
 
-    public void mouseExited(MouseEvent e) {
-    }
+    public void mouseExited(MouseEvent e) {}
 
     public void mouseMoved(MouseEvent e) {
         x = e.getX();
@@ -57,54 +62,57 @@ public class FlashlightPanel extends JPanel implements MouseListener, MouseMotio
         repaint();
     }
 
-    public void mouseDragged(MouseEvent e) {
-    }
+    public void mouseDragged(MouseEvent e) {}
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-        BufferedImage background= new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D backgroundGraphics = background.createGraphics();
-
-
-        if (image != null) {
-            // int imageX = (getWidth() - image.getWidth()) / 2;
-            // int imageY = (getHeight() - image.getHeight()) / 2;
-
-            // g.drawImage(image, imageX, imageY, this);
-            backgroundGraphics.drawImage(image, 0, 0, this);
-    
-            //g2d.dispose();
-            //g.drawImage(image, 0, 0, this);
-        }
         
-        backgroundGraphics.setColor(new Color(0, 0, 0, 100));
-        backgroundGraphics.setComposite(AlphaComposite.Clear);
+        if (image != null) {
+            BufferedImage scaledImage = scaleImage(image, getWidth(), getHeight());
 
+            g.drawImage(scaledImage, 0, 0, this);
+        }
+
+        // Subtract revealed areas from the black screen
+        Area mask = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
         for (Area area : revealedAreas) {
-            backgroundGraphics.fill(area);
-
+            mask.subtract(area);
         }
 
-        backgroundGraphics.dispose();
+        // Create a buffered image for the mask
+        BufferedImage maskImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D maskGraphics = maskImage.createGraphics();
+        maskGraphics.setColor(Color.BLACK);
+        maskGraphics.fill(mask);
+        maskGraphics.dispose();
 
-        g.drawImage(background, 0, 0, this);
+        // Draw the mask onto the panel
+        g.drawImage(maskImage, 0, 0, this);
 
-        //g.setColor(Color.BLACK);
-        //g.fillRect(0, 0, getWidth(), getHeight());
-
+        // Draw the oval representing the flashlight
         if (oval != null) {
-            Graphics2D g2d = (Graphics2D) g;
-            g2d.setColor(Color.WHITE);
-            g2d.draw(oval);
-            g2d.fill(oval);
-            g2d.setColor(Color.BLACK);
-            g2d.draw(oval);
-            g2d.setFont(new Font("SansSerif", Font.BOLD, 19));
-            g2d.drawString("Reveal", x - 29, y);
+            Graphics2D g2d2 = (Graphics2D) g.create();
+            g2d2.setColor(Color.WHITE);//Color of Floating Oval
+            g2d2.draw(oval);
+            g2d2.fill(oval);
+            g2d2.setColor(Color.BLACK);//Color of Reveal text
+            g2d2.draw(oval);//Draws string onto oval
+            g2d2.setFont(new Font("SansSerif", Font.BOLD, 19));
+            g2d2.drawString("Reveal", x - 29, y);
+            g2d2.dispose();
         }
-        setBackground(Color.GREEN);
+
+    }
+
+    private BufferedImage scaleImage(BufferedImage originalImage, int width, int height) {
+        Image tmp = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = resizedImage.createGraphics();
+        g.drawImage(tmp, 0, 0, null);
+        g.dispose();
+        return resizedImage;
     }
 
     public static void main(String[] args) {
@@ -114,7 +122,7 @@ public class FlashlightPanel extends JPanel implements MouseListener, MouseMotio
         FlashlightPanel panel = new FlashlightPanel();
         frame.add(panel);
 
-        frame.setSize(800, 600);
+        frame.setSize(750, 750);
         frame.setVisible(true);
     }
 }
