@@ -7,6 +7,10 @@ import java.awt.image.BufferedImage;
  */
 public abstract class RevealPanel extends InteractivePanel{
     protected BufferedImage image;
+    /**
+     * How much of the screen width the revealPanel occupies. guessPanel will occupy the other part (1-this).
+     */
+    protected double REVEAL_PANEL_SCREEN_PERCENTAGE = 5.0/6.0;
 
     public RevealPanel(String targetWord, int swapThreshold, boolean doSwapThreshold, BufferedImage image, LayoutManager layout){
         super(layout, targetWord, swapThreshold, doSwapThreshold);
@@ -16,5 +20,9 @@ public abstract class RevealPanel extends InteractivePanel{
     public RevealPanel(String targetWord, int swapThreshold, boolean doSwapThreshold, BufferedImage image){
         super(targetWord, swapThreshold, doSwapThreshold);
         this.image = image;
+    }
+
+    public double getREVEAL_PANEL_SCREEN_PERCENTAGE(){
+        return REVEAL_PANEL_SCREEN_PERCENTAGE;
     }
 }

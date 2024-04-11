@@ -27,10 +27,6 @@ public class Game extends JFrame{
      * The word to guess
      */
     private String targetWord;
-    /**
-     * How much of the screen width the revealPanel occupies. guessPanel will occupy the other part (1-this).
-     */
-    private final static double REVEAL_PANEL_SCREEN_PERCENTAGE = 5.0/6.0;
 
     public Game(int guessPanel,int revealPanel, int difficulty){
         BufferedImage image = null;
@@ -67,7 +63,7 @@ public class Game extends JFrame{
 
         switch(revealPanel){
             case 0: this.revealPanel = new SimpleReveal(image,targetWord,1,false); break;
-            case 1: this.revealPanel = new RevealByColor(image,targetWord,1,false, 10); break;
+            case 1: this.revealPanel = new RevealByColor(image,targetWord,1,false, 20); break;
             default: this.revealPanel = new SimpleReveal(image,targetWord,1,false); break;
         }
 
@@ -89,13 +85,13 @@ public class Game extends JFrame{
         // Add the revealPanel
         constraints.gridx = 0; // X position in the grid
         constraints.gridwidth = 1; // Number of cells wide
-        constraints.weightx = REVEAL_PANEL_SCREEN_PERCENTAGE; // Fraction of the width
+        constraints.weightx = this.revealPanel.getREVEAL_PANEL_SCREEN_PERCENTAGE(); // Fraction of the width
         this.add(revealPanel,constraints);
 
         // Add the guessPanel
         constraints.gridx = 1; // X position in the grid
         constraints.gridwidth = 1; // Number of cells wide
-        constraints.weightx = 1.0-REVEAL_PANEL_SCREEN_PERCENTAGE; // Fraction of the width
+        constraints.weightx = 1.0-this.revealPanel.getREVEAL_PANEL_SCREEN_PERCENTAGE(); // Fraction of the width
         this.add(guessPanel,constraints);
 
         guessPanel.setupContentArea();
