@@ -4,7 +4,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -63,30 +62,31 @@ public abstract class GuessPanel extends InteractivePanel{
     public void setupContentArea(){
         // General Constraints
         GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridy = -1; // Y position in the grid (-1 because we add 1 every time so first will be -1+1=0)
         constraints.fill = GridBagConstraints.HORIZONTAL; // Fill horizontally
 
-        // Use an empty panel to left align the textfield and have it take up 5/6 of the width of the panel
-        constraints.gridx = 2; // X position in the grid
-        constraints.gridy = 0; // Y position in the grid
-        constraints.gridwidth = 1; // Number of cells wide
-        constraints.weightx = 1.0 / 6.0; // 1/6 of the width
-        constraints.gridheight = MAX_GUESSES; // Number of cells tall
-        this.add(new JPanel(), constraints);
-
-        constraints.gridy = -1; // Y position in the grid (-1 because we add 1 every time so first will be -1+1=0)
+        // Use empty boxes to left align the textfield and have it take up 5/6 of the width of the panel
+        Component rightRigidArea = Box.createRigidArea(new Dimension(0, 0));
 
         // Create each guessField
         for(int i = 0; i < MAX_GUESSES; i++){
-        // Create the textfield
         guessFields[i] = new JComboBox<String>();
-
         // Customize the gridBagLayout
+        
         constraints.gridy++;
+
+        // Create the textfield
         constraints.gridx = 0; // X position in the grid
         constraints.gridwidth = 2; // Number of cells wide
         constraints.weightx = 5.0/6.0; // 5/6 of the width
         this.add(guessFields[i],constraints);
         guessFields[i].setVisible(true);
+
+        // Create empty component for right space
+        constraints.gridx = 2; // X position in the grid
+        constraints.gridwidth = 1; // Number of cells wide
+        constraints.weightx = 1.0 / 6.0; // 1/6 of the width
+        this.add(rightRigidArea, constraints);
 
         // Update the wordbank if the user selects one of the popup list options
         guessFields[i].addItemListener(new ItemListener() {
