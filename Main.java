@@ -14,6 +14,6 @@ public class Main {
 
     public static void playAgain(){
         f.dispose();
-        f = new Game(0, 0, 0);
+        f = new Game(0, 1, 0);
     }
 }

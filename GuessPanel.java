@@ -134,7 +134,7 @@ public abstract class GuessPanel extends InteractivePanel{
                 JLabel rendererComponent = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
                 // Hide the first item because the part is always contained there
-                if (index == 0 && wordBank.getWordList().length != 1) {
+                if (index == 0 && !(wordBank.isPartInWordList() && wordBank.getWordList().length == 1) ) {
                     // Set an empty string to hide it visually
                     rendererComponent.setText("");
                 }

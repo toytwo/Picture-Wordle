@@ -116,20 +116,20 @@ public class RevealByColor extends RevealPanel{
         colorSelectors = new JButton[NUMBER_OF_BUTTONS];
         for(int i=0; i<NUMBER_OF_BUTTONS; i++){
             colorSelectors[i] = new JButton();
+            hueRanges[i] = (float) (i) / (NUMBER_OF_BUTTONS);
 
             // Make the first and last button black and white
             if(i == 0){
                 colorSelectors[i].setBackground(Color.WHITE);
-                hueRanges[i] = (float) (i) / (NUMBER_OF_BUTTONS);
             }
             else if(i == colorSelectors.length-1){
                 colorSelectors[i].setBackground(Color.BLACK);
-                hueRanges[i] = 1.0f; // Set the upper bound of the last range to 1.0
+                hueRanges[i+1] = 1.0f; // Set the upper bound of the last range to 1.0
             }
             // Make all the other buttons colorful
             else{
                 // Distributes the colors across the color spectrum as equally as possible
-                hueRanges[i] = (float) (i) / (NUMBER_OF_BUTTONS);
+                
 
                 colorSelectors[i].setBackground(Color.getHSBColor(hueRanges[i], 1.0f, 1.0f));
             }
