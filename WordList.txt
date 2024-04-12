@@ -1447,3 +1447,6 @@ Kite
 Sunglasses
 Fish
 Watch
+Guitar
+Meadow
+Vault
