@@ -9,7 +9,7 @@ public class Main {
 
     public static JFrame f;
     public static void main(String[] args) {
-        f = new Game(0, 1, 0);
+        f = new Game(0, 0, 0);
     }
 
     public static void playAgain(){

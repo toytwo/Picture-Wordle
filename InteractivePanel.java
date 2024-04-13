@@ -3,7 +3,7 @@ import javax.swing.JPanel;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/08/2024
+ * @version Updated: 4/12/2024
  */
 public abstract class InteractivePanel extends JPanel {
     /**
@@ -68,4 +68,9 @@ public abstract class InteractivePanel extends JPanel {
      * Disable every interactable component in this panel
      */
     public abstract void deactivatePanel();
+
+    /**
+     * Enable some interactable components in this panel
+     */
+    public abstract void activatePanel();
 }

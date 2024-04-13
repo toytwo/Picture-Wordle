@@ -21,7 +21,7 @@ import java.awt.Dimension;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/08/2024
+ * @version Updated: 4/12/2024
  */
 public abstract class GuessPanel extends InteractivePanel{
     /**
@@ -74,52 +74,53 @@ public abstract class GuessPanel extends InteractivePanel{
         this.add(new JPanel(), constraints);
 
         constraints.gridy = -1; // Y position in the grid (-1 because we add 1 every time so first will be -1+1=0)
+        constraints.gridheight = 1; // Number of cells tall
 
         // Create each guessField
         for(int i = 0; i < MAX_GUESSES; i++){
-        // Create the textfield
-        guessFields[i] = new JComboBox<String>();
+            // Create the textfield
+            guessFields[i] = new JComboBox<String>();
 
-        // Customize the gridBagLayout
-        constraints.gridy++;
-        constraints.gridx = 0; // X position in the grid
-        constraints.gridwidth = 2; // Number of cells wide
-        constraints.weightx = 5.0/6.0; // 5/6 of the width
-        this.add(guessFields[i],constraints);
-        guessFields[i].setVisible(true);
+            // Customize the gridBagLayout
+            constraints.gridy++;
+            constraints.gridx = 0; // X position in the grid
+            constraints.gridwidth = 2; // Number of cells wide
+            constraints.weightx = 5.0/6.0; // 5/6 of the width
+            this.add(guessFields[i],constraints);
+            guessFields[i].setVisible(true);
 
-        // Update the wordbank if the user selects one of the popup list options
-        guessFields[i].addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                // Update the word bank if a different item in the popup has been selected and the word bank isn't being updated
-                // because updating the word bank changes the selected item in the popup
-                if (e.getStateChange() == ItemEvent.SELECTED && !updatingWordBank) {
-                    // Update the word bank
-                    updateWordBank((String) guessFields[guessNumber].getSelectedItem());
+            // Update the wordbank if the user selects one of the popup list options
+            guessFields[i].addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    // Update the word bank if a different item in the popup has been selected and the word bank isn't being updated
+                    // because updating the word bank changes the selected item in the popup
+                    if (e.getStateChange() == ItemEvent.SELECTED && !updatingWordBank) {
+                        // Update the word bank
+                        updateWordBank((String) guessFields[guessNumber].getSelectedItem());
+                    }
                 }
+            });
+            // Change the dropdown button to a guess button
+            guessFields[i].setUI(new MetalComboBoxUI(){
+            @Override
+            protected JButton createArrowButton() {
+            // Return the guess button
+            JButton makeGuessButton = new JButton();
+            // Make a guess when clicking the button
+            makeGuessButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                makeGuess();
             }
-        });
-        // Change the dropdown button to a guess button
-        guessFields[i].setUI(new MetalComboBoxUI(){
-        @Override
-        protected JButton createArrowButton() {
-        // Return the guess button
-        JButton makeGuessButton = new JButton();
-        // Make a guess when clicking the button
-        makeGuessButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            makeGuess();
-        }
-        
-        });
-        makeGuessButton.setText("Guess");
-        // Make the button visible
-        makeGuessButton.setVisible(true);
-        return makeGuessButton;
-        }
-        });
+            
+            });
+            makeGuessButton.setText("Guess");
+            // Make the button visible
+            makeGuessButton.setVisible(true);
+            return makeGuessButton;
+            }
+            });
         
             // Allow the user to type in the combobox
             guessFields[i].setEditable(true);
@@ -154,6 +155,23 @@ public abstract class GuessPanel extends InteractivePanel{
                     if(e.getKeyCode() == KeyEvent.VK_ENTER){
                         makeGuess();
                     }
+                    // Autofill the textfield based on the first item shown
+                    else if(e.getKeyCode() == KeyEvent.VK_TAB){
+                        int index;
+                        // First shown is index 0
+                        if(wordBank.isPartInWordList()){
+                            index = 0;
+                        }
+                        // First shown is index 1 (because index 0 is invisible)
+                        else{
+                            index = 1;
+                        }
+
+                        // Update the combobox
+                        guessFields[guessNumber].setSelectedIndex(index);
+                        System.out.println(index+" "+guessFields[guessNumber].getSelectedItem());
+                        updateWordBank((String) guessFields[guessNumber].getSelectedItem());
+                    }
                     else{
                         // Create a timer to delay retrieving the text. Without the delay, the last letter typed isn't recorded.
                         Timer timer = new Timer(1, new ActionListener() {
@@ -162,10 +180,9 @@ public abstract class GuessPanel extends InteractivePanel{
                                 // Update the wordbank
                                 updateWordBank(editor.getText());
 
-                                // If the popup has been disabled, enable it
-                                if(!guessFields[guessNumber].isPopupVisible()){
-                                    guessFields[guessNumber].setPopupVisible(true);
-                                }
+                                // Close and reopen the popup to update its dimensions
+                                guessFields[guessNumber].setPopupVisible(false);
+                                guessFields[guessNumber].setPopupVisible(true);
                             };
                         });
                         // Make the timer only activate once
@@ -174,15 +191,18 @@ public abstract class GuessPanel extends InteractivePanel{
                     }
                 }
     
-            @Override
-            public void keyReleased(KeyEvent e) {/* Do Nothing */}    
+                @Override
+                public void keyReleased(KeyEvent e) {/* Do Nothing */}    
             });
         }
+
+        // Fix the size of every guessField
+        for(JComboBox<String> guessField : guessFields){
+            guessField.setPreferredSize(new Dimension(150,30));
+        }
         // Add an empty item so the editor starts empty
-        guessFields[guessNumber].addItem("");
-        for(String word : wordBank.getWordList()){
-            guessFields[guessNumber].addItem(word);
-        }  
+        updateWordBank("");
+        
         // Enable the code after a delay. Without the delay the code doesn't run properly.
         Timer timer = new Timer(350, new ActionListener() {
             @Override
@@ -216,8 +236,14 @@ public abstract class GuessPanel extends InteractivePanel{
         this.wordBank.updateLetters(newPart);
         // Update the guessField popup list
         this.guessFields[this.guessNumber].removeAllItems();
+        int wordCount = 0;
         for(String word : this.wordBank.getWordList()){
+            wordCount++;
             this.guessFields[this.guessNumber].addItem(word);
+            // Only show the first 100 words
+            if(wordCount >= 100){
+                break;
+            }
         }
 
         this.updatingWordBank = false;
