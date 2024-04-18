@@ -1,10 +1,11 @@
-import javax.swing.Box;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,22 +16,15 @@ import java.awt.event.KeyListener;
 import javax.swing.Timer;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.GridBagConstraints;
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/08/2024
+ * @version Updated: 4/17/2024
  */
 public abstract class GuessPanel extends InteractivePanel{
-    /**
-     * The number of guesses made.
-     */
-    protected int guessNumber;
-    /** 
-     * The max number of guesses that can be made. Also determines the number of guess rows. 
-     */
-    protected int MAX_GUESSES;
     /**
      * The text field for each guess.
      */
@@ -43,6 +37,10 @@ public abstract class GuessPanel extends InteractivePanel{
      * If the word bank is being updated
      */
     protected boolean updatingWordBank;
+    /**
+     * A display of hints based targetWord which changes everytime a guess is made
+     */
+    protected HintPanel hintPanel;
 
 
     /** 
@@ -50,76 +48,101 @@ public abstract class GuessPanel extends InteractivePanel{
      * @param ratio The number of guesses per reveal.
      */
     @SuppressWarnings("unchecked")
-    public GuessPanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_GUESSES){
-        super(new GridBagLayout(), targetWord, SWAP_THRESHOLD, doSwapThreshold);
-        this.MAX_GUESSES = MAX_GUESSES;
-        this.guessNumber = 0;
-        this.wordBank = new AdaptingStringList();
-        this.guessFields = new JComboBox[MAX_GUESSES];
+    public GuessPanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS){
+        super(new BorderLayout(), targetWord, SWAP_THRESHOLD, doSwapThreshold);
+        // Initialize wordBank using an anonymous SwingWorker
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                wordBank = new AdaptingStringList();
+                return null;
+            }
+
+            @Override
+            protected void done() {/* Do Nothing */}
+        };
+        worker.execute();
+
+        // Initialize instance variables
+        this.MAX_ACTIONS = MAX_ACTIONS;
+        this.guessFields = new JComboBox[MAX_ACTIONS];
         this.updatingWordBank = false;
+        this.hintPanel = new HintPanel(this.targetWord, this.MAX_ACTIONS);
     }
 
     public void setupContentArea(){
+        // Add the hintPanel
+        this.add(this.hintPanel, BorderLayout.NORTH);
+
+        // Add the guessField Panel
+        JPanel guessFieldPanel = new JPanel(new GridBagLayout());
+        this.add(guessFieldPanel, BorderLayout.CENTER);
+
+        // Setup the guessFieldPanel
         // General Constraints
         GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridy = -1; // Y position in the grid (-1 because we add 1 every time so first will be -1+1=0)
         constraints.fill = GridBagConstraints.HORIZONTAL; // Fill horizontally
 
-        // Use empty boxes to left align the textfield and have it take up 5/6 of the width of the panel
-        Component rightRigidArea = Box.createRigidArea(new Dimension(0, 0));
-
-        // Create each guessField
-        for(int i = 0; i < MAX_GUESSES; i++){
-        guessFields[i] = new JComboBox<String>();
-        // Customize the gridBagLayout
-        
-        constraints.gridy++;
-
-        // Create the textfield
-        constraints.gridx = 0; // X position in the grid
-        constraints.gridwidth = 2; // Number of cells wide
-        constraints.weightx = 5.0/6.0; // 5/6 of the width
-        this.add(guessFields[i],constraints);
-        guessFields[i].setVisible(true);
-
-        // Create empty component for right space
+        // Use an empty panel to left align the textfield and have it take up 5/6 of the width of the panel
         constraints.gridx = 2; // X position in the grid
+        constraints.gridy = 1; // Y position in the grid
         constraints.gridwidth = 1; // Number of cells wide
         constraints.weightx = 1.0 / 6.0; // 1/6 of the width
-        this.add(rightRigidArea, constraints);
+        constraints.gridheight = MAX_ACTIONS; // Number of cells tall
+        guessFieldPanel.add(new JPanel(), constraints);
 
-        // Update the wordbank if the user selects one of the popup list options
-        guessFields[i].addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                // Update the word bank if a different item in the popup has been selected and the word bank isn't being updated
-                // because updating the word bank changes the selected item in the popup
-                if (e.getStateChange() == ItemEvent.SELECTED && !updatingWordBank) {
-                    // Update the word bank
-                    updateWordBank((String) guessFields[guessNumber].getSelectedItem());
+        constraints.gridy = 0; // Y position in the grid (0 because we add 1 every time so first will be 0+1=1)
+        constraints.gridheight = 1; // Number of cells tall
+
+        // Create each guessField
+        for(int i = 0; i < MAX_ACTIONS; i++){
+            // Create the textfield
+            guessFields[i] = new JComboBox<String>();
+            guessFields[i].setVisible(false);
+
+            // Customize the gridBagLayout
+            constraints.gridy++;
+            constraints.gridx = 0; // X position in the grid
+            constraints.gridwidth = 2; // Number of cells wide
+            constraints.weightx = 5.0/6.0; // 5/6 of the width
+            guessFieldPanel.add(guessFields[i],constraints);
+
+            // Update the wordbank if the user selects one of the popup list options
+            guessFields[i].addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    // Update the word bank if a different item in the popup has been selected and the word bank isn't being updated
+                    // because updating the word bank changes the selected item in the popup
+                    if (e.getStateChange() == ItemEvent.SELECTED && !updatingWordBank) {
+                        // Update the word bank
+                        updateWordBank((String) guessFields[interactionCount].getSelectedItem());
+                    }
                 }
-            }
-        });
-        // Change the dropdown button to a guess button
-        guessFields[i].setUI(new MetalComboBoxUI(){
-        @Override
-        protected JButton createArrowButton() {
-        // Return the guess button
-        JButton makeGuessButton = new JButton();
-        // Make a guess when clicking the button
-        makeGuessButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            makeGuess();
-        }
-        
-        });
-        makeGuessButton.setText("Guess");
-        // Make the button visible
-        makeGuessButton.setVisible(true);
-        return makeGuessButton;
-        }
-        });
+            });
+
+            // Change the dropdown button to a guess button
+            guessFields[i].setUI(new MetalComboBoxUI(){
+                @Override
+                protected JButton createArrowButton() {
+                    // Return the guess button
+                    JButton makeGuessButton = new JButton();
+
+                    // Make a guess when clicking the button
+                    makeGuessButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        interactionPerformed();
+                    }});
+
+                    // Set the label of the button
+                    makeGuessButton.setText("Guess");
+
+                    // Make the button visible
+                    makeGuessButton.setVisible(true);
+                    
+                    return makeGuessButton;
+                    }
+            });
         
             // Allow the user to type in the combobox
             guessFields[i].setEditable(true);
@@ -152,7 +175,7 @@ public abstract class GuessPanel extends InteractivePanel{
                 public void keyPressed(KeyEvent e) {
                     // Cycle to the next guessField
                     if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                        makeGuess();
+                        interactionPerformed();
                     }
                     else{
                         // Create a timer to delay retrieving the text. Without the delay, the last letter typed isn't recorded.
@@ -162,10 +185,9 @@ public abstract class GuessPanel extends InteractivePanel{
                                 // Update the wordbank
                                 updateWordBank(editor.getText());
 
-                                // If the popup has been disabled, enable it
-                                if(!guessFields[guessNumber].isPopupVisible()){
-                                    guessFields[guessNumber].setPopupVisible(true);
-                                }
+                                // Close and reopen the popup to update its dimensions
+                                guessFields[interactionCount].setPopupVisible(false);
+                                guessFields[interactionCount].setPopupVisible(true);
                             };
                         });
                         // Make the timer only activate once
@@ -174,35 +196,17 @@ public abstract class GuessPanel extends InteractivePanel{
                     }
                 }
     
-            @Override
-            public void keyReleased(KeyEvent e) {/* Do Nothing */}    
+                @Override
+                public void keyReleased(KeyEvent e) {/* Do Nothing */}    
             });
+
+            guessFields[i].setVisible(true);
         }
-        // Add an empty item so the editor starts empty
-        guessFields[guessNumber].addItem("");
-        for(String word : wordBank.getWordList()){
-            guessFields[guessNumber].addItem(word);
-        }  
-        // Enable the code after a delay. Without the delay the code doesn't run properly.
-        Timer timer = new Timer(350, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Set the text cursor to the guessField
-                guessFields[guessNumber].requestFocus();
-                // Wait 100 seconds before enabling the popup. Without the delay, the popup does not show.
-                Timer timer = new Timer(100, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        guessFields[guessNumber].setPopupVisible(true);
-                    };
-                });
-                // Only activate once
-                timer.setRepeats(false);
-                timer.start();
-            };
-        });
-        timer.setRepeats(false);
-        timer.start();
+
+        // Fix the size of every guessField
+        for(JComboBox<String> guessField : guessFields){
+            guessField.setPreferredSize(new Dimension(250,30));
+        }
     }
 
     /**
@@ -215,57 +219,98 @@ public abstract class GuessPanel extends InteractivePanel{
         // Update the word bank
         this.wordBank.updateLetters(newPart);
         // Update the guessField popup list
-        this.guessFields[this.guessNumber].removeAllItems();
+        this.guessFields[this.interactionCount].removeAllItems();
+        int wordCount = 0;
         for(String word : this.wordBank.getWordList()){
-            this.guessFields[this.guessNumber].addItem(word);
+            wordCount++;
+            this.guessFields[this.interactionCount].addItem(word);
+            // Only show the first 100 words
+            if(wordCount >= 100){
+                break;
+            }
         }
 
         this.updatingWordBank = false;
     }
 
-    public void makeGuess(){
-        boolean guessOutcome = this.targetWord.toLowerCase().equals(this.wordBank.getPart());
-
+    @Override
+    public void interactionPerformed(){
         // Invalid Guess
         if(!this.wordBank.isPartInWordList()){
             return;
         }
+        
+        boolean guessOutcome = this.targetWord.toLowerCase().equals(this.wordBank.getPart());
+
         // Correct Guess
         if(guessOutcome){
-            System.out.println("Guessed the word");
-            Main.playAgain();
+            // Reset game
+            Game.game.setupGame();
+            return;
         }
         // Incorrect Guess
         else{
-            // Do nothing
+            // Increase the number of actions performed and check if the user has run out of guesses
+            if(++interactionCount == MAX_ACTIONS){
+                // Reset game
+                Game.game.setupGame();
+                return;
+            }
+        }
+
+        // Potentially reveal a hint
+        this.hintPanel.checkReveal(interactionCount);
+
+        // Check if it's time to swap
+        if(swap()){
+            return;
         }
 
         // Disable the previous guessField
-        guessFields[guessNumber].setEnabled(false);
-        guessNumber++;
+        guessFields[interactionCount].setEnabled(false);
         // If the user has used all guesses
-        if(guessNumber>MAX_GUESSES){
+        if(interactionCount>MAX_ACTIONS){
             return;
         }
         // Update the wordbank
         wordBank.updateLetters("");
         // Add all the word bank words to the guessField popup
         for(String word : wordBank.getWordList()){
-            guessFields[guessNumber].addItem(word);
+            guessFields[interactionCount].addItem(word);
         }
         // Enable the new guessField
-        guessFields[guessNumber].setEnabled(true);
+        guessFields[interactionCount].setEnabled(true);
         // Set the text cursor to the new guessField
-        guessFields[guessNumber].requestFocus();
+        guessFields[interactionCount].requestFocus();
         // Wait 100 seconds before enabling the popup. Without the delay, the popup does not show.
         Timer timer = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                guessFields[guessNumber].setPopupVisible(true);
+                guessFields[interactionCount].setPopupVisible(true);
             };
         });
         // Only activate once
         timer.setRepeats(false);
         timer.start();
+    }
+
+    @Override
+    public void setPanelEnabled(boolean isEnabled) {
+        // Enable panel
+        if(isEnabled){
+            for(int i = interactionCount; i < MAX_ACTIONS; i++){
+                // Enable the new guessField
+                guessFields[i].setEnabled(true);
+            }
+
+            // Add an empty item so the editor starts empty
+            updateWordBank("");
+        }
+        // Disable panel
+        else{
+            for(int i = Math.max(interactionCount-1, 0); i < MAX_ACTIONS; i++){
+                guessFields[i].setEnabled(false);
+            }
+        }
     }
 }

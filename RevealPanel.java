@@ -3,9 +3,12 @@ import java.awt.image.BufferedImage;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/08/2024
+ * @version Updated: 4/17/2024
  */
 public abstract class RevealPanel extends InteractivePanel{
+    /**
+     * The image to be guessed.
+     */
     protected BufferedImage image;
     /**
      * How much of the screen width the revealPanel occupies. guessPanel will occupy the other part (1-this).
