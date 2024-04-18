@@ -9,7 +9,7 @@ import java.util.Hashtable;
 
 /**
  * @author Jackson Alexman
- * @version Updated 4/3/2024
+ * @version Updated: 4/17/2024
  */
 public class AdaptingStringList {
     /**
@@ -26,12 +26,9 @@ public class AdaptingStringList {
     private String[] fullWordList;
 
     public AdaptingStringList(){
-        // Get the wordlist
-        String filePath = "WordList.txt";
-
         try {
             // Open the file for reading
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+            BufferedReader reader = new BufferedReader(new FileReader("WordList.txt"));
             
             // ArrayList to store the words
             ArrayList<String> wordsList = new ArrayList<>();
@@ -39,11 +36,8 @@ public class AdaptingStringList {
             String line;
             // Read each line from the file
             while ((line = reader.readLine()) != null) {
-                // Split the line into words using whitespace as delimiter
-                String[] words = line.split("\\s+");
-                
                 // Add each word to the ArrayList
-                wordsList.addAll(Arrays.asList(words));
+                wordsList.add(line);
             }
 
             // Close the file reader

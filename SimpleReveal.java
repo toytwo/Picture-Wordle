@@ -3,7 +3,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/08/2024
+ * @version Updated: 4/17/2024
  */
 public class SimpleReveal extends RevealPanel {
     public SimpleReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold){
@@ -13,7 +13,6 @@ public class SimpleReveal extends RevealPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         if (image != null) {
             // Calculate the position to center the image horizontally
             int panelWidth = getWidth();
@@ -29,5 +28,5 @@ public class SimpleReveal extends RevealPanel {
     public void setupContentArea() {/* Do Nothing */}
 
     @Override
-    public void deactivatePanel() {/* Do Nothing */}
+    public void setPanelEnabled(boolean isEnabled) {/* Do Nothing */}
 }

@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/12/2024
+ * @version Updated: 4/17/2024
  */
 public class RevealByColor extends RevealPanel{
 
@@ -96,12 +96,12 @@ public class RevealByColor extends RevealPanel{
 
         // Add the image panel
         constraints.gridx = 1;
-        constraints.weightx = 2.0/3.0;
+        constraints.weightx = 3.0/6.0;
         add(imagePanel);
 
         // Add the button panel
         constraints.gridx = 2;
-        constraints.weightx = 2.0/3.0;
+        constraints.weightx = 1.0/6.0;
         add(buttonPanel);
 
         // Add an empty panel to the right side for spacing
@@ -109,7 +109,6 @@ public class RevealByColor extends RevealPanel{
         constraints.weightx = 1.0/6.0;
         add(new JPanel());
 
-        // Use a component listener to wait until the getHeight() method returns the height of the panel instead of 0
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -120,23 +119,27 @@ public class RevealByColor extends RevealPanel{
                 graphics2D.dispose();
                 imageCopy = resizedImage;
 
-                // Resize the imagePanel to fit the image
-                imagePanel.setPreferredSize(new Dimension(getHeight(),getHeight()));
-                imagePanel.repaint();
-
-                // Resize the buttonPanel to fit the height of imagePanel
-                buttonPanel.setPreferredSize(new Dimension(buttonPanel.getWidth(),getHeight()));
-                buttonPanel.revalidate();
-                buttonPanel.repaint();
-
                 // Cover the image
                 reveal();
 
-                // Only activate once
+                // Resize the imagePanel to fit the image
+                imagePanel.setPreferredSize(new Dimension(getHeight(),getHeight()));
+                imagePanel.setMinimumSize(new Dimension(getHeight(),getHeight()));
+                imagePanel.revalidate();
+                imagePanel.repaint();
+
+                // Resize the buttonPanel to fit the height of imagePanel
+                buttonPanel.setPreferredSize(new Dimension(getHeight()/16,getHeight()));
+                buttonPanel.setMinimumSize(new Dimension(getHeight()/16,getHeight()));
+                buttonPanel.revalidate();
+                buttonPanel.repaint();
+
+                // Remove the listener so it is only called once
                 removeComponentListener(getComponentListeners()[0]);
             }
         });
-        
+
+
         
     }
 
@@ -184,6 +187,12 @@ public class RevealByColor extends RevealPanel{
                     activeHueRanges[index] = true;
                     // Update the image
                     reveal();
+                    // An interaction has been performed
+                    interactionPerformed();
+                    // Disable the button
+                    colorSelectors[index].setEnabled(false);
+                    // Change the color to indicate that it's disabled
+                    colorSelectors[index].setBackground(Color.gray);
                 }
             });
 
@@ -267,9 +276,21 @@ public class RevealByColor extends RevealPanel{
 
         return copy;
     }
-    
+
     @Override
-    public void deactivatePanel() {
-        // TODO Implement Method
+    public void setPanelEnabled(boolean isEnabled) {
+        // Enable the panel
+        if(isEnabled){
+            for (int i = 0; i < colorSelectors.length; i++) {
+                // If the hue range is active, the button has been pressed and therefore doesn't need to be reenabled
+                colorSelectors[i].setEnabled(!activeHueRanges[i]);
+            }
+        }
+        // Disable the panel
+        else{
+            for (JButton selector : colorSelectors){
+                selector.setEnabled(false);
+            }
+        }
     }
 }

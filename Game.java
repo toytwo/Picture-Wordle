@@ -8,75 +8,91 @@ import javax.swing.JFrame;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/12/2024
+ * @version Updated: 4/17/2024
  */
-public class Game extends JFrame{
-    /**
-     * The chosen GuessPanel for this Game
-     */
+public class Game extends JFrame {
     private GuessPanel guessPanel;
-    /**
-     * The chosen RevealPanel for this Game
-     */
     private RevealPanel revealPanel;
-    /**
-     * A non-negative integer less than or equal to 5 representing the difficulty for this game. Higher numbers are more difficult.
-     */
     private int difficulty;
-    /**
-     * The word to guess
-     */
     private String targetWord;
+    private BufferedImage image;
+    private String imageFileName;
+    private File[] images;
+    private int guessPanelID;
+    private int revealPanelID;
+    public static Game game;
+    private Random random;
 
-    public Game(int guessPanel,int revealPanel, int difficulty){
-        BufferedImage image = null;
-        String fileName = null;
-        // Specify the directory path
-        String directoryPath = "Images";
+    public Game(int guessPanelID, int revealPanelID, int difficulty) {
+        this.difficulty = difficulty;
+        this.guessPanelID = guessPanelID;
+        this.revealPanelID = revealPanelID;
+        this.images = new File("Images").listFiles();
+        this.random = new Random();
 
-        // Create a File object representing the directory
-        File directory = new File(directoryPath);
+        this.setLayout(new GridBagLayout());
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.setUndecorated(true);
+        this.setVisible(true);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Get all files in the directory
-        File[] files = directory.listFiles();
+        game = this;
 
-        // Pick a random image and load it
-        Random r = new Random();
-        try{
-            File file = files[r.nextInt(files.length)];
+        setupGame();
+    }
+
+    private void pickRandomImage(int difficulty) {
+        try {
+            File file = images[random.nextInt(images.length)];
             image = ImageIO.read(file);
-            fileName = file.getName(); // Store the file name
+            imageFileName = file.getName(); 
 
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e);
             System.exit(1);
         }
-
-        this.targetWord = fileName.substring(0,fileName.indexOf("."));
-        this.difficulty = difficulty;
-
-        switch(guessPanel){
-            case 0: this.guessPanel = new SimpleGuess(this.targetWord,1,false,5); break;
-            default: this.guessPanel = new SimpleGuess(this.targetWord,1,false,5); break;
-        }
-
-        switch(revealPanel){
-            case 0: this.revealPanel = new SimpleReveal(image,targetWord,1,false); break;
-            case 1: this.revealPanel = new RevealByColor(image,targetWord,1,false, 20); break;
-            default: this.revealPanel = new SimpleReveal(image,targetWord,1,false); break;
-        }
-
-        this.startGame();
     }
 
+    public void setupGame() {
+        if(this.revealPanel != null || this.guessPanel != null){
+            this.guessPanel.setEnabled(false);
+            this.revealPanel.setEnabled(false);
+            this.remove(this.revealPanel);
+            this.remove(this.guessPanel);
+            this.guessPanel = null;
+            this.revealPanel = null;
+            this.revalidate();
+            this.repaint();
+        }
 
-    /**
-     * Sets up the guessPanel and revealPanel then adds them to this (frame).
-     */
-    private void startGame(){
-        // General Constraints
-        this.setLayout(new GridBagLayout());
+        pickRandomImage(difficulty);
+
+        this.targetWord = imageFileName.substring(0, imageFileName.indexOf("."));
+
+        switch (guessPanelID) {
+            case 0:
+                this.guessPanel = new SimpleGuess(this.targetWord, 1, true, 5);
+                break;
+            default:
+                this.guessPanel = new SimpleGuess(this.targetWord, 1, true, 5);
+                break;
+        }
+
+        switch (revealPanelID) {
+            case 0:
+                this.revealPanel = new SimpleReveal(image, targetWord, 1, false);
+                break;
+            case 1:
+                this.revealPanel = new RevealByColor(image, targetWord, 2, true, 20);
+                break;
+            default:
+                this.revealPanel = new SimpleReveal(image, targetWord, 1, false);
+                break;
+        }
+
+        this.guessPanel.setOtherPanel(revealPanel);
+        this.revealPanel.setOtherPanel(guessPanel);
+
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridy = 0; // Y position in the grid
         constraints.fill = GridBagConstraints.BOTH; // Fill horizontally and vertically
@@ -94,15 +110,9 @@ public class Game extends JFrame{
         constraints.weightx = 1.0-this.revealPanel.getREVEAL_PANEL_SCREEN_PERCENTAGE(); // Fraction of the width
         this.add(guessPanel,constraints);
 
-        guessPanel.setupContentArea();
         revealPanel.setupContentArea();
+        guessPanel.setupContentArea();
 
-        // Configure the frame
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-        this.setUndecorated(true);
-        this.setVisible(true);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        guessPanel.setPanelEnabled(false);
     }
-
-
 }
