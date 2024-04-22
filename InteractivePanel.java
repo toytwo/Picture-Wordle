@@ -55,10 +55,11 @@ public abstract class InteractivePanel extends JPanel {
 
     /**
      * Called when an action is performed in this panel.
+     * @return If it's time to swap
      */
-    public void interactionPerformed(){
+    public boolean interactionPerformed(){
         this.interactionCount++;
-        swap();
+        return swap();
     }
 
     /**

@@ -234,10 +234,10 @@ public abstract class GuessPanel extends InteractivePanel{
     }
 
     @Override
-    public void interactionPerformed(){
+    public boolean interactionPerformed(){
         // Invalid Guess
         if(!this.wordBank.isPartInWordList()){
-            return;
+            return false;
         }
         
         boolean guessOutcome = this.targetWord.toLowerCase().equals(this.wordBank.getPart());
@@ -245,33 +245,30 @@ public abstract class GuessPanel extends InteractivePanel{
         // Correct Guess
         if(guessOutcome){
             // Reset game
+            Game.game.updateImageDifficulty(interactionCount, MAX_ACTIONS);
             Game.game.setupGame();
-            return;
+            return false;
         }
+
         // Incorrect Guess
-        else{
-            // Increase the number of actions performed and check if the user has run out of guesses
-            if(++interactionCount == MAX_ACTIONS){
-                // Reset game
-                Game.game.setupGame();
-                return;
-            }
+        // Check if the user has run out of guesses
+        if(interactionCount+1 >= MAX_ACTIONS){ // +1 because we increment this later
+            // Reset game
+            Game.game.setupGame();
+            return false;
         }
 
         // Potentially reveal a hint
         this.hintPanel.checkReveal(interactionCount);
 
         // Check if it's time to swap
-        if(swap()){
-            return;
+        if(super.interactionPerformed()){
+            return true;
         }
 
         // Disable the previous guessField
         guessFields[interactionCount].setEnabled(false);
-        // If the user has used all guesses
-        if(interactionCount>MAX_ACTIONS){
-            return;
-        }
+    
         // Update the wordbank
         wordBank.updateLetters("");
         // Add all the word bank words to the guessField popup
@@ -292,6 +289,9 @@ public abstract class GuessPanel extends InteractivePanel{
         // Only activate once
         timer.setRepeats(false);
         timer.start();
+
+        // Not time to swap
+        return false;
     }
 
     @Override
