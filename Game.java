@@ -64,7 +64,9 @@ public class Game extends JFrame{
         switch(revealPanel){
             case 0: this.revealPanel = new SimpleReveal(image,targetWord,1,false); break;
             case 1: this.revealPanel = new RevealByColor(image,targetWord,1,false, 20); break;
+            case 2: this.revealPanel = new FlashlightPanel(targetWord, 1, false, image); break;
             default: this.revealPanel = new SimpleReveal(image,targetWord,1,false); break;
+
         }
 
         this.startGame();

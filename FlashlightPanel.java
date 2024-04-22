@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FlashlightPanel extends JPanel implements MouseListener, MouseMotionListener {
+public class FlashlightPanel extends RevealPanel implements MouseListener, MouseMotionListener {
     private BufferedImage image;
     private int radius;
     private int x, y;
@@ -18,12 +18,9 @@ public class FlashlightPanel extends JPanel implements MouseListener, MouseMotio
     private List<Area> revealedAreas;
     private int ovalCount;
 
-    public FlashlightPanel() {
-        try {
-            image = ImageIO.read(new File("wolf.jpg"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public FlashlightPanel(String n, int i, boolean b, BufferedImage g) {
+        super(n,i,b,g);
+        image = g;
         radius = 70;
         x = -1;
         y = -1;
@@ -43,6 +40,7 @@ public class FlashlightPanel extends JPanel implements MouseListener, MouseMotio
 
             ovalCount++;
             System.out.println(ovalCount);
+            System.out.println(x + " " + y);
             repaint();
         }
     }
@@ -63,6 +61,20 @@ public class FlashlightPanel extends JPanel implements MouseListener, MouseMotio
     }
 
     public void mouseDragged(MouseEvent e) {}
+
+    @Override
+    public void setupContentArea() {
+        //JPanel jpanel = new JPanel();
+        //add(jpanel);
+        int imageSize = Math.min(getWidth(), getHeight()); // Choose the size you want for the square panel
+        setPreferredSize(new Dimension(imageSize, imageSize));
+    }
+
+    @Override
+    public void deactivatePanel() {
+        // TODO Auto-generated method stub
+        //throw new UnsupportedOperationException("Unimplemented method 'deactivatePanel'");
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -116,13 +128,13 @@ public class FlashlightPanel extends JPanel implements MouseListener, MouseMotio
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Flashlight Panel");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // JFrame frame = new JFrame("Flashlight Panel");
+        // frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        FlashlightPanel panel = new FlashlightPanel();
-        frame.add(panel);
+        // FlashlightPanel panel = new FlashlightPanel();
+        // frame.add(panel);
 
-        frame.setSize(750, 750);
-        frame.setVisible(true);
+        // frame.setSize(750, 750);
+        // frame.setVisible(true);
     }
 }
