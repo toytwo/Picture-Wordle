@@ -21,7 +21,7 @@ public class FlashlightPanel extends RevealPanel implements MouseListener, Mouse
     public FlashlightPanel(String n, int i, boolean b, BufferedImage g) {
         super(n,i,b,g);
         image = g;
-        radius = 70;
+        radius = 150;
         x = -1;
         y = -1;
         revealedAreas = new ArrayList<>();
