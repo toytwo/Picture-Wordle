@@ -24,12 +24,13 @@ public class Game extends JFrame {
     private int revealPanelID;
     public static Game game;
     private Random random;
-    private final boolean doModularDifficulty = false;
+    private boolean doModularDifficulty;
 
-    public Game(int guessPanelID, int revealPanelID, int difficulty) {
+    public Game(int guessPanelID, int revealPanelID, int difficulty, boolean doModularDifficulty) {
         this.difficulty = difficulty;
         this.guessPanelID = guessPanelID;
         this.revealPanelID = revealPanelID;
+        this.doModularDifficulty = doModularDifficulty;
         this.random = new Random();
 
         String filePath = "Images"+File.separator;
@@ -43,7 +44,7 @@ public class Game extends JFrame {
             filePath+="Hard";
         }
         this.images = new File(filePath+File.separator).listFiles();
-        this.unsortedImages = new File("Images/Unsorted").listFiles();
+        this.unsortedImages = new File("Images"+File.separator+"Unsorted").listFiles();
 
         this.setLayout(new GridBagLayout());
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -61,20 +62,7 @@ public class Game extends JFrame {
             try {
                 imageFile = unsortedImages[random.nextInt(unsortedImages.length)];
                 image = ImageIO.read(imageFile);
-                String oldFileName = imageFile.getName();
-                String newFileName = oldFileName.substring(0,oldFileName.indexOf('.'))+" 0.0.jpg";
-                String newFilePath = "Images"+File.separator+"Easy"+File.separator;
-
-                // Rename the file
-                File newImageFile = new File(newFilePath+newFileName);
-                if (imageFile.renameTo(newImageFile)) {
-                    // Do Nothing
-                } else {
-                    System.err.println("Failed to rename the file.");
-                    System.exit(0);
-                }
-
-                imageFileName = newFileName; 
+                imageFileName = imageFile.getName(); 
     
             } catch (Exception e) {
                 System.out.println(e);
@@ -108,7 +96,13 @@ public class Game extends JFrame {
 
         pickRandomImage();
 
-        this.targetWord = imageFileName.substring(0, imageFileName.indexOf(' '));
+        try{
+            this.targetWord = imageFileName.substring(0, imageFileName.indexOf(' '));
+        }
+        catch(Exception e){
+            this.targetWord = imageFileName.substring(0, imageFileName.indexOf('.'));
+        }
+        
 
         switch (guessPanelID) {
             case 0:
@@ -171,8 +165,21 @@ public class Game extends JFrame {
          * The percent of MAX_GUESSES used
         */
         double guessPercentage = (double) guessesMade / MAX_GUESSES;
-        double newAverageGuessPercentage = (Double.parseDouble(imageFileName.substring(imageFileName.indexOf('.'), imageFileName.lastIndexOf('.')))+guessPercentage) / 2.0;
-        String newFileName = imageFileName.substring(0,imageFileName.indexOf(' '))+" "+newAverageGuessPercentage+".jpg";
+        double newAverageGuessPercentage;
+        String newFileName;
+        int firstPeriod = imageFileName.indexOf('.');
+        int secondPeriod = imageFileName.lastIndexOf('.');
+        // No average found
+        if(firstPeriod == secondPeriod){
+            newAverageGuessPercentage = guessPercentage;
+            newFileName = imageFileName.substring(0,imageFileName.indexOf('.'))+" "+newAverageGuessPercentage+".jpg";
+        }
+        // Average found
+        else{
+            newAverageGuessPercentage = (Double.parseDouble(imageFileName.substring(firstPeriod, secondPeriod))+guessPercentage)/2.0;
+            newFileName = imageFileName.substring(0,imageFileName.indexOf(' '))+" "+newAverageGuessPercentage+".jpg";
+        }
+
         String difficulty;
         if(newAverageGuessPercentage > 0.8){
             difficulty = "Hard";
@@ -184,9 +191,6 @@ public class Game extends JFrame {
             difficulty = "Easy";
         }
         String newFilePath = "Images"+File.separator+difficulty+File.separator;
-
-        System.out.println(newAverageGuessPercentage + " " + difficulty);
-        System.exit(0);
 
         // Rename the file
         File newImageFile = new File(newFilePath+newFileName);

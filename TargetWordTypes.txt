@@ -101,6 +101,12 @@ Adjective
 Verb
 Verb
 Verb
+Verb
+Adjective
+Verb
+Noun
+Noun
+Noun
 Noun
 Noun
 Noun

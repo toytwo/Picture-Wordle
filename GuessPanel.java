@@ -242,24 +242,16 @@ public abstract class GuessPanel extends InteractivePanel{
         
         boolean guessOutcome = this.targetWord.toLowerCase().equals(this.wordBank.getPart());
 
-        // Correct Guess
-        if(guessOutcome){
+        // Correct Guess or The user has run out of guesses
+        if(guessOutcome || interactionCount+1 >= MAX_ACTIONS){
             // Reset game
-            Game.game.updateImageDifficulty(interactionCount, MAX_ACTIONS);
-            Game.game.setupGame();
-            return false;
-        }
-
-        // Incorrect Guess
-        // Check if the user has run out of guesses
-        if(interactionCount+1 >= MAX_ACTIONS){ // +1 because we increment this later
-            // Reset game
+            Game.game.updateImageDifficulty(interactionCount+1, MAX_ACTIONS);
             Game.game.setupGame();
             return false;
         }
 
         // Potentially reveal a hint
-        this.hintPanel.checkReveal(interactionCount);
+        this.hintPanel.checkReveal(interactionCount+1);
 
         // Check if it's time to swap
         if(super.interactionPerformed()){

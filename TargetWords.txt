@@ -101,6 +101,12 @@ Delicious
 Stretch
 Sketch
 Stir
+Orbit
+Whimsical
+Fall
+Oasis
+Nectar
+Trophy
 Apple
 Dog
 Cat
@@ -139,7 +145,7 @@ Statue
 Symphony
 Astronaut
 Clown
-drink
+Drink
 Globe
 Shoes
 Suitcase
@@ -184,4 +190,4 @@ Shine
 Snorkeling
 Submarine
 Walk
-Trophy
+Butterfly
