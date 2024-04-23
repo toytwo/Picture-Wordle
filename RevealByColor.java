@@ -91,12 +91,12 @@ public class RevealByColor extends RevealPanel{
 
         // Add an empty panel to the left side for spacing
         constraints.gridx = 0;
-        constraints.weightx = 1.0/6.0;
+        constraints.weightx = 1.0/8.0;
         add(new JPanel());
 
         // Add the image panel
         constraints.gridx = 1;
-        constraints.weightx = 3.0/6.0;
+        constraints.weightx = 7.0/12.0;
         add(imagePanel);
 
         // Add the button panel
@@ -106,7 +106,7 @@ public class RevealByColor extends RevealPanel{
 
         // Add an empty panel to the right side for spacing
         constraints.gridx = 3;
-        constraints.weightx = 1.0/6.0;
+        constraints.weightx = 1.0/8.0;
         add(new JPanel());
 
         this.addComponentListener(new ComponentAdapter() {

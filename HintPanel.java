@@ -34,7 +34,7 @@ public class HintPanel extends JPanel {
     /**
      * The JLabels that hold the hints
      */
-    private JLabel[] hintLabels;
+    private HintLabel[] hintLabels;
     /**
      * The word types i.e. noun, verb, or adjective, for each possible targetWord
      */
@@ -53,7 +53,7 @@ public class HintPanel extends JPanel {
         this.targetWord = targetWord.toLowerCase();
         this.MAX_GUESSES = MAX_GUESSES;
         this.hintsRevealed = 0;
-        this.hintLabels = new JLabel[4];
+        this.hintLabels = new HintLabel[4];
 
         // If targetWordTypes is uninitialized
         if(targetWordTypes == null){
@@ -77,7 +77,7 @@ public class HintPanel extends JPanel {
         // Create a JLabel for each hint and give it default text
         for (int i = 0; i < hints.length; i++) {
             constraints.gridy++;
-            hintLabels[i] = new JLabel("Hint "+(i+1)); 
+            hintLabels[i] = new HintLabel(i+1, hints[i]);
             this.add(hintLabels[i],constraints);
         }
     }
@@ -98,18 +98,10 @@ public class HintPanel extends JPanel {
 
         if(percentGuessed > revealThreshold){
             // Reveal the hint
-            reveal();
+            hintLabels[hintsRevealed++].reveal();
             // Check if more than one hint needs to be revealed
             checkReveal(guessNumber);
         }
-    }
-
-    /**
-     * Reveal the next hint
-     */
-    private void reveal(){
-        // Make the label visible and increment the number of hints
-        hintLabels[hintsRevealed].setText(hints[hintsRevealed++]);;
     }
 
     /**
@@ -131,6 +123,7 @@ public class HintPanel extends JPanel {
         hintsArray[0] = "The first letter of this word is a "+firstLetterType+".";
 
         String article = null;
+        System.out.println(this.targetWord);
         String wordType = targetWordTypes.get(this.targetWord);
         if(wordType.equals("adjective")){
             article = "an";
