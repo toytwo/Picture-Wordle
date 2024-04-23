@@ -234,44 +234,33 @@ public abstract class GuessPanel extends InteractivePanel{
     }
 
     @Override
-    public void interactionPerformed(){
+    public boolean interactionPerformed(){
         // Invalid Guess
         if(!this.wordBank.isPartInWordList()){
-            return;
+            return false;
         }
         
         boolean guessOutcome = this.targetWord.toLowerCase().equals(this.wordBank.getPart());
 
-        // Correct Guess
-        if(guessOutcome){
+        // Correct Guess or The user has run out of guesses
+        if(guessOutcome || interactionCount+1 >= MAX_ACTIONS){
             // Reset game
+            Game.game.updateImageDifficulty(interactionCount+1, MAX_ACTIONS);
             Game.game.setupGame();
-            return;
-        }
-        // Incorrect Guess
-        else{
-            // Increase the number of actions performed and check if the user has run out of guesses
-            if(++interactionCount == MAX_ACTIONS){
-                // Reset game
-                Game.game.setupGame();
-                return;
-            }
+            return false;
         }
 
         // Potentially reveal a hint
-        this.hintPanel.checkReveal(interactionCount);
+        this.hintPanel.checkReveal(interactionCount+1);
 
         // Check if it's time to swap
-        if(swap()){
-            return;
+        if(super.interactionPerformed()){
+            return true;
         }
 
         // Disable the previous guessField
         guessFields[interactionCount].setEnabled(false);
-        // If the user has used all guesses
-        if(interactionCount>MAX_ACTIONS){
-            return;
-        }
+    
         // Update the wordbank
         wordBank.updateLetters("");
         // Add all the word bank words to the guessField popup
@@ -292,6 +281,9 @@ public abstract class GuessPanel extends InteractivePanel{
         // Only activate once
         timer.setRepeats(false);
         timer.start();
+
+        // Not time to swap
+        return false;
     }
 
     @Override
