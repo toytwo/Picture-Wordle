@@ -38,14 +38,14 @@ public class HintPanel extends JPanel {
     /**
      * The word types i.e. noun, verb, or adjective, for each possible targetWord
      */
-    private static Map<String,String> targetWordTypes;
-    private static final String[] vowels = new String[]{"a","e","i","o","u"};
+    private static Map<String, String> targetWordTypes; // maps targetWord to word type
+    private static final String[] vowels = new String[] { "a", "e", "i", "o", "u" };
 
     /**
-     * @param targetWord The word to be guessed
+     * @param targetWord  The word to be guessed
      * @param MAX_GUESSES The max number of guesses
      */
-    public HintPanel(String targetWord, int MAX_GUESSES){
+    public HintPanel(String targetWord, int MAX_GUESSES) {
         // Use a GridBagLayout
         super(new GridBagLayout());
 
@@ -56,8 +56,8 @@ public class HintPanel extends JPanel {
         this.hintLabels = new JLabel[4];
 
         // If targetWordTypes is uninitialized
-        if(targetWordTypes == null){
-            targetWordTypes = initializeTargetWordTypes();
+        if (targetWordTypes == null) {
+            targetWordTypes = initializeTargetWordTypes(); // Initialize targetWordTypes
         }
 
         // Create the hints
@@ -72,21 +72,23 @@ public class HintPanel extends JPanel {
         constraints.gridy = 0; // Vertical position
 
         // Add a header
-        this.add(new JLabel("Hints", SwingConstants.CENTER),constraints);
+        this.add(new JLabel("Hints", SwingConstants.CENTER), constraints);
 
         // Create a JLabel for each hint and give it default text
         for (int i = 0; i < hints.length; i++) {
             constraints.gridy++;
-            hintLabels[i] = new JLabel("Hint "+(i+1)); 
-            this.add(hintLabels[i],constraints);
+            hintLabels[i] = new JLabel("Hint " + (i + 1));
+            this.add(hintLabels[i], constraints);
         }
     }
 
     /**
-     * Called every time a guess is made. May or may not reveal a hint based on the guessNumber
+     * Called every time a guess is made. May or may not reveal a hint based on the
+     * guessNumber
+     * 
      * @param guessNumber The number of guesses that have been made
      */
-    public void checkReveal(int guessNumber){
+    public void checkReveal(int guessNumber) {
         /**
          * What percentage of their guesses have they used
          */
@@ -96,63 +98,67 @@ public class HintPanel extends JPanel {
          */
         double revealThreshold = (double) hintsRevealed * 0.2 + 0.1;
 
-        if(percentGuessed > revealThreshold){
+        if (percentGuessed > revealThreshold) {
             // Reveal the hint
-            reveal();
+            reveal(); // hint is revealed
             // Check if more than one hint needs to be revealed
-            checkReveal(guessNumber);
+            checkReveal(guessNumber); // recursive call
         }
     }
 
     /**
      * Reveal the next hint
      */
-    private void reveal(){
+    private void reveal() {
         // Make the label visible and increment the number of hints
-        hintLabels[hintsRevealed].setText(hints[hintsRevealed++]);;
+        hintLabels[hintsRevealed].setText(hints[hintsRevealed++]);
+        ;
     }
 
     /**
      * Create the hints
+     * 
      * @return An array of String hints in the order they should be revealed
      */
-    private String[] generateHints(){
+    private String[] generateHints() {
         String[] hintsArray = new String[4];
 
         String firstLetterType = null;
         for (String vowel : vowels) {
-            if(this.targetWord.substring(0, 1).equals(vowel)){
+            if (this.targetWord.substring(0, 1).equals(vowel)) {
                 firstLetterType = "vowel";
             }
         }
-        if(firstLetterType == null){
+        if (firstLetterType == null) {
             firstLetterType = "consonant";
         }
-        hintsArray[0] = "The first letter of this word is a "+firstLetterType+".";
+        hintsArray[0] = "The first letter of this word is a " + firstLetterType + ".";
 
         String article = null;
         String wordType = targetWordTypes.get(this.targetWord);
-        if(wordType.equals("adjective")){
+        if (wordType.equals("adjective")) {
             article = "an";
-        }
-        else{
+        } else {
             article = "a";
         }
-        hintsArray[1] = "This word is "+article+" "+wordType+".";
+        hintsArray[1] = "This word is " + article + " " + wordType + ".";
 
-        hintsArray[2] = "This word is "+targetWord.length()+" letters long.";
+        hintsArray[2] = "This word is " + targetWord.length() + " letters long.";
 
-        hintsArray[3] = "The first letter of this word is '"+targetWord.substring(0, 1).toUpperCase()+"'.";
+        hintsArray[3] = "The first letter of this word is '" + targetWord.substring(0, 1).toUpperCase() + "'.";
 
         return hintsArray;
     }
 
     /**
-     * Gets the all the possible target words and their types and creates a dictionary to access the types
-     * @return The dictionary containing the target words as the keys and types as the values
+     * Gets the all the possible target words and their types and creates a
+     * dictionary to access the types
+     * 
+     * @return The dictionary containing the target words as the keys and types as
+     *         the values
      */
-    private Map<String,String> initializeTargetWordTypes(){
-        Map<String,String> dict = new HashMap<String,String>();
+    private Map<String, String> initializeTargetWordTypes() {
+        Map<String, String> dict = new HashMap<String, String>();
         ArrayList<String> targetWords = new ArrayList<>();
         ArrayList<String> targetWordTypes = new ArrayList<>();
 
@@ -195,19 +201,19 @@ public class HintPanel extends JPanel {
         }
 
         // Check if one of the lists is not updated
-        if(targetWords.size() != targetWordTypes.size()){
+        if (targetWords.size() != targetWordTypes.size()) {
             System.err.println("Old TargetWord lists. Update TargetWords.txt and TargetWordTypes.txt");
             System.exit(0);
         }
 
         // Create the dictionary
         for (int i = 0; i < targetWords.size(); i++) {
-            dict.put(targetWords.get(i).toLowerCase(),targetWordTypes.get(i).toLowerCase());
+            dict.put(targetWords.get(i).toLowerCase(), targetWordTypes.get(i).toLowerCase());
         }
 
         // Make sure the targetword is in the dictionary
-        if(dict.get(this.targetWord) == null){
-            System.err.println(this.targetWord+" not found. Update TargetWords.txt and TargetWordTypes.txt");
+        if (dict.get(this.targetWord) == null) {
+            System.err.println(this.targetWord + " not found. Update TargetWords.txt and TargetWordTypes.txt");
             System.exit(0);
         }
 

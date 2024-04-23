@@ -16,7 +16,7 @@ import javax.swing.JPanel;
  * @author Jackson Alexman
  * @version Updated: 4/17/2024
  */
-public class RevealByColor extends RevealPanel{
+public class RevealByColor extends RevealPanel {
 
     /**
      * The number of reveal buttons. Must be greater than zero.
@@ -48,32 +48,34 @@ public class RevealByColor extends RevealPanel{
     private JPanel imagePanel;
 
     /**
-     * @param image The image to be revealed
-     * @param targetWord The word to be guessed
-     * @param SWAP_THRESHOLD How many reveals before swapping to guessing
-     * @param doSwapThreshold Whether or not the user swaps between guessing and revealing
+     * @param image             The image to be revealed
+     * @param targetWord        The word to be guessed
+     * @param SWAP_THRESHOLD    How many reveals before swapping to guessing
+     * @param doSwapThreshold   Whether or not the user swaps between guessing and
+     *                          revealing
      * @param NUMBER_OF_BUTTONS The number of reveal buttons
      */
-    public RevealByColor(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int NUMBER_OF_BUTTONS){
+    public RevealByColor(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold,
+            int NUMBER_OF_BUTTONS) {
         super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, new GridBagLayout());
 
         this.NUMBER_OF_BUTTONS = NUMBER_OF_BUTTONS;
         this.activeHueRanges = new boolean[NUMBER_OF_BUTTONS];
         this.hueRanges = new float[NUMBER_OF_BUTTONS + 1];
-        this.REVEAL_PANEL_SCREEN_PERCENTAGE = 3.0 / 4.0;
+        this.REVEAL_PANEL_SCREEN_PERCENTAGE = 3.0 / 4.0; // for buttons
         this.imageCopy = image;
     }
-    
+
     @Override
-    public void setupContentArea(){
+    public void setupContentArea() {
         // Set up both panels
 
-        imagePanel = new JPanel(){
+        imagePanel = new JPanel() {
             // Override the paintComponent to draw the image
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                    
+
                 // Draw the image
                 if (image != null) {
                     g.drawImage(image, 0, 0, this);
@@ -91,22 +93,22 @@ public class RevealByColor extends RevealPanel{
 
         // Add an empty panel to the left side for spacing
         constraints.gridx = 0;
-        constraints.weightx = 1.0/6.0;
+        constraints.weightx = 1.0 / 6.0;
         add(new JPanel());
 
         // Add the image panel
         constraints.gridx = 1;
-        constraints.weightx = 3.0/6.0;
+        constraints.weightx = 3.0 / 6.0;
         add(imagePanel);
 
         // Add the button panel
         constraints.gridx = 2;
-        constraints.weightx = 1.0/6.0;
+        constraints.weightx = 1.0 / 6.0;
         add(buttonPanel);
 
         // Add an empty panel to the right side for spacing
         constraints.gridx = 3;
-        constraints.weightx = 1.0/6.0;
+        constraints.weightx = 1.0 / 6.0;
         add(new JPanel());
 
         this.addComponentListener(new ComponentAdapter() {
@@ -123,14 +125,14 @@ public class RevealByColor extends RevealPanel{
                 reveal();
 
                 // Resize the imagePanel to fit the image
-                imagePanel.setPreferredSize(new Dimension(getHeight(),getHeight()));
-                imagePanel.setMinimumSize(new Dimension(getHeight(),getHeight()));
+                imagePanel.setPreferredSize(new Dimension(getHeight(), getHeight()));
+                imagePanel.setMinimumSize(new Dimension(getHeight(), getHeight()));
                 imagePanel.revalidate();
                 imagePanel.repaint();
 
                 // Resize the buttonPanel to fit the height of imagePanel
-                buttonPanel.setPreferredSize(new Dimension(getHeight()/16,getHeight()));
-                buttonPanel.setMinimumSize(new Dimension(getHeight()/16,getHeight()));
+                buttonPanel.setPreferredSize(new Dimension(getHeight() / 16, getHeight()));
+                buttonPanel.setMinimumSize(new Dimension(getHeight() / 16, getHeight()));
                 buttonPanel.revalidate();
                 buttonPanel.repaint();
 
@@ -139,11 +141,9 @@ public class RevealByColor extends RevealPanel{
             }
         });
 
-
-        
     }
 
-    private void setupButtonPanel(JPanel imagePanel){
+    private void setupButtonPanel(JPanel imagePanel) {
         buttonPanel = new JPanel();
 
         // Place the buttons in a column
@@ -156,7 +156,7 @@ public class RevealByColor extends RevealPanel{
 
         // Setup the buttons
         colorSelectors = new JButton[NUMBER_OF_BUTTONS];
-        for(int i=0; i<NUMBER_OF_BUTTONS; i++){
+        for (int i = 0; i < NUMBER_OF_BUTTONS; i++) {
             // Create the button
             colorSelectors[i] = new JButton();
 
@@ -164,15 +164,14 @@ public class RevealByColor extends RevealPanel{
             hueRanges[i] = (float) (i) / (NUMBER_OF_BUTTONS);
 
             // Make the first and last button black and white
-            if(i == 0){
+            if (i == 0) {
                 colorSelectors[i].setBackground(Color.WHITE);
-            }
-            else if(i == colorSelectors.length-1){
+            } else if (i == colorSelectors.length - 1) {
                 colorSelectors[i].setBackground(Color.BLACK);
-                hueRanges[i+1] = 1.0f; // Set the upper bound of the last range to 1.0
+                hueRanges[i + 1] = 1.0f; // Set the upper bound of the last range to 1.0
             }
             // Make all the other buttons colorful
-            else{
+            else {
                 colorSelectors[i].setBackground(Color.getHSBColor(hueRanges[i], 1.0f, 1.0f));
             }
 
@@ -188,6 +187,7 @@ public class RevealByColor extends RevealPanel{
                     // Update the image
                     reveal();
                     // An interaction has been performed
+
                     interactionPerformed();
                     // Disable the button
                     colorSelectors[index].setEnabled(false);
@@ -212,7 +212,8 @@ public class RevealByColor extends RevealPanel{
         int width = image.getWidth();
         int height = image.getHeight();
 
-        // Iterate through each pixel and activate it if it is in one of the active hue ranges
+        // Iterate through each pixel and activate it if it is in one of the active hue
+        // ranges
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 Color pixelColor = new Color(image.getRGB(x, y));
@@ -221,17 +222,17 @@ public class RevealByColor extends RevealPanel{
                 // Check if the color is in any of the active ranges
                 boolean isInActiveRanges = false;
                 int index = -1; // We increment at the start of the for loop so the first index is actually 0
-                for(boolean activeRange : activeHueRanges){
+                for (boolean activeRange : activeHueRanges) {
                     index++;
 
                     // Skip inactive ranges
-                    if(!activeRange){
+                    if (!activeRange) {
                         continue;
                     }
 
-                    // Is it in the range 
+                    // Is it in the range
                     isInActiveRanges = hue >= hueRanges[index] && hue < hueRanges[index + 1];
-                    
+
                     // If it's in one of the ranges, no need to check the others
                     if (isInActiveRanges) {
                         break;
@@ -241,17 +242,19 @@ public class RevealByColor extends RevealPanel{
                     }
                 }
 
-                // If the pixel falls within the any of the active color ranges, uncover it by setting alpha to fully opaque
+                // If the pixel falls within the any of the active color ranges, uncover it by
+                // setting alpha to fully opaque
                 if (isInActiveRanges) {
-                    image.setRGB(x, y, new Color(pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue(), 255).getRGB());
+                    image.setRGB(x, y,
+                            new Color(pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue(), 255).getRGB());
 
-                } 
+                }
                 // Otherwise, set the pixel to black
                 else {
                     image.setRGB(x, y, Color.TRANSLUCENT);
                 }
             }
-            
+
             // Update the image
             repaint();
         }
@@ -261,16 +264,16 @@ public class RevealByColor extends RevealPanel{
      * @param imageToCopy
      * @return A copy of originalImage
      */
-    private BufferedImage copyImage(BufferedImage imageToCopy){
+    private BufferedImage copyImage(BufferedImage imageToCopy) {
         // Create a new BufferedImage with the same dimensions and type as the original
         BufferedImage copy = new BufferedImage(imageToCopy.getWidth(), imageToCopy.getHeight(), imageToCopy.getType());
-        
+
         // Create a Graphics2D object to draw on the new image
         Graphics2D g2d = copy.createGraphics();
-        
+
         // Draw the original image onto the new one
         g2d.drawImage(imageToCopy, 0, 0, null);
-        
+
         // Dispose the Graphics2D object
         g2d.dispose();
 
@@ -280,17 +283,26 @@ public class RevealByColor extends RevealPanel{
     @Override
     public void setPanelEnabled(boolean isEnabled) {
         // Enable the panel
-        if(isEnabled){
+        if (isEnabled) {
             for (int i = 0; i < colorSelectors.length; i++) {
-                // If the hue range is active, the button has been pressed and therefore doesn't need to be reenabled
+                // If the hue range is active, the button has been pressed and therefore doesn't
+                // need to be reenabled
                 colorSelectors[i].setEnabled(!activeHueRanges[i]);
             }
         }
         // Disable the panel
-        else{
-            for (JButton selector : colorSelectors){
+        else {
+            for (JButton selector : colorSelectors) {
                 selector.setEnabled(false);
             }
         }
     }
+
+    @Override
+    public void subtractPoint() {
+        Game.game.score -= 20;
+
+        // Prevent negative interactionCount
+    }
+
 }

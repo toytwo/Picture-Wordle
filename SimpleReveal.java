@@ -6,27 +6,38 @@ import java.awt.image.BufferedImage;
  * @version Updated: 4/17/2024
  */
 public class SimpleReveal extends RevealPanel {
-    public SimpleReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold){
+    public SimpleReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold) {
         super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+        super.paintComponent(g); // call super paintComponent
         if (image != null) {
             // Calculate the position to center the image horizontally
             int panelWidth = getWidth();
             int panelHeight = getHeight();
-            int x = (panelWidth-panelHeight) / 2;
-            
+            int x = (panelWidth - panelHeight) / 2;
+
             // Draw the scaled image with the height matching the panel height
             g.drawImage(image, x, 0, panelHeight, panelHeight, this);
         }
     }
 
     @Override
-    public void setupContentArea() {/* Do Nothing */}
+    // displays the images
+    public void setupContentArea() {
+        /* Do Nothing */}
+
+    // only reveal the image
+    @Override
+    public void setPanelEnabled(boolean isEnabled) {
+        /* Do Nothing */}
 
     @Override
-    public void setPanelEnabled(boolean isEnabled) {/* Do Nothing */}
+    public void subtractPoint() {
+        // Do nothing
+
+        // Prevent negative interactionCount
+    }
 }

@@ -13,23 +13,24 @@ import java.util.Hashtable;
  */
 public class AdaptingStringList {
     /**
-     * Parts of words typed by the user : The words from the wordbank that contain that part
+     * Parts of words typed by the user : The words from the wordbank that contain
+     * that part
      */
-    private Dictionary<String,String[]> parts;
+    private Dictionary<String, String[]> parts; // key: the part of the word, value: full word
     /**
-     * The current part typed by the user 
+     * The current part typed by the user
      */
-    private String part;
+    private String part; // The part typed by the user
     /**
      * The entire unedited guessable word list
      */
-    private String[] fullWordList;
+    private String[] fullWordList; // The entire unedited guessable word list
 
-    public AdaptingStringList(){
+    public AdaptingStringList() {
         try {
             // Open the file for reading
             BufferedReader reader = new BufferedReader(new FileReader("WordList.txt"));
-            
+
             // ArrayList to store the words
             ArrayList<String> wordsList = new ArrayList<>();
 
@@ -51,45 +52,47 @@ public class AdaptingStringList {
         }
 
         // Initialize the instance variables
-        this.parts = new Hashtable<String,String[]>();
+        this.parts = new Hashtable<String, String[]>();
         this.part = "";
 
-        // Add "" to the start of array because the first element of the array needs to be what is currently typed
+        // Add "" to the start of array because the first element of the array needs to
+        // be what is currently typed
         ArrayList<String> tempArray = new ArrayList<>(Arrays.asList(fullWordList));
-        tempArray.add(0,part);
+        tempArray.add(0, part);
         this.parts.put(this.part, tempArray.toArray(new String[0]));
     }
 
     /**
-     * Checks the parts dictionary to see if the newPart has already been pared. If not, it pares it and all of it's subparts.
+     * Checks the parts dictionary to see if the newPart has already been pared. If
+     * not, it pares it and all of it's subparts.
+     * 
      * @param newPart The new part to be checked
      */
-    public void updateLetters(String newPart){
+    public void updateLetters(String newPart) {
         newPart = newPart.toLowerCase();
         // No Update
-        if(part.equals(newPart)){
+        if (part.equals(newPart)) {
             return;
         }
         // New Entry
-        if(parts.get(newPart) == null){
-            int i = newPart.length()-1;
+        if (parts.get(newPart) == null) {
+            int i = newPart.length() - 1;
             String[] subPartWordList = null;
-            while(i>=0){
+            while (i >= 0) {
                 // Check to see if any subPart of this part has been pared
-                subPartWordList = parts.get(newPart.substring(0,i));
-                if(subPartWordList == null){
+                subPartWordList = parts.get(newPart.substring(0, i));
+                if (subPartWordList == null) {
                     i--;
                     continue;
-                }
-                else{
+                } else {
                     i++; // Pare the next index because paring found at current
                     break;
                 }
-            } 
+            }
 
             // Pare every part that makes up this part that hasn't already been pared
             String subPart = "";
-            while(i<=newPart.length()){
+            while (i <= newPart.length()) {
                 subPart = newPart.substring(0, i++);
                 subPartWordList = pareWordList(subPartWordList, subPart);
                 parts.put(subPart, subPartWordList);
@@ -97,46 +100,48 @@ public class AdaptingStringList {
             part = newPart;
         }
         // Previous Entry
-        else{
+        else {
             part = newPart;
         }
     }
 
     /**
-     * @param wordList The part of the word list to pare
+     * @param wordList   The part of the word list to pare
      * @param partToPare The part to pare the word list with
      * @return A pared word list
      */
     private String[] pareWordList(String[] wordList, String partToPare) {
         ArrayList<String> finalWordList = new ArrayList<>();
-        Dictionary<Integer,ArrayList<String>> partPositionInWords = new Hashtable<Integer,ArrayList<String>>();
-        // The first word in the list should always be the part in order to display it in the editor
-        finalWordList.add(partToPare.substring(0, 1).toUpperCase()+partToPare.substring(1));
+        Dictionary<Integer, ArrayList<String>> partPositionInWords = new Hashtable<Integer, ArrayList<String>>();
+        // The first word in the list should always be the part in order to display it
+        // in the editor
+        finalWordList.add(partToPare.substring(0, 1).toUpperCase() + partToPare.substring(1));
         // Add all the words that contain the part
-        for(String word : wordList){
-            if(word.toLowerCase().contains(partToPare)){
+        for (String word : wordList) {
+            if (word.toLowerCase().contains(partToPare)) {
                 int index = word.toLowerCase().indexOf(partToPare);
-                if(partPositionInWords.get(index) == null){
+                if (partPositionInWords.get(index) == null) {
                     partPositionInWords.put(index, new ArrayList<String>());
                 }
-                partPositionInWords.get(index).add(word.substring(0, 1).toUpperCase()+word.substring(1));
+                partPositionInWords.get(index).add(word.substring(0, 1).toUpperCase() + word.substring(1));
             }
         }
-        // Add the words to the array sorted by how close the part is to the start of the word
+        // Add the words to the array sorted by how close the part is to the start of
+        // the word
         int i = 0;
-        while(partPositionInWords.size()>0){
+        while (partPositionInWords.size() > 0) {
             // Get all the words with the part at index i in the word
             ArrayList<String> subFinalWordList = partPositionInWords.get(i);
             partPositionInWords.remove(i++);
             // Sort them alphabetically and add them to the word list
-            try{
-                // Sometimes this errors because there are no words with the part at that index but there are words with the part at a larger index
+            try {
+                // Sometimes this errors because there are no words with the part at that index
+                // but there are words with the part at a larger index
                 Collections.sort(subFinalWordList);
-            }
-            catch(NullPointerException e){
+            } catch (NullPointerException e) {
                 continue;
             }
-            
+
             finalWordList.addAll(subFinalWordList);
         }
 
@@ -146,24 +151,24 @@ public class AdaptingStringList {
     /**
      * @return The current word list based on the current part
      */
-    public String[] getWordList(){
+    public String[] getWordList() {
         return this.parts.get(this.part);
     }
 
     /**
      * @return The current part
      */
-    public String getPart(){
+    public String getPart() {
         return this.part;
     }
 
     /**
-     * @return Check if the current part is in the wordlist 
+     * @return Check if the current part is in the wordlist
      */
-    public boolean isPartInWordList(){
+    public boolean isPartInWordList() {
         // Skip the first index because part is stored at the first index
         for (int i = 1; i < this.getWordList().length; i++) {
-            if(this.part.equals(this.getWordList()[i].toLowerCase())){
+            if (this.part.equals(this.getWordList()[i].toLowerCase())) {
                 return true;
             }
         }
