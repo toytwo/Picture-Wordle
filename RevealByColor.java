@@ -54,22 +54,22 @@ public class RevealByColor extends RevealPanel{
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weighty = 1;
         constraints.gridy = 0;
-
+        //left
         constraints.gridx = 0;
         constraints.weightx = 1.0/6.0;
-        add(new JPanel());
-
+        add(new JPanel(),constraints);
+        //middle
         constraints.gridx = 1;
         constraints.weightx = 2.0/3.0;
-        add(imagePanel);
-
+        add(imagePanel,constraints);
+        //middle
         constraints.gridx = 2;
         constraints.weightx = 2.0/3.0;
         add(buttonPanel);
-
+        //right
         constraints.gridx = 3;
         constraints.weightx = 1.0/6.0;
-        add(new JPanel());
+        add(new JPanel(),constraints);
 
         this.addComponentListener(new ComponentAdapter() {
             @Override

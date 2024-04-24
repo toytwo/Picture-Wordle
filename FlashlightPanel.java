@@ -21,7 +21,7 @@ public class FlashlightPanel extends RevealPanel implements MouseListener, Mouse
     public FlashlightPanel(String n, int i, boolean b, BufferedImage g) {
         super(n,i,b,g);
         image = g;
-        radius = 150;
+        radius = 90;
         x = -1;
         y = -1;
         revealedAreas = new ArrayList<>();
@@ -66,7 +66,7 @@ public class FlashlightPanel extends RevealPanel implements MouseListener, Mouse
     public void setupContentArea() {
         //JPanel jpanel = new JPanel();
         //add(jpanel);
-        int imageSize = Math.min(getWidth(), getHeight()); // Choose the size you want for the square panel
+        int imageSize = Math.min(1024, 1024); // Choose the size you want for the square panel
         setPreferredSize(new Dimension(imageSize, imageSize));
     }
 
@@ -82,19 +82,19 @@ public class FlashlightPanel extends RevealPanel implements MouseListener, Mouse
         
         
         if (image != null) {
-            BufferedImage scaledImage = scaleImage(image, getWidth(), getHeight());
+            BufferedImage scaledImage = scaleImage(image, getHeight(), getHeight());
 
             g.drawImage(scaledImage, 0, 0, this);
         }
 
         // Subtract revealed areas from the black screen
-        Area mask = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
+        Area mask = new Area(new Rectangle(0, 0, getHeight(), getHeight()));
         for (Area area : revealedAreas) {
             mask.subtract(area);
         }
 
         // Create a buffered image for the mask
-        BufferedImage maskImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage maskImage = new BufferedImage(getHeight(), getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D maskGraphics = maskImage.createGraphics();
         maskGraphics.setColor(Color.BLACK);
         maskGraphics.fill(mask);
@@ -115,6 +115,27 @@ public class FlashlightPanel extends RevealPanel implements MouseListener, Mouse
             g2d2.drawString("Reveal", x - 29, y);
             g2d2.dispose();
         }
+
+        // GridBagConstraints constraints = new GridBagConstraints();
+        // constraints.fill = GridBagConstraints.BOTH;
+        // constraints.weighty = 1;
+        // constraints.gridy = 0;
+        // //left
+        // constraints.gridx = 0;
+        // constraints.weightx = 1.0/6.0;
+        // add(new JPanel(),constraints);
+        // //middle
+        // constraints.gridx = 1;
+        // constraints.weightx = 2.0/3.0;
+        // add(imagePanel,constraints);
+        // //middle
+        // constraints.gridx = 2;
+        // constraints.weightx = 2.0/3.0;
+        // add(buttonPanel);
+        // //right
+        // constraints.gridx = 3;
+        // constraints.weightx = 1.0/6.0;
+        // add(new JPanel(),constraints);
 
     }
 
