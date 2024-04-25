@@ -67,6 +67,7 @@ public abstract class GuessPanel extends InteractivePanel{
         this.guessFields = new JComboBox[MAX_ACTIONS];
         this.updatingWordBank = false;
         this.hintPanel = new HintPanel(this.targetWord, this.MAX_ACTIONS);
+        this.setPanelDescriptors("Guess", "Guesses");
     }
 
     public void setupContentArea(){

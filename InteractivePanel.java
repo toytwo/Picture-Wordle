@@ -30,6 +30,14 @@ public abstract class InteractivePanel extends JPanel {
      * The other interactive panel in Game.
      */
     protected InteractivePanel otherPanel;
+    /**
+     * The name of the panel simplified to a string. Used for displaying to the player.
+     */
+    protected String panelName;
+    /**
+     * The plural form of the panel's action. Used for displaying to the player.
+     */
+    protected String panelPluralAction;
 
     public InteractivePanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS){
         this.SWAP_THRESHOLD = SWAP_THRESHOLD;
@@ -54,12 +62,47 @@ public abstract class InteractivePanel extends JPanel {
     public abstract void setupContentArea();
 
     /**
+     * Sends a notification to the player based on the number of guesses or reveals remaining
+     * @param isSwapping True if it is time to swap to the other panel. False otherwise.
+     */
+    public void sendNotification(Boolean isSwapping) {
+        int ACTIONS_REMAINING;
+        String ACTION_NAME;
+        InteractivePanel PANEL;
+
+        // Time to swap
+        if(isSwapping){
+            PANEL = this.otherPanel;
+            ACTIONS_REMAINING = this.otherPanel.SWAP_THRESHOLD;
+        }
+        // Keep Revealing
+        else{
+            PANEL = this;
+            ACTIONS_REMAINING = this.SWAP_THRESHOLD-(interactionCount%this.SWAP_THRESHOLD);
+        }
+
+        // Singular
+        if(ACTIONS_REMAINING == 1){
+            ACTION_NAME = PANEL.panelName;
+        }
+        // Plural
+        else{
+            ACTION_NAME = PANEL.panelPluralAction;
+        }
+
+        // Notify the player of their next action
+        (new ActionNotification(PANEL.panelName, ACTIONS_REMAINING+" "+ACTION_NAME+" Remaining")).setVisible(true); // Set visible here because it freezes when doing it in FadingNotification
+    }
+
+    /**
      * Called when an action is performed in this panel.
      * @return If it's time to swap
      */
     public boolean interactionPerformed(){
-        this.interactionCount++;
-        return swap();
+        this.interactionCount++; // Increment the number of actions performed
+        Boolean isSwapping = this.swap(); // Check if it's time to swap
+        this.sendNotification(isSwapping); // Send a notif
+        return isSwapping;
     }
 
     /**
@@ -94,4 +137,14 @@ public abstract class InteractivePanel extends JPanel {
      * Enable or disable certain interactable components in this panel
      */
     public abstract void setPanelEnabled(boolean isEnabled);
+
+    /**
+     * Sets descriptors of the panel
+     * @param panelName The name of the panel
+     * @param panelPluralAction The plural form of the action of the panel
+     */
+    public void setPanelDescriptors(String panelName, String panelPluralAction){
+        this.panelName = panelName;
+        this.panelPluralAction = panelPluralAction;
+    }
 }

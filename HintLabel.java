@@ -37,7 +37,7 @@ public class HintLabel extends JLabel {
             // Draw the background rounded rectangle
             Graphics2D g2d = (Graphics2D) g.create();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setColor(new Color(BACKGROUND_COLOR.getRed(), BACKGROUND_COLOR.getGreen(), BACKGROUND_COLOR.getBlue(), Math.max(0,this.backgroundOpacity)));
+            g2d.setColor(new Color(BACKGROUND_COLOR.getRed(), BACKGROUND_COLOR.getGreen(), BACKGROUND_COLOR.getBlue(), this.backgroundOpacity));
             g2d.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
             g2d.dispose();
         }
@@ -45,6 +45,8 @@ public class HintLabel extends JLabel {
         // Call the superclass method to draw the text
         super.paintComponent(g);
     }
+
+
 
     /**
      * Slowly reveals the label by decreasing the opacity of the background
@@ -58,7 +60,8 @@ public class HintLabel extends JLabel {
                 backgroundOpacity -= OPACITY_DECREMENT;
                 textOpacity -= OPACITY_DECREMENT*textOpacityModifier;
 
-                if(textOpacity < 0){
+                // Start fading in the new text when the old text is faded out
+                if(textOpacity <= 0){
                     textOpacityModifier *= -1;
                     setHorizontalAlignment(SwingConstants.LEFT); // Left align
                     textColor = Color.BLACK; // Text Color
@@ -67,8 +70,9 @@ public class HintLabel extends JLabel {
                 
                 setForeground(new Color(textColor.getRed(),textColor.getGreen(),textColor.getBlue(),Math.max(0,textOpacity)));
 
-                // Stop the timer when the opacity is less than 0
-                if(backgroundOpacity < 0){
+                // Stop the timer when the background opacity is less than 0
+                if(backgroundOpacity <= 0){
+                    backgroundOpacity = 0; // Set to 0 in case it's negative
                     ((Timer)e.getSource()).stop();
                 }
 

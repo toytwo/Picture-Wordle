@@ -18,11 +18,13 @@ public abstract class RevealPanel extends InteractivePanel{
     public RevealPanel(String targetWord, int swapThreshold, boolean doSwapThreshold, BufferedImage image, int MAX_REVEALS, LayoutManager layout){
         super(layout, targetWord, swapThreshold, doSwapThreshold, MAX_REVEALS);
         this.image = image;
+        this.setPanelDescriptors("Reveal", "Reveals");
     }
 
     public RevealPanel(String targetWord, int swapThreshold, boolean doSwapThreshold, BufferedImage image, int MAX_REVEALS){
         super(targetWord, swapThreshold, doSwapThreshold, MAX_REVEALS);
         this.image = image;
+        this.setPanelDescriptors("Reveal", "Reveals");
     }
 
     public double getREVEAL_PANEL_SCREEN_PERCENTAGE(){

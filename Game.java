@@ -27,8 +27,8 @@ public class Game extends JFrame {
     private boolean doModularDifficulty;
     private static final int MAX_GUESSES = 5;
     private static final int MAX_REVEALS = 10;
-    private static final int REVEAL_SWAP_THRESHOLD = 2;
-    private static final int GUESS_SWAP_THRESHOLD = 1;
+    public static final int REVEAL_SWAP_THRESHOLD = 2;
+    public static final int GUESS_SWAP_THRESHOLD = 1;
 
     public Game(int guessPanelID, int revealPanelID, int difficulty, boolean doModularDifficulty) {
         this.difficulty = difficulty;
