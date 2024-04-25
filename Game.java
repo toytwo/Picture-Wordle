@@ -23,16 +23,29 @@ public class Game extends JFrame{
      * A non-negative integer less than or equal to 5 representing the difficulty for this game. Higher numbers are more difficult.
      */
     private int difficulty;
+
+    private int imageMode;
     /**
      * The word to guess
      */
     private String targetWord;
 
-    public Game(int guessPanel,int revealPanel, int difficulty){
+    public Game(int guessPanel, int revealPanel, int difficulty, int imageMode){
         BufferedImage image = null;
         String fileName = null;
+        String directoryPath = null;
         // Specify the directory path
-        String directoryPath = "Images";
+        
+        switch(imageMode){
+            case 0: 
+                this.imageMode = 0; 
+                directoryPath = "Images"; // Assign directoryPath inside the case block
+                break;
+            case 1: 
+                this.imageMode = 1; 
+                directoryPath = "Icon List"; // Assign directoryPath inside the case block
+                break;
+        }
 
         // Create a File object representing the directory
         File directory = new File(directoryPath);
