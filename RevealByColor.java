@@ -11,6 +11,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 
 /**
  * @author Jackson Alexman
@@ -92,7 +93,7 @@ public class RevealByColor extends RevealPanel{
         // Add an empty panel to the left side for spacing
         constraints.gridx = 0;
         constraints.weightx = 1.0/8.0;
-        add(new JPanel());
+        add(new JPanel(), constraints);
 
         // Add the image panel
         constraints.gridx = 1;
@@ -107,7 +108,7 @@ public class RevealByColor extends RevealPanel{
         // Add an empty panel to the right side for spacing
         constraints.gridx = 3;
         constraints.weightx = 1.0/8.0;
-        add(new JPanel());
+        add(new JPanel(),constraints);
 
         this.addComponentListener(new ComponentAdapter() {
             @Override
@@ -130,7 +131,7 @@ public class RevealByColor extends RevealPanel{
 
                 // Resize the buttonPanel to fit the height of imagePanel
                 buttonPanel.setPreferredSize(new Dimension(getHeight()/16,getHeight()));
-                buttonPanel.setMinimumSize(new Dimension(getHeight()/16,getHeight()));
+                buttonPanel.setMaximumSize(new Dimension(getHeight()/16,getHeight()));
                 buttonPanel.revalidate();
                 buttonPanel.repaint();
 
@@ -152,7 +153,7 @@ public class RevealByColor extends RevealPanel{
         buttonPanelConstraints.gridx = 0;
         buttonPanelConstraints.fill = GridBagConstraints.BOTH;
         buttonPanelConstraints.weightx = 1;
-        buttonPanelConstraints.weighty = 1;
+        
 
         // Setup the buttons
         colorSelectors = new JButton[NUMBER_OF_BUTTONS];
@@ -165,14 +166,17 @@ public class RevealByColor extends RevealPanel{
 
             // Make the first and last button black and white
             if(i == 0){
+                buttonPanelConstraints.weighty = 1;
                 colorSelectors[i].setBackground(Color.WHITE);
             }
             else if(i == colorSelectors.length-1){
+                buttonPanelConstraints.weighty = 1;
                 colorSelectors[i].setBackground(Color.BLACK);
                 hueRanges[i+1] = 1.0f; // Set the upper bound of the last range to 1.0
             }
             // Make all the other buttons colorful
             else{
+                buttonPanelConstraints.weighty = 0.973;
                 colorSelectors[i].setBackground(Color.getHSBColor(hueRanges[i], 1.0f, 1.0f));
             }
 

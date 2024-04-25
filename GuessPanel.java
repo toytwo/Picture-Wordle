@@ -14,9 +14,11 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.Timer;
+import javax.swing.border.LineBorder;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.GridBagConstraints;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 
@@ -71,28 +73,35 @@ public abstract class GuessPanel extends InteractivePanel{
     }
 
     public void setupContentArea(){
-        // Add the hintPanel
-        this.add(this.hintPanel, BorderLayout.NORTH);
+        // Use a centerPanel so hintPanel doesn't draw above the empty Panel
+        JPanel centerPanel = new JPanel(new BorderLayout());
 
         // Add the guessField Panel
         JPanel guessFieldPanel = new JPanel(new GridBagLayout());
-        this.add(guessFieldPanel, BorderLayout.CENTER);
+        centerPanel.add(guessFieldPanel, BorderLayout.CENTER);
+
+        // Add an empty panel to the right side for spacing
+        JPanel emptyPanel = new JPanel();
+        emptyPanel.setMinimumSize(new Dimension(20, 100));
+        emptyPanel.setPreferredSize(new Dimension(20, 100));
+        this.add(emptyPanel, BorderLayout.EAST);
+
+        // Add the hintPanel
+        centerPanel.add(this.hintPanel, BorderLayout.NORTH);
+
+        // Add the centerPanel
+        this.add(centerPanel, BorderLayout.CENTER);
 
         // Setup the guessFieldPanel
         // General Constraints
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL; // Fill horizontally
 
-        // Use an empty panel to left align the textfield and have it take up 5/6 of the width of the panel
-        constraints.gridx = 2; // X position in the grid
-        constraints.gridy = 1; // Y position in the grid
-        constraints.gridwidth = 1; // Number of cells wide
-        constraints.weightx = 1.0 / 6.0; // 1/6 of the width
-        constraints.gridheight = MAX_ACTIONS; // Number of cells tall
-        guessFieldPanel.add(new JPanel(), constraints);
-
-        constraints.gridy = 0; // Y position in the grid (0 because we add 1 every time so first will be 0+1=1)
-        constraints.gridheight = 1; // Number of cells tall
+        // Customize the gridBagLayout
+        constraints.gridx = 0; // X position in the grid
+        constraints.gridwidth = 2; // Number of cells wide
+        constraints.weightx = 5.0/6.0; // 5/6 of the width
+        constraints.gridy = 0; // Y position in the grid (0 because we add 1 every time so first will be 0+1=1)]
 
         // Create each guessField
         for(int i = 0; i < MAX_ACTIONS; i++){
@@ -100,11 +109,7 @@ public abstract class GuessPanel extends InteractivePanel{
             guessFields[i] = new JComboBox<String>();
             guessFields[i].setVisible(false);
 
-            // Customize the gridBagLayout
             constraints.gridy++;
-            constraints.gridx = 0; // X position in the grid
-            constraints.gridwidth = 2; // Number of cells wide
-            constraints.weightx = 5.0/6.0; // 5/6 of the width
             guessFieldPanel.add(guessFields[i],constraints);
 
             // Update the wordbank if the user selects one of the popup list options

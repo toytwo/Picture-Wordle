@@ -2,6 +2,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -15,11 +16,13 @@ public class HintLabel extends JLabel {
     private int textOpacity = 255;
     private Color textColor = Color.WHITE;
     private static final int OPACITY_DECREMENT = 2;
-    private static final Color backgroundColor = Color.BLACK;
+    public static final int TEXT_SIZE = 20;
+    private static final Color BACKGROUND_COLOR = Color.BLACK;
     
 
     public HintLabel(int hintNumber, String hint) {
         super("Hint "+hintNumber, SwingConstants.CENTER);
+        this.setFont(new Font("Arial", Font.PLAIN, TEXT_SIZE));
         this.setForeground(textColor);
         this.hint = hint;
     }
@@ -30,7 +33,7 @@ public class HintLabel extends JLabel {
             // Draw the background rounded rectangle
             Graphics2D g2d = (Graphics2D) g.create();
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setColor(new Color(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue(), Math.max(0,this.backgroundOpacity)));
+            g2d.setColor(new Color(BACKGROUND_COLOR.getRed(), BACKGROUND_COLOR.getGreen(), BACKGROUND_COLOR.getBlue(), Math.max(0,this.backgroundOpacity)));
             g2d.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
             g2d.dispose();
         }

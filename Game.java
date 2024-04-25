@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
@@ -5,6 +6,7 @@ import java.io.File;
 import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.border.LineBorder;
 
 /**
  * @author Jackson Alexman
@@ -147,6 +149,8 @@ public class Game extends JFrame {
 
         revealPanel.setupContentArea();
         guessPanel.setupContentArea();
+
+        // revealPanel.setBorder(new LineBorder(Color.blue, 10));
 
         guessPanel.setPanelEnabled(false);
     }

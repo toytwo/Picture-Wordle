@@ -1,3 +1,6 @@
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.BufferedReader;
@@ -9,6 +12,7 @@ import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 
 /**
  * @author Jackson Alexman
@@ -71,8 +75,18 @@ public class HintPanel extends JPanel {
         constraints.gridx = 1; // Horizontal position
         constraints.gridy = 0; // Vertical position
 
+        // Add an empty panel for spacing
+        JPanel emptyPanel = new JPanel();
+        emptyPanel.setMinimumSize(new Dimension(100,20));
+        emptyPanel.setPreferredSize(new Dimension(100,20));
+        this.add(emptyPanel, constraints);
+
         // Add a header
-        this.add(new JLabel("Hints", SwingConstants.CENTER),constraints);
+        JLabel header = new JLabel("                              Hints                              ", SwingConstants.CENTER);
+        header.setFont(new Font("Arial", Font.PLAIN, HintLabel.TEXT_SIZE));
+        constraints.gridy++;
+        this.add(header,constraints);
+        
 
         // Create a JLabel for each hint and give it default text
         for (int i = 0; i < hints.length; i++) {
