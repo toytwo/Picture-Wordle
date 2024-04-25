@@ -9,7 +9,7 @@ import java.util.Hashtable;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/17/2024
+ * @version Updated: 4/24/2024
  */
 public class AdaptingStringList {
     /**

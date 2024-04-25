@@ -1,6 +1,6 @@
 /**
  * @author Jackson Alexman
- * @version Updated: 4/15/2024
+ * @version Updated: 4/24/2024
  */
 public class SimpleGuess extends GuessPanel {
     /**

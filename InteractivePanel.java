@@ -3,7 +3,7 @@ import javax.swing.JPanel;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/17/2024
+ * @version Updated: 4/24/2024
  */
 public abstract class InteractivePanel extends JPanel {
     /**
@@ -31,20 +31,20 @@ public abstract class InteractivePanel extends JPanel {
      */
     protected InteractivePanel otherPanel;
 
-    public InteractivePanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold){
+    public InteractivePanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS){
         this.SWAP_THRESHOLD = SWAP_THRESHOLD;
         this.targetWord = targetWord;
         this.doSwapThreshold = doSwapThreshold;
-
+        this.MAX_ACTIONS = MAX_ACTIONS;
         this.interactionCount = 0;
     }
 
-    public InteractivePanel(LayoutManager layout, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold){
+    public InteractivePanel(LayoutManager layout, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS){
         super(layout);
         this.SWAP_THRESHOLD = SWAP_THRESHOLD;
         this.targetWord = targetWord;
         this.doSwapThreshold = doSwapThreshold;
-
+        this.MAX_ACTIONS = MAX_ACTIONS;
         this.interactionCount = 0;
     }
 

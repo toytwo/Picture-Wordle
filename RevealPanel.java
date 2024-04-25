@@ -3,7 +3,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/17/2024
+ * @version Updated: 4/24/2024
  */
 public abstract class RevealPanel extends InteractivePanel{
     /**
@@ -15,13 +15,13 @@ public abstract class RevealPanel extends InteractivePanel{
      */
     protected double REVEAL_PANEL_SCREEN_PERCENTAGE = 5.0/6.0;
 
-    public RevealPanel(String targetWord, int swapThreshold, boolean doSwapThreshold, BufferedImage image, LayoutManager layout){
-        super(layout, targetWord, swapThreshold, doSwapThreshold);
+    public RevealPanel(String targetWord, int swapThreshold, boolean doSwapThreshold, BufferedImage image, int MAX_REVEALS, LayoutManager layout){
+        super(layout, targetWord, swapThreshold, doSwapThreshold, MAX_REVEALS);
         this.image = image;
     }
 
-    public RevealPanel(String targetWord, int swapThreshold, boolean doSwapThreshold, BufferedImage image){
-        super(targetWord, swapThreshold, doSwapThreshold);
+    public RevealPanel(String targetWord, int swapThreshold, boolean doSwapThreshold, BufferedImage image, int MAX_REVEALS){
+        super(targetWord, swapThreshold, doSwapThreshold, MAX_REVEALS);
         this.image = image;
     }
 

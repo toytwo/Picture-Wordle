@@ -14,17 +14,15 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import javax.swing.Timer;
-import javax.swing.border.LineBorder;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.GridBagConstraints;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/17/2024
+ * @version Updated: 4/24/2024
  */
 public abstract class GuessPanel extends InteractivePanel{
     /**
@@ -50,8 +48,8 @@ public abstract class GuessPanel extends InteractivePanel{
      * @param ratio The number of guesses per reveal.
      */
     @SuppressWarnings("unchecked")
-    public GuessPanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS){
-        super(new BorderLayout(), targetWord, SWAP_THRESHOLD, doSwapThreshold);
+    public GuessPanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_GUESSES){
+        super(new BorderLayout(), targetWord, SWAP_THRESHOLD, doSwapThreshold, MAX_GUESSES);
         // Initialize wordBank using an anonymous SwingWorker
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override
@@ -66,7 +64,6 @@ public abstract class GuessPanel extends InteractivePanel{
         worker.execute();
 
         // Initialize instance variables
-        this.MAX_ACTIONS = MAX_ACTIONS;
         this.guessFields = new JComboBox[MAX_ACTIONS];
         this.updatingWordBank = false;
         this.hintPanel = new HintPanel(this.targetWord, this.MAX_ACTIONS);

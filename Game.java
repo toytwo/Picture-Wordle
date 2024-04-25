@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
@@ -6,11 +5,10 @@ import java.io.File;
 import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
-import javax.swing.border.LineBorder;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/17/2024
+ * @version Updated: 4/24/2024
  */
 public class Game extends JFrame {
     private GuessPanel guessPanel;
@@ -27,6 +25,10 @@ public class Game extends JFrame {
     public static Game game;
     private Random random;
     private boolean doModularDifficulty;
+    private static final int MAX_GUESSES = 5;
+    private static final int MAX_REVEALS = 10;
+    private static final int REVEAL_SWAP_THRESHOLD = 2;
+    private static final int GUESS_SWAP_THRESHOLD = 1;
 
     public Game(int guessPanelID, int revealPanelID, int difficulty, boolean doModularDifficulty) {
         this.difficulty = difficulty;
@@ -108,22 +110,29 @@ public class Game extends JFrame {
 
         switch (guessPanelID) {
             case 0:
-                this.guessPanel = new SimpleGuess(this.targetWord, 1, true, 5);
+                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES);
                 break;
+
             default:
-                this.guessPanel = new SimpleGuess(this.targetWord, 1, true, 5);
+                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES);
                 break;
         }
 
         switch (revealPanelID) {
             case 0:
-                this.revealPanel = new SimpleReveal(image, targetWord, 1, false);
+                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS);
                 break;
+
             case 1:
-                this.revealPanel = new RevealByColor(image, targetWord, 2, true, 20);
+                this.revealPanel = new RevealByColor(image, targetWord, REVEAL_SWAP_THRESHOLD, true, MAX_REVEALS, 20);
                 break;
+
+            case 2:
+                this.revealPanel = new SpotlightReveal(targetWord, REVEAL_SWAP_THRESHOLD, true, image, MAX_REVEALS);
+                break;
+
             default:
-                this.revealPanel = new SimpleReveal(image, targetWord, 1, false);
+                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS);
                 break;
         }
 

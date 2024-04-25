@@ -10,6 +10,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.RoundRectangle2D;
 
+/**
+ * @author Jackson Alexman
+ * @version Updated: 4/24/2024
+ */
 public class HintLabel extends JLabel {
     private String hint;
     private int backgroundOpacity = 255;

@@ -11,11 +11,10 @@ import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.border.LineBorder;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/17/2024
+ * @version Updated: 4/24/2024
  */
 public class RevealByColor extends RevealPanel{
 
@@ -55,8 +54,8 @@ public class RevealByColor extends RevealPanel{
      * @param doSwapThreshold Whether or not the user swaps between guessing and revealing
      * @param NUMBER_OF_BUTTONS The number of reveal buttons
      */
-    public RevealByColor(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int NUMBER_OF_BUTTONS){
-        super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, new GridBagLayout());
+    public RevealByColor(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int NUMBER_OF_BUTTONS){
+        super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, MAX_REVEALS, new GridBagLayout());
 
         this.NUMBER_OF_BUTTONS = NUMBER_OF_BUTTONS;
         this.activeHueRanges = new boolean[NUMBER_OF_BUTTONS];
@@ -138,10 +137,7 @@ public class RevealByColor extends RevealPanel{
                 // Remove the listener so it is only called once
                 removeComponentListener(getComponentListeners()[0]);
             }
-        });
-
-
-        
+        });    
     }
 
     private void setupButtonPanel(JPanel imagePanel){
