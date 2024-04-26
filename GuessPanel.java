@@ -106,6 +106,7 @@ public abstract class GuessPanel extends InteractivePanel{
             // Create the textfield
             guessFields[i] = new JComboBox<String>();
             guessFields[i].setVisible(false);
+            guessFields[i].setEnabled(false);
 
             constraints.gridy++;
             guessFieldPanel.add(guessFields[i],constraints);
@@ -293,10 +294,8 @@ public abstract class GuessPanel extends InteractivePanel{
     public void setPanelEnabled(boolean isEnabled) {
         // Enable panel
         if(isEnabled){
-            for(int i = interactionCount; i < MAX_ACTIONS; i++){
-                // Enable the new guessField
-                guessFields[i].setEnabled(true);
-            }
+            // Enable the new guessField
+            guessFields[interactionCount].setEnabled(true);
 
             // Add an empty item so the editor starts empty
             updateWordBank("");
