@@ -285,3 +285,4 @@ Velvet
 Enigmatic
 Zen
 Narwhal
+Wallet
