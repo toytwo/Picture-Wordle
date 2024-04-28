@@ -15,13 +15,20 @@ public class PicturMenu extends JFrame implements ActionListener{
       private JFrame frame;
       private JButton startButton;
       private JButton backButton; private JButton exitButton; private JButton settingsButton;
+      @SuppressWarnings("rawtypes")
       private JComboBox comboBox;
+      @SuppressWarnings("rawtypes")
       private JComboBox guesscomboBox;
+      @SuppressWarnings("rawtypes")
       private JComboBox revealcomboBox;
       private JCheckBox checkbox;
       private CardLayout cardLayout;
       private JPanel menuArea;
       private JPanel settingsPanel;
+    private int defaultGuessPanel;
+    private int defaultRevealPanel;
+    private int defaultDifficulty;
+    private boolean defaultDoModularDifficulty;
        
       /**
        * @ this controls all events of the game menu
@@ -152,7 +159,7 @@ public class PicturMenu extends JFrame implements ActionListener{
         checkbox.setOpaque(false);
         checkbox.setContentAreaFilled(false);
         checkbox.setBorderPainted(false);
-        checkbox.setSelected(false);
+        checkbox.setSelected(defaultDoModularDifficulty);
         settingsPanel.add( checkbox);
           
         backButton = new JButton("BACK");
@@ -208,33 +215,36 @@ public class PicturMenu extends JFrame implements ActionListener{
         
         String[] difficulty = {"EASY", "MIDDLE", "HARD"};
         comboBox = new JComboBox<>(difficulty);//This implements a dropdown box for the various game levels
+        @SuppressWarnings("unused")
         String selectedOption = (String) comboBox.getSelectedItem();
         comboBox.setBounds(450,220,70,26);
         comboBox.setFont(new Font("Arial", Font.BOLD, 15));
         comboBox.setForeground(Color.RED);
         comboBox.setCursor(new Cursor(Cursor.HAND_CURSOR));
         comboBox.setOpaque(false);
-        comboBox.setSelectedItem("EASY");
+        comboBox.setSelectedIndex(defaultDifficulty);
         settingsPanel.add(comboBox);
         
         String[] guess = {"SIMPLE GUESS"};
         guesscomboBox = new JComboBox<>(guess);
         guesscomboBox.setForeground(Color.RED);
         guesscomboBox.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        @SuppressWarnings("unused")
         String selectedguess = (String) comboBox.getSelectedItem();
         guesscomboBox.setBounds(415,320,145,26);
         guesscomboBox.setFont(new Font("Arial", Font.BOLD, 15));
-        guesscomboBox.setSelectedItem("SIMPLE GUESS");
+        guesscomboBox.setSelectedIndex(defaultGuessPanel);
         settingsPanel.add(guesscomboBox);
         
         String[] reveal = {"SIMPLE REVEAL", "COLOR REVEAL", "SPOTLIGHT REVEAL"};
         revealcomboBox = new JComboBox<>(reveal);
         revealcomboBox.setForeground(Color.RED);
         revealcomboBox.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        @SuppressWarnings("unused")
         String selectedreveal = (String) comboBox.getSelectedItem();
         revealcomboBox.setBounds(415,420,145,26);
         revealcomboBox.setFont(new Font("Arial", Font.BOLD, 15));
-        revealcomboBox.setSelectedItem("SPOTLIGHT REVEAL");
+        revealcomboBox.setSelectedIndex(defaultRevealPanel);
         settingsPanel.add(revealcomboBox);
         
         add(menuArea, "menuArea");
@@ -246,14 +256,21 @@ public class PicturMenu extends JFrame implements ActionListener{
          * This is the methods default constructor
          * It calls setupMenu so we can achieve all the funtionalities we want the game menu to do
          */
-    public PicturMenu(){
+    public PicturMenu(int defaultGuessPanel, int defaultRevealPanel, int defaultDifficulty, boolean defaultDoModularDifficulty){
+        // Default settings
+        this.defaultGuessPanel = defaultGuessPanel;
+        this.defaultRevealPanel = defaultRevealPanel;
+        this.defaultDifficulty = defaultDifficulty;
+        this.defaultDoModularDifficulty = defaultDoModularDifficulty;
+
+        // Setup the frame
         frame = this;
         setSize(1000,600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Pictur");
         BufferedImage iconImage = null;
         try {
-            iconImage = ImageIO.read(new File("Pictur.png"));
+            iconImage = ImageIO.read(new File("PicturLogo.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }

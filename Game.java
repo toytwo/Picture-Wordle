@@ -59,7 +59,7 @@ public class Game extends JFrame {
         this.setTitle("Pictur");
         BufferedImage iconImage = null;
         try {
-            iconImage = ImageIO.read(new File("Pictur.png"));
+            iconImage = ImageIO.read(new File("PicturLogo.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
