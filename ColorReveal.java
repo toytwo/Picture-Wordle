@@ -13,11 +13,22 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 /**
+<<<<<<< Updated upstream:ColorReveal.java
  * @author Jackson Alexman
  * @version Updated: 4/24/2024
  */
 public class ColorReveal extends RevealPanel{
 
+=======
+ * Author: Jackson Alexman
+ * Version: Updated: 4/17/2024
+ */
+/**
+ * The RevealByColor class represents a panel where an image is revealed based on selected color ranges.
+ * It extends the RevealPanel class.
+ */
+public class RevealByColor extends RevealPanel {
+>>>>>>> Stashed changes:RevealByColor.java
     /**
      * The number of reveal buttons. Must be greater than zero.
      */
@@ -27,7 +38,7 @@ public class ColorReveal extends RevealPanel{
      */
     private JButton[] colorSelectors;
     /**
-     * Which hue ranges are being displayed in the image
+     * Indicates which hue ranges are being displayed in the image.
      */
     private boolean[] activeHueRanges;
     /**
@@ -48,11 +59,22 @@ public class ColorReveal extends RevealPanel{
     private JPanel imagePanel;
 
     /**
+<<<<<<< Updated upstream:ColorReveal.java
      * @param image The image to be revealed
      * @param targetWord The word to be guessed
      * @param SWAP_THRESHOLD How many reveals before swapping to guessing
      * @param doSwapThreshold Whether or not the user swaps between guessing and revealing
      * @param NUMBER_OF_BUTTONS The number of reveal buttons
+=======
+     * Constructor to initialize a RevealByColor object with the specified image, target word, swap threshold,
+     * swap threshold functionality flag, and number of reveal buttons.
+     * 
+     * @param image             The image to be revealed.
+     * @param targetWord        The word associated with the image.
+     * @param SWAP_THRESHOLD    The number of reveals before swapping to guessing.
+     * @param doSwapThreshold   Whether or not the user swaps between guessing and revealing.
+     * @param NUMBER_OF_BUTTONS The number of reveal buttons.
+>>>>>>> Stashed changes:RevealByColor.java
      */
     public ColorReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int NUMBER_OF_BUTTONS){
         super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, MAX_REVEALS, new GridBagLayout());
@@ -63,7 +85,15 @@ public class ColorReveal extends RevealPanel{
         this.REVEAL_PANEL_SCREEN_PERCENTAGE = 3.0 / 4.0;
         this.imageCopy = image;
     }
+<<<<<<< Updated upstream:ColorReveal.java
     
+=======
+
+    /**
+     * Override method to set up the content area of the panel.
+     * Sets up both the image panel and the button panel.
+     */
+>>>>>>> Stashed changes:RevealByColor.java
     @Override
     public void setupContentArea(){
         // Set up both panels
@@ -140,7 +170,16 @@ public class ColorReveal extends RevealPanel{
         });    
     }
 
+<<<<<<< Updated upstream:ColorReveal.java
     private void setupButtonPanel(JPanel imagePanel){
+=======
+    /**
+     * Method to set up the button panel containing the reveal buttons.
+     * 
+     * @param imagePanel The panel containing the image.
+     */
+    private void setupButtonPanel(JPanel imagePanel) {
+>>>>>>> Stashed changes:RevealByColor.java
         buttonPanel = new JPanel();
 
         // Place the buttons in a column
@@ -201,7 +240,7 @@ public class ColorReveal extends RevealPanel{
     }
 
     /**
-     * Update the image based on the active hue ranges
+     * Method to update the image based on the active hue ranges.
      */
     private void reveal() {
         // Reset the image
@@ -233,31 +272,42 @@ public class ColorReveal extends RevealPanel{
                     // If it's in one of the ranges, no need to check the others
                     if (isInActiveRanges) {
                         break;
-
                     } else {
                         continue;
                     }
                 }
 
+<<<<<<< Updated upstream:ColorReveal.java
                 // If the pixel falls within the any of the active color ranges, uncover it by setting alpha to fully opaque
                 if (isInActiveRanges) {
                     image.setRGB(x, y, new Color(pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue(), 255).getRGB());
 
                 } 
+=======
+                // If the pixel falls within any of the active color ranges, uncover it by setting alpha to fully opaque
+                if (isInActiveRanges) {
+                    image.setRGB(x, y, new Color(pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue(), 255).getRGB());
+                }
+>>>>>>> Stashed changes:RevealByColor.java
                 // Otherwise, set the pixel to black
                 else {
                     image.setRGB(x, y, Color.TRANSLUCENT);
                 }
             }
+<<<<<<< Updated upstream:ColorReveal.java
             
+=======
+>>>>>>> Stashed changes:RevealByColor.java
             // Update the image
             repaint();
         }
     }
 
     /**
-     * @param imageToCopy
-     * @return A copy of originalImage
+     * Method to create a copy of the original image.
+     * 
+     * @param imageToCopy The original image to be copied.
+     * @return A copy of the original image.
      */
     private BufferedImage copyImage(BufferedImage imageToCopy){
         // Create a new BufferedImage with the same dimensions and type as the original
@@ -275,6 +325,11 @@ public class ColorReveal extends RevealPanel{
         return copy;
     }
 
+    /**
+     * Method to enable or disable the panel based on the provided flag.
+     * 
+     * @param isEnabled True to enable the panel, false to disable.
+     */
     @Override
     public void setPanelEnabled(boolean isEnabled) {
         // Enable the panel
@@ -291,4 +346,15 @@ public class ColorReveal extends RevealPanel{
             }
         }
     }
+<<<<<<< Updated upstream:ColorReveal.java
+=======
+
+    /**
+     * Method to subtract points from the game score.
+     */
+    @Override
+    public void subtractPoint() {
+        Game.game.score -= 20;
+    }
+>>>>>>> Stashed changes:RevealByColor.java
 }
