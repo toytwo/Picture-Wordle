@@ -108,7 +108,7 @@ public class PicturMenu extends JFrame implements ActionListener{
                 g2d.drawString(text, 335, 150 + 10);
                 
                 Graphics2D g2 = (Graphics2D) g;
-                String credits = "Credits: Jackson,Damon, Babucarr, Gishe";
+                String credits = "Credits: Jackson,Dammon, Babucarr, Gishe";
                 Font cred = new Font("sanSerif", Font.BOLD, 20);
                 g2.setFont(cred);
                 Stroke stro = new BasicStroke(3.0f);
