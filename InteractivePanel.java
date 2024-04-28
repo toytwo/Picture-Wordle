@@ -100,9 +100,9 @@ public abstract class InteractivePanel extends JPanel {
      */
     public boolean interactionPerformed(){
         this.interactionCount++; // Increment the number of actions performed
-        Boolean isSwapping = this.swap(); // Check if it's time to swap
-        this.sendNotification(isSwapping); // Send a notif
-        return isSwapping;
+        Boolean doSwap = this.swap(); // Check if it's time to swap
+        this.sendNotification(doSwap); // Send a notif
+        return doSwap;
     }
 
     /**

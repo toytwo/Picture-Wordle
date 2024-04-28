@@ -2,6 +2,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -13,13 +15,20 @@ import javax.swing.JFrame;
 public class Game extends JFrame {
     private GuessPanel guessPanel;
     private RevealPanel revealPanel;
-    private int difficulty;
+    public int difficulty;
+    private int previousDifficulty;
     private String targetWord;
     private BufferedImage image;
     private File imageFile;
     private String imageFileName;
+    /**
+     * The list of images to be randomly selected from.
+     */
+    private File[] imagePool;
+    /**
+     * The list of images for the selected difficulty.
+     */
     private File[] images;
-    private File[] unsortedImages;
     private int guessPanelID;
     private int revealPanelID;
     public static Game game;
@@ -29,26 +38,19 @@ public class Game extends JFrame {
     private static final int MAX_REVEALS = 10;
     public static final int REVEAL_SWAP_THRESHOLD = 2;
     public static final int GUESS_SWAP_THRESHOLD = 1;
+    /**
+     * Images that haven't been selected for revealing during this session. Resets when all potential images have been selected.
+     */
+    private Map<String, File> unselectedImages;
 
     public Game(int guessPanelID, int revealPanelID, int difficulty, boolean doModularDifficulty) {
         this.difficulty = difficulty;
+        this.previousDifficulty = -1; // Ensure it's different from difficulty
         this.guessPanelID = guessPanelID;
         this.revealPanelID = revealPanelID;
         this.doModularDifficulty = doModularDifficulty;
+        this.unselectedImages = new HashMap<String,File>();
         this.random = new Random();
-
-        String filePath = "Images"+File.separator;
-        if(this.difficulty == 0){
-            filePath+="Easy";
-        }
-        else if (this.difficulty == 1){
-            filePath+="Medium";
-        }
-        else{
-            filePath+="Hard";
-        }
-        this.images = new File(filePath+File.separator).listFiles();
-        this.unsortedImages = new File("Images"+File.separator+"Unsorted").listFiles();
 
         this.setLayout(new GridBagLayout());
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -58,35 +60,67 @@ public class Game extends JFrame {
 
         game = this;
 
-        setupGame();
+        resetGame();
     }
+
+
 
     private void pickRandomImage() {
-        if(unsortedImages.length > 0){
-            try {
-                imageFile = unsortedImages[random.nextInt(unsortedImages.length)];
-                image = ImageIO.read(imageFile);
-                imageFileName = imageFile.getName(); 
-    
-            } catch (Exception e) {
-                System.out.println(e);
-                System.exit(1);
-            }
+        updateImagePool();
+
+        try {
+            // Pick a random image from the list of unselected images
+            String randomImageName = (String) unselectedImages.keySet().toArray()[random.nextInt(unselectedImages.size())];
+            imageFile = unselectedImages.get(randomImageName);
+            image = ImageIO.read(imageFile);
+            imageFileName = randomImageName; 
+
+            // Remove it once it's been selected
+            unselectedImages.remove(randomImageName);
+
+        } catch (Exception e) {
+            System.out.println(e);
+            System.exit(1);
         }
-        else{
-            try {
-                imageFile = images[random.nextInt(images.length)];
-                image = ImageIO.read(imageFile);
-                imageFileName = imageFile.getName(); 
-    
-            } catch (Exception e) {
-                System.out.println(e);
-                System.exit(1);
+    }
+
+    /**
+     * Determines the pool of images to pick from for revealing. Prioritizes unsorted images if there are unsorted images left to sort.
+     */
+    private void updateImagePool(){
+        if(this.previousDifficulty != this.difficulty){
+            String filePath = "Images"+File.separator;
+            if(this.difficulty == 0){
+                filePath+="Easy";
+            }
+            else if (this.difficulty == 1){
+                filePath+="Medium";
+            }
+            else{
+                filePath+="Hard";
+            }
+            
+            this.images = new File(filePath+File.separator).listFiles();
+            this.imagePool = new File("Images"+File.separator+"Unsorted").listFiles();
+
+            this.previousDifficulty = this.difficulty;
+        }
+        
+        // No unsorted images to sort
+        if(this.imagePool.length == 0){
+            this.imagePool = this.images;
+        }
+
+        // Guessed all images in folder
+        if(unselectedImages.size() == 0){
+            unselectedImages = new HashMap<String,File>();
+            for(File image : imagePool){
+                unselectedImages.put(image.getName(),image);
             }
         }
     }
 
-    public void setupGame() {
+    public void resetGame() {
         if(this.revealPanel != null || this.guessPanel != null){
             this.guessPanel.setEnabled(false);
             this.revealPanel.setEnabled(false);

@@ -50592,6 +50592,7 @@ celloist
 cellophane
 cellos
 cellose
+cellphone
 cells
 cellucotton
 cellular
