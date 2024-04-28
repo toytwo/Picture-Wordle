@@ -245,34 +245,54 @@ public abstract class GuessPanel extends InteractivePanel{
         }
         
         boolean guessOutcome = this.targetWord.toLowerCase().equals(this.wordBank.getPart());
+        boolean doSwap = super.interactionPerformed();
 
         // Correct Guess or The user has run out of guesses
-        if(guessOutcome || interactionCount+1 >= MAX_ACTIONS){
+        if(guessOutcome || interactionCount >= MAX_ACTIONS){
             // Reset game
-            Game.game.updateImageDifficulty(interactionCount+1, MAX_ACTIONS);
-            Game.game.setupGame();
+            Game.game.updateImageDifficulty(interactionCount, MAX_ACTIONS);
+            this.setPanelEnabled(false);
+            (new MenuNotification(targetWord, MAX_ACTIONS, interactionCount)).setVisible(true);;
             return false;
         }
 
         // Potentially reveal a hint
-        this.hintPanel.checkReveal(interactionCount+1);
-
-        // Check if it's time to swap
-        if(super.interactionPerformed()){
+        this.hintPanel.checkReveal(interactionCount);
+        
+        if(doSwap){
             return true;
         }
 
-        // Disable the previous guessField
-        guessFields[interactionCount].setEnabled(false);
-    
-        // Update the wordbank
-        wordBank.updateLetters("");
-        // Add all the word bank words to the guessField popup
-        for(String word : wordBank.getWordList()){
-            guessFields[interactionCount].addItem(word);
+        nextGuess();
+
+        // Not time to swap
+        return false;
+    }
+
+    @Override
+    public void setPanelEnabled(boolean isEnabled) {
+        // Enable panel
+        if(isEnabled){
+            nextGuess();
         }
+        // Disable panel
+        else{
+            for(int i = Math.max(interactionCount-1, 0); i < MAX_ACTIONS; i++){
+                guessFields[i].setEnabled(false);
+            }
+        }
+    }
+
+
+    private void nextGuess(){
+        // Update the wordbank
+        updateWordBank("");
         // Enable the new guessField
         guessFields[interactionCount].setEnabled(true);
+        if(interactionCount > 0){
+            // Disable the previous guessField
+            guessFields[interactionCount-1].setEnabled(false);
+        }
         // Set the text cursor to the new guessField
         guessFields[interactionCount].requestFocus();
         // Wait 100 seconds before enabling the popup. Without the delay, the popup does not show.
@@ -285,26 +305,5 @@ public abstract class GuessPanel extends InteractivePanel{
         // Only activate once
         timer.setRepeats(false);
         timer.start();
-
-        // Not time to swap
-        return false;
-    }
-
-    @Override
-    public void setPanelEnabled(boolean isEnabled) {
-        // Enable panel
-        if(isEnabled){
-            // Enable the new guessField
-            guessFields[interactionCount].setEnabled(true);
-
-            // Add an empty item so the editor starts empty
-            updateWordBank("");
-        }
-        // Disable panel
-        else{
-            for(int i = Math.max(interactionCount-1, 0); i < MAX_ACTIONS; i++){
-                guessFields[i].setEnabled(false);
-            }
-        }
     }
 }

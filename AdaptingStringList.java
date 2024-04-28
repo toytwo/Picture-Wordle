@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Jackson Alexman
@@ -15,7 +15,7 @@ public class AdaptingStringList {
     /**
      * Parts of words typed by the user : The words from the wordbank that contain that part
      */
-    private Dictionary<String,String[]> parts;
+    private Map<String,String[]> parts;
     /**
      * The current part typed by the user 
      */
@@ -51,7 +51,7 @@ public class AdaptingStringList {
         }
 
         // Initialize the instance variables
-        this.parts = new Hashtable<String,String[]>();
+        this.parts = new HashMap<String,String[]>();
         this.part = "";
 
         // Add "" to the start of array because the first element of the array needs to be what is currently typed
@@ -109,7 +109,7 @@ public class AdaptingStringList {
      */
     private String[] pareWordList(String[] wordList, String partToPare) {
         ArrayList<String> finalWordList = new ArrayList<>();
-        Dictionary<Integer,ArrayList<String>> partPositionInWords = new Hashtable<Integer,ArrayList<String>>();
+        Map<Integer,ArrayList<String>> partPositionInWords = new HashMap<Integer,ArrayList<String>>();
         // The first word in the list should always be the part in order to display it in the editor
         finalWordList.add(partToPare.substring(0, 1).toUpperCase()+partToPare.substring(1));
         // Add all the words that contain the part
