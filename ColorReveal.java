@@ -16,7 +16,7 @@ import javax.swing.JPanel;
  * @author Jackson Alexman
  * @version Updated: 4/24/2024
  */
-public class RevealByColor extends RevealPanel{
+public class ColorReveal extends RevealPanel{
 
     /**
      * The number of reveal buttons. Must be greater than zero.
@@ -54,7 +54,7 @@ public class RevealByColor extends RevealPanel{
      * @param doSwapThreshold Whether or not the user swaps between guessing and revealing
      * @param NUMBER_OF_BUTTONS The number of reveal buttons
      */
-    public RevealByColor(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int NUMBER_OF_BUTTONS){
+    public ColorReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int NUMBER_OF_BUTTONS){
         super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, MAX_REVEALS, new GridBagLayout());
 
         this.NUMBER_OF_BUTTONS = NUMBER_OF_BUTTONS;

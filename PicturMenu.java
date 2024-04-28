@@ -1,18 +1,24 @@
-import javax.swing.JFrame;
-import java.awt.event.ActionListener;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.awt.*;
-import java.awt.Color;
 
 /**
  * @author Babucarr
  * @version ( 04/13/2024)
+ * @version Integrated by Jackson 4/27/2024
  */
 public class PicturMenu extends JFrame implements ActionListener{
       private JFrame frame;
       private JButton startButton;
       private JButton backButton; private JButton exitButton; private JButton settingsButton;
+      private JComboBox comboBox;
+      private JComboBox guesscomboBox;
+      private JComboBox revealcomboBox;
+      private JCheckBox checkbox;
       private CardLayout cardLayout;
       private JPanel menuArea;
       private JPanel settingsPanel;
@@ -29,7 +35,8 @@ public class PicturMenu extends JFrame implements ActionListener{
         }
         
         if(comm.equals("START")){
-                
+            new Game(guesscomboBox.getSelectedIndex(), revealcomboBox.getSelectedIndex(),comboBox.getSelectedIndex() , checkbox.isSelected());
+            this.dispose();
         }
         
         
@@ -62,10 +69,10 @@ public class PicturMenu extends JFrame implements ActionListener{
         if(comm.equals("SIMPLE REVEAL")){
             
         }
-        if(comm.equals("BY ICON")){
+        if(comm.equals("SPOTLIGHT REVEAL")){
             
         }
-        if(comm.equals("BY COLOR")){
+        if(comm.equals("COLOR REVEAL")){
             
         }
         
@@ -87,7 +94,6 @@ public class PicturMenu extends JFrame implements ActionListener{
      * whenever the mouse hovers over the location of the buttons.
      */
     private void setupMenu(){
-        
          menuArea = new JPanel(){
              //Draws the title of the game and it's credits
             @Override
@@ -136,7 +142,7 @@ public class PicturMenu extends JFrame implements ActionListener{
         settingsPanel.setPreferredSize(frame.getSize()); 
         settingsPanel.setLayout(null);
           
-        JCheckBox checkbox = new JCheckBox ("Modular Difficulty");
+        checkbox = new JCheckBox ("Modular Difficulty");
         checkbox.setFont(new Font("Arial", Font.BOLD, 15));
         checkbox.setBounds(620,110,150,15);
         checkbox.setCursor(new Cursor(Cursor.HAND_CURSOR)); //This puts the pointing finger cursor when we hover over 
@@ -146,7 +152,7 @@ public class PicturMenu extends JFrame implements ActionListener{
         checkbox.setOpaque(false);
         checkbox.setContentAreaFilled(false);
         checkbox.setBorderPainted(false);
-        checkbox.setSelected(true);
+        checkbox.setSelected(false);
         settingsPanel.add( checkbox);
           
         backButton = new JButton("BACK");
@@ -201,7 +207,7 @@ public class PicturMenu extends JFrame implements ActionListener{
         menuArea.add(exitButton);
         
         String[] difficulty = {"EASY", "MIDDLE", "HARD"};
-        JComboBox<String> comboBox = new JComboBox<>(difficulty);//This implements a dropdown box for the various game levels
+        comboBox = new JComboBox<>(difficulty);//This implements a dropdown box for the various game levels
         String selectedOption = (String) comboBox.getSelectedItem();
         comboBox.setBounds(450,220,70,26);
         comboBox.setFont(new Font("Arial", Font.BOLD, 15));
@@ -211,8 +217,8 @@ public class PicturMenu extends JFrame implements ActionListener{
         comboBox.setSelectedItem("EASY");
         settingsPanel.add(comboBox);
         
-        String[] guess = {"SIMPLE GUESS","WORD TYPE","LOGO"};
-        JComboBox<String> guesscomboBox = new JComboBox<>(guess);
+        String[] guess = {"SIMPLE GUESS"};
+        guesscomboBox = new JComboBox<>(guess);
         guesscomboBox.setForeground(Color.RED);
         guesscomboBox.setCursor(new Cursor(Cursor.HAND_CURSOR));
         String selectedguess = (String) comboBox.getSelectedItem();
@@ -221,14 +227,14 @@ public class PicturMenu extends JFrame implements ActionListener{
         guesscomboBox.setSelectedItem("SIMPLE GUESS");
         settingsPanel.add(guesscomboBox);
         
-        String[] reveal = {"SIMPLE REVEAL", "BY COLOR", "BY ICON"};
-        JComboBox<String> revealcomboBox = new JComboBox<>(reveal);
+        String[] reveal = {"SIMPLE REVEAL", "COLOR REVEAL", "SPOTLIGHT REVEAL"};
+        revealcomboBox = new JComboBox<>(reveal);
         revealcomboBox.setForeground(Color.RED);
         revealcomboBox.setCursor(new Cursor(Cursor.HAND_CURSOR));
         String selectedreveal = (String) comboBox.getSelectedItem();
         revealcomboBox.setBounds(415,420,145,26);
         revealcomboBox.setFont(new Font("Arial", Font.BOLD, 15));
-        revealcomboBox.setSelectedItem("SIMPLE REVEAL");
+        revealcomboBox.setSelectedItem("SPOTLIGHT REVEAL");
         settingsPanel.add(revealcomboBox);
         
         add(menuArea, "menuArea");
@@ -241,18 +247,20 @@ public class PicturMenu extends JFrame implements ActionListener{
          * It calls setupMenu so we can achieve all the funtionalities we want the game menu to do
          */
     public PicturMenu(){
-        frame = new JFrame();
+        frame = this;
         setSize(1000,600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Picture-Wordle");
+        setTitle("Pictur");
+        BufferedImage iconImage = null;
+        try {
+            iconImage = ImageIO.read(new File("Pictur.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        setIconImage(iconImage);
         setupMenu();
         setLocationRelativeTo(null);
         setVisible(true);
         repaint();
-    }
-    
-    public static void main(String[] args){
-        PicturMenu menuPanel = new PicturMenu();
-       menuPanel.setVisible(true);  
     }
 }

@@ -8,6 +8,6 @@ public class Main {
 
     public static JFrame f;
     public static void main(String[] args) {
-        f = new Game(0, 2, 0, false);
+        f = new PicturMenu();
     }
 }

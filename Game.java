@@ -2,6 +2,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -55,6 +56,14 @@ public class Game extends JFrame {
         this.setLayout(new GridBagLayout());
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setUndecorated(true);
+        this.setTitle("Pictur");
+        BufferedImage iconImage = null;
+        try {
+            iconImage = ImageIO.read(new File("Pictur.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.setIconImage(iconImage);
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -62,8 +71,6 @@ public class Game extends JFrame {
 
         resetGame();
     }
-
-
 
     private void pickRandomImage() {
         updateImagePool();
@@ -158,7 +165,7 @@ public class Game extends JFrame {
                 break;
 
             case 1:
-                this.revealPanel = new RevealByColor(image, targetWord, REVEAL_SWAP_THRESHOLD, true, MAX_REVEALS, 20);
+                this.revealPanel = new ColorReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, true, MAX_REVEALS, 16);
                 break;
 
             case 2:

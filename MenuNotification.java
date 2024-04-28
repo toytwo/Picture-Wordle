@@ -104,9 +104,8 @@ public class MenuNotification extends FadingNotification {
         mainMenuButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fadeOut();
-                //TODO Send to main menu
-                System.exit(0);
+                new PicturMenu();
+                Game.game.dispose();
             }
         });
         westPanel.add(mainMenuButton,BorderLayout.CENTER);
