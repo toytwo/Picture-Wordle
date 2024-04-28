@@ -35,12 +35,12 @@ public class MenuNotification extends FadingNotification {
      * @param title The main text
      * @param subtitle The text under the main text
      */
-    public MenuNotification(String targetWord, int MAX_GUESSES, int GUESSES_USED) {
+    public MenuNotification(String targetWord, boolean wasCorrectGuess, int GUESSES_USED) {
         super(false,true);
         
         this.targetWord = targetWord;
         this.GUESSES_USED = GUESSES_USED;
-        this.wasCorrectGuess = MAX_GUESSES != GUESSES_USED;
+        this.wasCorrectGuess = wasCorrectGuess;
 
         // Must be called here and not in superclass in order to properly add elements (I don't know why)
         setupContentArea();
@@ -104,7 +104,7 @@ public class MenuNotification extends FadingNotification {
         mainMenuButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new PicturMenu();
+                new PicturMenu(Main.defaultGuessPanel,Main.defaultRevealPanel,Main.defaultDifficulty,Main.defaultDoModularDifficulty);
                 Game.game.dispose();
             }
         });
@@ -183,9 +183,12 @@ public class MenuNotification extends FadingNotification {
         this.messageTitle = pickPhrase(this.wasCorrectGuess);
 
         // Subtitle
-        this.messageSubtitle = "The Word Was '"+this.targetWord+"'.";
+        this.messageSubtitle = "The word was '"+this.targetWord+"'.";
         if(this.wasCorrectGuess){
-            this.messageSubtitle += " You Guessed It In "+this.GUESSES_USED+".";
+            this.messageSubtitle += " You guessed it in "+this.GUESSES_USED+".";
+        }
+        else{
+            this.messageSubtitle += " You didn't guess the word.";
         }
     }
 

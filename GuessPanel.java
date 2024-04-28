@@ -19,6 +19,7 @@ import java.awt.GridBagConstraints;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 
 /**
  * @author Jackson Alexman
@@ -105,6 +106,7 @@ public abstract class GuessPanel extends InteractivePanel{
         for(int i = 0; i < MAX_ACTIONS; i++){
             // Create the textfield
             guessFields[i] = new JComboBox<String>();
+            guessFields[i].setFont(new Font("Arial", Font.PLAIN, 20));
             guessFields[i].setVisible(false);
             guessFields[i].setEnabled(false);
 
@@ -244,17 +246,18 @@ public abstract class GuessPanel extends InteractivePanel{
             return false;
         }
         
-        boolean guessOutcome = this.targetWord.toLowerCase().equals(this.wordBank.getPart());
-        boolean doSwap = super.interactionPerformed();
+        boolean wasCorrectGuess = this.targetWord.toLowerCase().equals(this.wordBank.getPart());
 
         // Correct Guess or The user has run out of guesses
-        if(guessOutcome || interactionCount >= MAX_ACTIONS){
+        if(wasCorrectGuess || interactionCount+1 >= MAX_ACTIONS){ // Intentionally don't increment interactionCount to differentiate between winning on the last guess and losing on the last guess
             // Reset game
-            Game.game.updateImageDifficulty(interactionCount, MAX_ACTIONS);
+            Game.game.updateImageDifficulty(interactionCount, MAX_ACTIONS, wasCorrectGuess);
             this.setPanelEnabled(false);
-            (new MenuNotification(targetWord, MAX_ACTIONS, interactionCount)).setVisible(true);;
+            (new MenuNotification(targetWord, wasCorrectGuess, interactionCount+1)).setVisible(true); //Increment it here to display the correct number
             return false;
         }
+
+        boolean doSwap = super.interactionPerformed();
 
         // Potentially reveal a hint
         this.hintPanel.checkReveal(interactionCount);

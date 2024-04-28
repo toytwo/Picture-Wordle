@@ -210,7 +210,7 @@ public class Game extends JFrame {
      * @param guessesMade How many guesses it took to guess the image
      * @param MAX_GUESSES How many guesses were allowed in total
      */
-    public void updateImageDifficulty(int guessesMade, int MAX_GUESSES){
+    public void updateImageDifficulty(int guessesMade, int MAX_GUESSES, boolean wasCorrectGuess){
         if(!this.doModularDifficulty){
             return;
         }
