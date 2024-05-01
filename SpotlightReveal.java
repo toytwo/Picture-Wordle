@@ -59,6 +59,11 @@ public class SpotlightReveal extends RevealPanel {
                 
                 g.drawImage(image, 0, 0, this);
 
+                if(revealedAreas == null){
+                    // Don't hide the image
+                    return;
+                }
+
                 // Subtract revealed areas from the black screen
                 Area mask = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
                 for (int i = 0; i < interactionCount; i++) {
@@ -184,7 +189,7 @@ public class SpotlightReveal extends RevealPanel {
 
     @Override
     public void revealEntireImage() {
-        this.revealedAreas = new Area[interactionCount];
+        this.revealedAreas = null;
         repaint();
     }
 }
