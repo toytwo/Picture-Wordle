@@ -11,11 +11,13 @@ import javax.swing.JFrame;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/24/2024
+ * @version Updated: 4/30/2024
  */
 public class Game extends JFrame {
     private GuessPanel guessPanel;
     private RevealPanel revealPanel;
+    public SkipActionPanel skipActionPanel;
+    public ScorePanel scorePanel;
     public int difficulty;
     private int previousDifficulty;
     private String targetWord;
@@ -40,13 +42,30 @@ public class Game extends JFrame {
     public static final int REVEAL_SWAP_THRESHOLD = 2;
     public static final int GUESS_SWAP_THRESHOLD = 1;
     /**
+     * How many points are subtracted for each guess.
+     */
+    private static final int GUESS_COST = 20;
+    /**
+     * How Many points are subtracted for each reveal.
+     */
+    private static final int REVEAL_COST = 40;
+    /**
+     * How many points are subtracted for each manual hint reveal.
+     */
+    public static final int REVEAL_HINT_COST = 60;
+    /**
      * Images that haven't been selected for revealing during this session. Resets when all potential images have been selected.
      */
     private Map<String, File> unselectedImages;
-
+    /**
+     * The player's cumulative score. Updated after each image.
+     */
+    private int totalScore;
+    
     public Game(int guessPanelID, int revealPanelID, int difficulty, boolean doModularDifficulty) {
         this.difficulty = difficulty;
         this.previousDifficulty = -1; // Ensure it's different from difficulty
+        this.totalScore = 0;
         this.guessPanelID = guessPanelID;
         this.revealPanelID = revealPanelID;
         this.doModularDifficulty = doModularDifficulty;
@@ -116,6 +135,12 @@ public class Game extends JFrame {
         // No unsorted images to sort
         if(this.imagePool.length == 0){
             this.imagePool = this.images;
+            this.scorePanel = new ScorePanel(difficulty, this.totalScore);
+        }
+        // Use unsorted images
+        else{
+            int UNSORTED_IMAGE_DIFFICULTY = 3;
+            this.scorePanel = new ScorePanel(UNSORTED_IMAGE_DIFFICULTY, this.totalScore);
         }
 
         // Guessed all images in folder
@@ -128,13 +153,12 @@ public class Game extends JFrame {
     }
 
     public void resetGame() {
-        if(this.revealPanel != null || this.guessPanel != null){
-            this.guessPanel.setEnabled(false);
-            this.revealPanel.setEnabled(false);
+        if(this.revealPanel != null || this.guessPanel != null || this.scorePanel != null){
             this.remove(this.revealPanel);
             this.remove(this.guessPanel);
             this.guessPanel = null;
             this.revealPanel = null;
+            this.scorePanel = null;
             this.revalidate();
             this.repaint();
         }
@@ -151,58 +175,66 @@ public class Game extends JFrame {
 
         switch (guessPanelID) {
             case 0:
-                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES);
+                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES, GUESS_COST);
                 break;
 
             default:
-                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES);
+                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES, GUESS_COST);
                 break;
         }
 
         switch (revealPanelID) {
             case 0:
-                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS);
+                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS, REVEAL_COST);
                 break;
 
             case 1:
-                this.revealPanel = new ColorReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, true, MAX_REVEALS, 16);
+                this.revealPanel = new ColorReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, true, MAX_REVEALS, REVEAL_COST, 16);
                 break;
 
             case 2:
-                this.revealPanel = new SpotlightReveal(targetWord, REVEAL_SWAP_THRESHOLD, true, image, MAX_REVEALS);
+                this.revealPanel = new SpotlightReveal(targetWord, REVEAL_SWAP_THRESHOLD, true, image, MAX_REVEALS, REVEAL_COST);
                 break;
 
             default:
-                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS);
+                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS, REVEAL_COST);
                 break;
         }
 
-        this.guessPanel.setOtherPanel(revealPanel);
-        this.revealPanel.setOtherPanel(guessPanel);
+        this.skipActionPanel = new SkipActionPanel();
+
+        this.guessPanel.setOtherPanel(this.revealPanel);
+        this.revealPanel.setOtherPanel(this.guessPanel);
+
+        this.guessPanel.setScorePanel(this.scorePanel);
+        this.revealPanel.setScorePanel(this.scorePanel);
+
+        if(this.guessPanel.doSwapThreshold){
+            this.guessPanel.setSkipActionPanel(this.skipActionPanel);
+        }
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridy = 0; // Y position in the grid
         constraints.fill = GridBagConstraints.BOTH; // Fill horizontally and vertically
         constraints.weighty = 1; // All of the height
+        constraints.gridwidth = 1; // All of the width
 
         // Add the revealPanel
         constraints.gridx = 0; // X position in the grid
-        constraints.gridwidth = 1; // Number of cells wide
         constraints.weightx = this.revealPanel.getREVEAL_PANEL_SCREEN_PERCENTAGE(); // Fraction of the width
-        this.add(revealPanel,constraints);
+        this.add(this.revealPanel,constraints);
 
         // Add the guessPanel
         constraints.gridx = 1; // X position in the grid
-        constraints.gridwidth = 1; // Number of cells wide
         constraints.weightx = 1.0-this.revealPanel.getREVEAL_PANEL_SCREEN_PERCENTAGE(); // Fraction of the width
-        this.add(guessPanel,constraints);
+        this.add(this.guessPanel,constraints);
 
-        revealPanel.setupContentArea();
-        guessPanel.setupContentArea();
+        this.revealPanel.setupContentArea();
+        this.guessPanel.setupContentArea();
+        this.skipActionPanel.setupContentArea();
 
-        // revealPanel.setBorder(new LineBorder(Color.blue, 10));
-
-        guessPanel.setPanelEnabled(false);
+        this.guessPanel.setPanelEnabled(false);
+        this.skipActionPanel.setEnabledPanel(this.revealPanel);
     }
 
     /**
@@ -254,5 +286,20 @@ public class Game extends JFrame {
             System.err.println("Failed to rename the file.");
             System.exit(0);
         }
+    }
+
+    /**
+     * Updates totalScore based on the score recieved from an image
+     * @param imageScore The score the player earned from an image
+     */
+    public void updateTotalScore(){
+        this.totalScore += this.scorePanel.getImageScore();
+    }
+
+    /**
+     * @return The current total score
+     */
+    public int getTotalScore(){
+        return this.totalScore;
     }
 }

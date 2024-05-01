@@ -54,8 +54,8 @@ public class ColorReveal extends RevealPanel{
      * @param doSwapThreshold Whether or not the user swaps between guessing and revealing
      * @param NUMBER_OF_BUTTONS The number of reveal buttons
      */
-    public ColorReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int NUMBER_OF_BUTTONS){
-        super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, MAX_REVEALS, new GridBagLayout());
+    public ColorReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int revealCost, int NUMBER_OF_BUTTONS){
+        super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, MAX_REVEALS, revealCost, new GridBagLayout());
 
         this.NUMBER_OF_BUTTONS = NUMBER_OF_BUTTONS;
         this.activeHueRanges = new boolean[NUMBER_OF_BUTTONS];
@@ -186,7 +186,7 @@ public class ColorReveal extends RevealPanel{
                     // Update the image
                     reveal();
                     // An interaction has been performed
-                    interactionPerformed();
+                    interactionPerformed(true);
                     // Disable the button
                     colorSelectors[index].setEnabled(false);
                     // Change the color to indicate that it's disabled
@@ -290,5 +290,11 @@ public class ColorReveal extends RevealPanel{
                 selector.setEnabled(false);
             }
         }
+    }
+
+    @Override
+    public void revealEntireImage() {
+        this.image = imageCopy;
+        repaint();
     }
 }

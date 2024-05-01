@@ -3,7 +3,7 @@ import javax.swing.JPanel;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/24/2024
+ * @version Updated: 4/30/2024
  */
 public abstract class InteractivePanel extends JPanel {
     /**
@@ -38,22 +38,36 @@ public abstract class InteractivePanel extends JPanel {
      * The plural form of the panel's action. Used for displaying to the player.
      */
     protected String panelPluralAction;
+    /**
+     * How much score is lost for an interaction
+     */
+    protected int ACTION_COST;
+    /**
+     * The panel that contains the total and image score displays
+     */
+    protected ScorePanel scorePanel;
+    /**
+     * True if the panel is enabled. False otherwise.
+     */
+    protected boolean isEnabled;
 
-    public InteractivePanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS){
+    public InteractivePanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS, int ACTION_COST){
         this.SWAP_THRESHOLD = SWAP_THRESHOLD;
         this.targetWord = targetWord;
         this.doSwapThreshold = doSwapThreshold;
         this.MAX_ACTIONS = MAX_ACTIONS;
         this.interactionCount = 0;
+        this.ACTION_COST = ACTION_COST;
     }
 
-    public InteractivePanel(LayoutManager layout, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS){
+    public InteractivePanel(LayoutManager layout, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS, int ACTION_COST){
         super(layout);
         this.SWAP_THRESHOLD = SWAP_THRESHOLD;
         this.targetWord = targetWord;
         this.doSwapThreshold = doSwapThreshold;
         this.MAX_ACTIONS = MAX_ACTIONS;
         this.interactionCount = 0;
+        this.ACTION_COST = ACTION_COST;
     }
 
     /**
@@ -65,7 +79,7 @@ public abstract class InteractivePanel extends JPanel {
      * Sends a notification to the player based on the number of guesses or reveals remaining
      * @param isSwapping True if it is time to swap to the other panel. False otherwise.
      */
-    public void sendNotification(Boolean isSwapping) {
+    final public void sendNotification(Boolean isSwapping) {
         int ACTIONS_REMAINING;
         String ACTION_NAME;
         InteractivePanel PANEL;
@@ -98,18 +112,28 @@ public abstract class InteractivePanel extends JPanel {
      * Called when an action is performed in this panel.
      * @return If it's time to swap
      */
-    public boolean interactionPerformed(){
+    protected boolean interactionPerformed(boolean doSubtractPoints){
         this.interactionCount++; // Increment the number of actions performed
         Boolean doSwap = this.swap(); // Check if it's time to swap
-        this.sendNotification(doSwap); // Send a notif
+        this.sendNotification(doSwap); // Show the player the next action they should perform
+        if(doSubtractPoints){
+            this.subtractPointCost();
+        }
         return doSwap;
+    }
+
+    /**
+     * Subtract the ACTION_COST from the image score
+     */
+    final protected void subtractPointCost(){
+        this.scorePanel.updateImageScore(-ACTION_COST);
     }
 
     /**
      * Check if the actionCount meets the swapThreshold. If so, swap panels.
      * @return If enough actions have been performed and it is time to swap to the other panel
      */
-    final public boolean swap(){
+    final protected boolean swap(){
         if(!doSwapThreshold){
             return false;
         }
@@ -118,6 +142,7 @@ public abstract class InteractivePanel extends JPanel {
         if(interactionCount%SWAP_THRESHOLD == 0){
             this.setPanelEnabled(false);
             otherPanel.setPanelEnabled(true);
+            Game.game.skipActionPanel.setEnabledPanel(otherPanel);
             return true;
         }
         else{
@@ -136,15 +161,21 @@ public abstract class InteractivePanel extends JPanel {
     /**
      * Enable or disable certain interactable components in this panel
      */
-    public abstract void setPanelEnabled(boolean isEnabled);
+    public void setPanelEnabled(boolean isEnabled){
+        this.isEnabled = isEnabled;
+    }
 
     /**
      * Sets descriptors of the panel
      * @param panelName The name of the panel
      * @param panelPluralAction The plural form of the action of the panel
      */
-    public void setPanelDescriptors(String panelName, String panelPluralAction){
+    final public void setPanelDescriptors(String panelName, String panelPluralAction){
         this.panelName = panelName;
         this.panelPluralAction = panelPluralAction;
+    }
+
+    final public void setScorePanel(ScorePanel scorePanel){
+        this.scorePanel = scorePanel;
     }
 }

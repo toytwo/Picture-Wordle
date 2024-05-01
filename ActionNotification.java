@@ -12,6 +12,7 @@ import java.awt.BorderLayout;
 public class ActionNotification extends FadingNotification {
     private String title;
     private String subtitle;
+    private static ActionNotification[] displayedNotifications = new ActionNotification[5];
 
     /**
      * @param title The main text
@@ -23,6 +24,13 @@ public class ActionNotification extends FadingNotification {
         this.title = title;
         this.subtitle = subtitle;
 
+        for(int i = 0; i < displayedNotifications.length; i++){
+            if(displayedNotifications[i] != null){
+                displayedNotifications[i].dispose();
+            }
+        }
+        displayedNotifications[0] = this;
+
         // Must be called here and not in superclass in order to properly add elements (I don't know why)
         setupContentArea();
     }
@@ -30,9 +38,9 @@ public class ActionNotification extends FadingNotification {
     @Override
     public void setupContentArea() {
         // Customize the JDialog
-        setLayout(new BorderLayout()); // Layout
-        setBackground(Color.BLACK); // Background color
-        setSize(300, 150); // Size
+        this.setLayout(new BorderLayout()); // Layout
+        this.setBackground(Color.BLACK); // Background color
+        this.setSize(300, 150); // Size
 
         // Calculate the desired position
         int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
@@ -43,18 +51,18 @@ public class ActionNotification extends FadingNotification {
         int y = screenHeight / 3 - dialogHeight / 2; // 2/3 of height, centered vertically
 
         // Set the dialog's location
-        setLocation(x, y);
+        this.setLocation(x, y);
 
         // Add the title
-        JLabel titleLabel = new JLabel(title);
+        JLabel titleLabel = new JLabel(this.title);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.PLAIN, 40));
-        add(titleLabel, BorderLayout.CENTER);
+        this.add(titleLabel, BorderLayout.CENTER);
 
         // Add the subtitle
-        JLabel subtitleLabel = new JLabel(subtitle);
+        JLabel subtitleLabel = new JLabel(this.subtitle);
         subtitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         subtitleLabel.setFont(new Font("Arial", Font.PLAIN, 15));
-        add(subtitleLabel, BorderLayout.SOUTH);
+        this.add(subtitleLabel, BorderLayout.SOUTH);
     }
 }

@@ -15,14 +15,14 @@ public abstract class RevealPanel extends InteractivePanel{
      */
     protected double REVEAL_PANEL_SCREEN_PERCENTAGE = 5.0/6.0;
 
-    public RevealPanel(String targetWord, int swapThreshold, boolean doSwapThreshold, BufferedImage image, int MAX_REVEALS, LayoutManager layout){
-        super(layout, targetWord, swapThreshold, doSwapThreshold, MAX_REVEALS);
+    public RevealPanel(String targetWord, int swapThreshold, boolean doSwapThreshold, BufferedImage image, int MAX_REVEALS, int revealCost, LayoutManager layout){
+        super(layout, targetWord, swapThreshold, doSwapThreshold, MAX_REVEALS, revealCost);
         this.image = image;
         this.setPanelDescriptors("Reveal", "Reveals");
     }
 
-    public RevealPanel(String targetWord, int swapThreshold, boolean doSwapThreshold, BufferedImage image, int MAX_REVEALS){
-        super(targetWord, swapThreshold, doSwapThreshold, MAX_REVEALS);
+    public RevealPanel(String targetWord, int swapThreshold, boolean doSwapThreshold, BufferedImage image, int MAX_REVEALS, int revealCost){
+        super(targetWord, swapThreshold, doSwapThreshold, MAX_REVEALS, revealCost);
         this.image = image;
         this.setPanelDescriptors("Reveal", "Reveals");
     }
@@ -30,4 +30,6 @@ public abstract class RevealPanel extends InteractivePanel{
     public double getREVEAL_PANEL_SCREEN_PERCENTAGE(){
         return REVEAL_PANEL_SCREEN_PERCENTAGE;
     }
+
+    public abstract void revealEntireImage();
 }

@@ -22,10 +22,11 @@ public class HintLabel extends JLabel {
     private static final int OPACITY_DECREMENT = 2;
     public static final int TEXT_SIZE = 20;
     private static final Color BACKGROUND_COLOR = Color.BLACK;
+    private boolean isRevealed = false;
     
 
-    public HintLabel(int hintNumber, String hint) {
-        super("Hint "+hintNumber, SwingConstants.CENTER);
+    public HintLabel(String hint, int revealAt) {
+        super("Reveals Automatically After Guess "+revealAt, SwingConstants.CENTER);
         this.setFont(new Font("Arial", Font.PLAIN, TEXT_SIZE));
         this.setForeground(textColor);
         this.hint = hint;
@@ -52,6 +53,10 @@ public class HintLabel extends JLabel {
      * Slowly reveals the label by decreasing the opacity of the background
      */
     public void reveal(){
+        if(isRevealed){
+            return;
+        }
+
         Timer timer = new Timer(10, new ActionListener() {
             int textOpacityModifier = 2;
             @Override
@@ -81,5 +86,6 @@ public class HintLabel extends JLabel {
         });
 
         timer.start();
+        this.isRevealed = true;
     }
 }
