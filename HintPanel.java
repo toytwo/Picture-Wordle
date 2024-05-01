@@ -1,36 +1,5 @@
-<<<<<<< Updated upstream
 import java.awt.Dimension;
 import java.awt.Font;
-=======
-/**
- * The HintPanel class represents a panel that provides hints to aid users in guessing the target word in a game.
- * It dynamically reveals hints based on the user's progress in making guesses.
- * 
- * Instance Variables:
- * - targetWord: The word to be guessed.
- * - MAX_GUESSES: The maximum number of guesses allowed.
- * - hintsRevealed: The number of hints that have been revealed.
- * - hints: An array of String representing the hints to be given based on the targetWord.
- * - hintLabels: An array of JLabels that hold the hints.
- * - targetWordTypes: A static map mapping target words to their types (e.g., noun, verb, adjective).
- * - vowels: An array of strings representing vowels.
- * 
- * Methods:
- * - HintPanel(String targetWord, int MAX_GUESSES): Constructor to initialize a new HintPanel instance.
- * - checkReveal(int guessNumber): Method called every time a guess is made to potentially reveal a hint based on the guess number.
- * - reveal(): Method to reveal the next hint.
- * - generateHints(): Method to generate hints based on the targetWord.
- * - initializeTargetWordTypes(): Method to initialize the targetWordTypes map from external files.
- * 
- * Usage:
- * - Create a new instance of HintPanel with the target word and maximum guesses parameters.
- * - The panel dynamically reveals hints as the user makes guesses.
- * - Use the checkReveal(int guessNumber) method to check if a hint should be revealed based on the number of guesses made.
- * 
- * Author: Jackson Alexman
- * Version: Updated: 4/17/2024
- */
->>>>>>> Stashed changes
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.BufferedReader;
@@ -43,23 +12,27 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-<<<<<<< Updated upstream
 /**
  * @author Jackson Alexman
  * @version Updated: 4/24/2024
  */
-=======
->>>>>>> Stashed changes
 public class HintPanel extends JPanel {
-    /** The word to be guessed. */
+    /**
+     * The word to be guessed
+     */
     private String targetWord;
-    /** The max number of guesses. */
+    /**
+     * The max number of guesses
+     */
     private int MAX_GUESSES;
-    /** The number of hints that have been revealed. */
+    /**
+     * The number of hints that have been revealed
+     */
     private int hintsRevealed;
-    /** The hints to be given based on targetWord. */
+    /**
+     * The hints to be given based on targetWord
+     */
     private String[] hints;
-<<<<<<< Updated upstream
     /**
      * The JLabels that hold the hints
      */
@@ -73,20 +46,6 @@ public class HintPanel extends JPanel {
     /**
      * @param targetWord The word to be guessed
      * @param MAX_GUESSES The max number of guesses
-=======
-    /** The JLabels that hold the hints. */
-    private JLabel[] hintLabels;
-    /** The word types i.e. noun, verb, or adjective, for each possible targetWord. */
-    private static Map<String, String> targetWordTypes; // maps targetWord to word type
-    /** An array of strings representing vowels. */
-    private static final String[] vowels = new String[] { "a", "e", "i", "o", "u" };
-
-    /**
-     * Constructor to initialize a new HintPanel instance.
-     * 
-     * @param targetWord  The word to be guessed.
-     * @param MAX_GUESSES The max number of guesses.
->>>>>>> Stashed changes
      */
     public HintPanel(String targetWord, int MAX_GUESSES){
         // Use a GridBagLayout
@@ -136,7 +95,6 @@ public class HintPanel extends JPanel {
     }
 
     /**
-<<<<<<< Updated upstream
      * Called every time a guess is made. May or may not reveal a hint based on the guessNumber
      * @param guessNumber The number of guesses that have been made
      */
@@ -144,52 +102,27 @@ public class HintPanel extends JPanel {
         /**
          * What percentage of their guesses have they used
          */
-=======
-     * Method called every time a guess is made. May or may not reveal a hint based on the guessNumber.
-     * 
-     * @param guessNumber The number of guesses that have been made.
-     */
-    public void checkReveal(int guessNumber) {
->>>>>>> Stashed changes
         double percentGuessed = (double) guessNumber / MAX_GUESSES;
+        /**
+         * The percent needed to reveal the next hint.
+         */
         double revealThreshold = (double) hintsRevealed * 0.2 + 0.1;
 
-<<<<<<< Updated upstream
         if(percentGuessed > revealThreshold){
             // Reveal the hint
             hintLabels[hintsRevealed++].reveal();
             // Check if more than one hint needs to be revealed
             checkReveal(guessNumber);
-=======
-        if (percentGuessed > revealThreshold) {
-            reveal(); // Reveal the hint
-            checkReveal(guessNumber); // Check if more than one hint needs to be revealed
->>>>>>> Stashed changes
         }
     }
 
     /**
-<<<<<<< Updated upstream
      * Create the hints
      * @return An array of String hints in the order they should be revealed
-=======
-     * Reveal the next hint.
-     */
-    private void reveal() {
-        // Make the label visible and increment the number of hints
-        hintLabels[hintsRevealed].setText(hints[hintsRevealed++]);
-    }
-
-    /**
-     * Generate hints based on the targetWord.
-     * 
-     * @return An array of String hints in the order they should be revealed.
->>>>>>> Stashed changes
      */
     private String[] generateHints(){
         String[] hintsArray = new String[4];
 
-        // Determine if the first letter is a vowel or consonant
         String firstLetterType = null;
         for (String vowel : vowels) {
             if(this.targetWord.substring(0, 1).equals(vowel)){
@@ -201,7 +134,6 @@ public class HintPanel extends JPanel {
         }
         hintsArray[0] = "The first letter of this word is a "+firstLetterType+".";
 
-        // Determine the article and word type
         String article = null;
         System.out.println(this.targetWord);
         String wordType = targetWordTypes.get(this.targetWord);
@@ -221,14 +153,8 @@ public class HintPanel extends JPanel {
     }
 
     /**
-<<<<<<< Updated upstream
      * Gets the all the possible target words and their types and creates a dictionary to access the types
      * @return The dictionary containing the target words as the keys and types as the values
-=======
-     * Initialize the targetWordTypes map from external files.
-     * 
-     * @return The dictionary containing the target words as the keys and types as the values.
->>>>>>> Stashed changes
      */
     private Map<String,String> initializeTargetWordTypes(){
         Map<String,String> dict = new HashMap<String,String>();
