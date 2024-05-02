@@ -20,9 +20,9 @@ public abstract class FadingNotification extends JDialog {
      * True if fadeIn doesn't call fade out. False otherwise. 
      */
     private boolean doManualFadeOut;
-    protected int FADE_OUT_DELAY_MILLISECONDS = 300;
-    protected int FADE_IN_DURATION_MILLISECONDS = 50;
-    protected int FADE_OUT_DURATION_MILLISECONDS = 100;
+    protected int FADE_OUT_DELAY_MILLISECONDS = 3000;
+    protected int FADE_IN_DURATION_MILLISECONDS = 300;
+    protected int FADE_OUT_DURATION_MILLISECONDS = 300;
 
     public FadingNotification(boolean doFadeOutDelay, boolean doManualFadeOut) {
         super(Game.game, ModalityType.MODELESS);
