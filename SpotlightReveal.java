@@ -16,18 +16,13 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 /**
- * @version Integrated into program by Jackson on 4/24/2024
+ * @version Integrated into program by Jackson on 4/24/2024. Updated: 4/30/2024 (Jackson)
  */
 public class SpotlightReveal extends RevealPanel {
-    private BufferedImage image;
     private int radius;
     private int x, y;
     private Ellipse2D oval;
     private Area[] revealedAreas;
-    /**
-     * Whether or not this panel is enabled
-     */
-    private boolean panelEnabled;
     /**
      * Whether or not the cursor is on the panel
      */
@@ -40,18 +35,27 @@ public class SpotlightReveal extends RevealPanel {
      * @param g
      * @param MAX_REVEALS The maximum number of times that the player can reveal part of the image
      */
-    public SpotlightReveal(String n, int i, boolean b, BufferedImage g, int MAX_REVEALS) {
-        super(n,i,b,g, MAX_REVEALS,  new GridBagLayout());
-        image = g;
+    public SpotlightReveal(String n, int i, boolean b, BufferedImage g, int MAX_REVEALS, int REVEAL_COST) {
+        super(n,i,b,g, MAX_REVEALS, REVEAL_COST, new GridBagLayout());
         radius = 70;
         x = -1;
         y = -1;
-        revealedAreas = new Area[MAX_REVEALS];
-        this.panelEnabled = true;
+        revealedAreas = new Area[MAX_ACTIONS];
+        this.isEnabled = true;
         this.focused = false;
+
+        setupContentArea();
+    }   
+
+    @Override
+    public void resetInstanceVariables() {
+        revealedAreas = new Area[MAX_ACTIONS];
     }
 
-    
+    @Override
+    public void resetContentArea() {
+        repaint();
+    }
 
     @Override
     public void setupContentArea() {
@@ -63,9 +67,18 @@ public class SpotlightReveal extends RevealPanel {
                 
                 g.drawImage(image, 0, 0, this);
 
+                if(revealedAreas == null){
+                    // Don't hide the image
+                    return;
+                }
+
                 // Subtract revealed areas from the black screen
                 Area mask = new Area(new Rectangle(0, 0, getWidth(), getHeight()));
                 for (int i = 0; i < interactionCount; i++) {
+                    if(revealedAreas[i] == null){
+                        continue;
+                    }
+
                     mask.subtract(revealedAreas[i]);
                 }
 
@@ -80,7 +93,7 @@ public class SpotlightReveal extends RevealPanel {
                 g.drawImage(maskImage, 0, 0, this);
 
                 // Draw the oval representing the spotlight
-                if (oval != null && panelEnabled && focused) {
+                if (oval != null && isEnabled && focused) {
                     Graphics2D g2d2 = (Graphics2D) g.create();
                     g2d2.setColor(Color.WHITE);// Color of Oval
                     g2d2.draw(oval);
@@ -98,9 +111,9 @@ public class SpotlightReveal extends RevealPanel {
 
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    if (oval != null && panelEnabled && focused) {
+                    if (oval != null && isEnabled && focused) {
                         revealedAreas[interactionCount] = new Area(oval); // Add the clicked oval to the list of revealed areas
-                        interactionPerformed();
+                        interactionPerformed(true);
                         repaint();
                     }
                 }
@@ -113,7 +126,7 @@ public class SpotlightReveal extends RevealPanel {
 
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    if(panelEnabled){
+                    if(isEnabled){
                         // Draw the reveal oval if the mouse is in the panel
                         focused = true;
                         repaint();
@@ -122,7 +135,7 @@ public class SpotlightReveal extends RevealPanel {
 
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    if(panelEnabled){
+                    if(isEnabled){
                         // Dont draw the reveal oval if the mouse isn't in the panel
                         focused = false;
                         repaint();
@@ -137,7 +150,7 @@ public class SpotlightReveal extends RevealPanel {
                 public void mouseDragged(MouseEvent e) {/* Do Nothing */}
 
                 public void mouseMoved(MouseEvent e) {
-                    if(panelEnabled && focused){
+                    if(isEnabled && focused){
                         x = e.getX();
                         y = e.getY();
                         oval = new Ellipse2D.Double(x - radius, y - radius, 2 * radius, 2 * radius);
@@ -183,7 +196,8 @@ public class SpotlightReveal extends RevealPanel {
     }
 
     @Override
-    public void setPanelEnabled(boolean isEnabled) {
-        this.panelEnabled = isEnabled;
+    public void revealEntireImage() {
+        this.revealedAreas = null;
+        repaint();
     }
 }

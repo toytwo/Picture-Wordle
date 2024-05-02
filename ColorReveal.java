@@ -54,14 +54,47 @@ public class ColorReveal extends RevealPanel{
      * @param doSwapThreshold Whether or not the user swaps between guessing and revealing
      * @param NUMBER_OF_BUTTONS The number of reveal buttons
      */
-    public ColorReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int NUMBER_OF_BUTTONS){
-        super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, MAX_REVEALS, new GridBagLayout());
+    public ColorReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int revealCost, int NUMBER_OF_BUTTONS){
+        super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, MAX_REVEALS, revealCost, new GridBagLayout());
 
         this.NUMBER_OF_BUTTONS = NUMBER_OF_BUTTONS;
         this.activeHueRanges = new boolean[NUMBER_OF_BUTTONS];
         this.hueRanges = new float[NUMBER_OF_BUTTONS + 1];
         this.REVEAL_PANEL_SCREEN_PERCENTAGE = 3.0 / 4.0;
         this.imageCopy = image;
+
+        setupContentArea();
+    }
+
+    @Override
+    public void resetInstanceVariables() {
+        this.imageCopy = resizeImage(image);
+        this.activeHueRanges = new boolean[NUMBER_OF_BUTTONS];
+    }
+
+    @Override
+    public void resetContentArea() {
+        // Cover the image
+        reveal();
+
+        // Reset the colorSelector buttons
+        for(int i=0; i<NUMBER_OF_BUTTONS; i++){
+            colorSelectors[i].setEnabled(true);
+
+            // Make the first and last button black and white
+            if(i == 0){
+                colorSelectors[i].setBackground(Color.WHITE);
+            }
+            else if(i == colorSelectors.length-1){
+                colorSelectors[i].setBackground(Color.BLACK);
+            }
+            // Make all the other buttons colorful
+            else{
+                colorSelectors[i].setBackground(Color.getHSBColor(hueRanges[i], 1.0f, 1.0f));
+            }
+        }
+
+        repaint();
     }
     
     @Override
@@ -112,12 +145,7 @@ public class ColorReveal extends RevealPanel{
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                // Resize the image to fit the panel
-                BufferedImage resizedImage = new BufferedImage(getHeight(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-                Graphics2D graphics2D = resizedImage.createGraphics();
-                graphics2D.drawImage(image, 0, 0, getHeight(), getHeight(), null);
-                graphics2D.dispose();
-                imageCopy = resizedImage;
+                imageCopy = resizeImage(image);
 
                 // Cover the image
                 reveal();
@@ -186,7 +214,7 @@ public class ColorReveal extends RevealPanel{
                     // Update the image
                     reveal();
                     // An interaction has been performed
-                    interactionPerformed();
+                    interactionPerformed(true);
                     // Disable the button
                     colorSelectors[index].setEnabled(false);
                     // Change the color to indicate that it's disabled
@@ -275,6 +303,19 @@ public class ColorReveal extends RevealPanel{
         return copy;
     }
 
+    /**
+     * Resize the image to fit the panel
+     * @param imageToResize The image to be resized
+     * @return The resized image
+     */
+    private BufferedImage resizeImage(BufferedImage imageToResize){
+        BufferedImage resizedImage = new BufferedImage(getHeight(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = resizedImage.createGraphics();
+        graphics2D.drawImage(image, 0, 0, getHeight(), getHeight(), null);
+        graphics2D.dispose();
+        return resizedImage;
+    }
+
     @Override
     public void setPanelEnabled(boolean isEnabled) {
         // Enable the panel
@@ -290,5 +331,11 @@ public class ColorReveal extends RevealPanel{
                 selector.setEnabled(false);
             }
         }
+    }
+
+    @Override
+    public void revealEntireImage() {
+        this.image = imageCopy;
+        repaint();
     }
 }

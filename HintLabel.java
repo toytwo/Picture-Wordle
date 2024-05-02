@@ -22,13 +22,30 @@ public class HintLabel extends JLabel {
     private static final int OPACITY_DECREMENT = 2;
     public static final int TEXT_SIZE = 20;
     private static final Color BACKGROUND_COLOR = Color.BLACK;
-    
+    private boolean isRevealed = false;
+    /**
+     * True if the label is being reset. False otherwise. Used to cancel any animations occuring when the reset is intitiated.
+     */
+    private Timer revealTimer;
 
-    public HintLabel(int hintNumber, String hint) {
-        super("Hint "+hintNumber, SwingConstants.CENTER);
+    public HintLabel(String hint, int revealAt) {
+        super("Reveals Automatically After Guess "+revealAt, SwingConstants.CENTER);
         this.setFont(new Font("Arial", Font.PLAIN, TEXT_SIZE));
         this.setForeground(textColor);
         this.hint = hint;
+    }
+
+    public void resetLabel(String hint, int revealAt){
+        this.revealTimer.stop();
+
+        this.setText("Reveals Automatically After Guess "+revealAt);
+        this.setHorizontalAlignment(SwingConstants.CENTER);
+        this.textColor = Color.WHITE;
+        this.setForeground(textColor);
+        this.isRevealed = false;
+        this.hint = hint;
+        this.backgroundOpacity = 255;
+        this.textOpacity = 255;
     }
 
     @Override
@@ -52,7 +69,11 @@ public class HintLabel extends JLabel {
      * Slowly reveals the label by decreasing the opacity of the background
      */
     public void reveal(){
-        Timer timer = new Timer(10, new ActionListener() {
+        if(isRevealed){
+            return;
+        }
+
+        revealTimer = new Timer(10, new ActionListener() {
             int textOpacityModifier = 2;
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -80,6 +101,7 @@ public class HintLabel extends JLabel {
             };
         });
 
-        timer.start();
+        revealTimer.start();
+        this.isRevealed = true;
     }
 }

@@ -1,7 +1,11 @@
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,12 +15,12 @@ import javax.swing.JFrame;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/24/2024
+ * @version Updated: 4/30/2024
  */
 public class Game extends JFrame {
     private GuessPanel guessPanel;
     private RevealPanel revealPanel;
-    public int difficulty;
+    private int difficulty;
     private int previousDifficulty;
     private String targetWord;
     private BufferedImage image;
@@ -32,24 +36,51 @@ public class Game extends JFrame {
     private File[] images;
     private int guessPanelID;
     private int revealPanelID;
-    public static Game game;
+    private static Game game;
     private Random random;
     private boolean doModularDifficulty;
     private static final int MAX_GUESSES = 5;
     private static final int MAX_REVEALS = 10;
-    public static final int REVEAL_SWAP_THRESHOLD = 2;
-    public static final int GUESS_SWAP_THRESHOLD = 1;
+    private static final int REVEAL_SWAP_THRESHOLD = 2;
+    private static final int GUESS_SWAP_THRESHOLD = 1;
+    /**
+     * How many points are subtracted for each guess.
+     */
+    private static final int GUESS_COST = 20;
+    /**
+     * How Many points are subtracted for each reveal.
+     */
+    private static final int REVEAL_COST = 40;
+    /**
+     * How many points are subtracted for each manual hint reveal.
+     */
+    private static final int REVEAL_HINT_COST = 60;
     /**
      * Images that haven't been selected for revealing during this session. Resets when all potential images have been selected.
      */
     private Map<String, File> unselectedImages;
-
-    public Game(int guessPanelID, int revealPanelID, int difficulty, boolean doModularDifficulty) {
+    /**
+     * The player's cumulative score. Updated after each image.
+     */
+    private int totalScore;
+    /**
+     * The max number of images (rounds) per game. -1 if there is no limit.
+     */
+    private int imageLimit;
+    /**
+     * How many images (rounds) have been started.
+     */
+    private int imageCount;
+    
+    public Game(int guessPanelID, int revealPanelID, int difficulty, boolean doModularDifficulty, int imageLimit) {
         this.difficulty = difficulty;
         this.previousDifficulty = -1; // Ensure it's different from difficulty
+        this.totalScore = 0;
+        this.imageCount = 0;
         this.guessPanelID = guessPanelID;
         this.revealPanelID = revealPanelID;
         this.doModularDifficulty = doModularDifficulty;
+        this.imageLimit = imageLimit;
         this.unselectedImages = new HashMap<String,File>();
         this.random = new Random();
 
@@ -128,16 +159,7 @@ public class Game extends JFrame {
     }
 
     public void resetGame() {
-        if(this.revealPanel != null || this.guessPanel != null){
-            this.guessPanel.setEnabled(false);
-            this.revealPanel.setEnabled(false);
-            this.remove(this.revealPanel);
-            this.remove(this.guessPanel);
-            this.guessPanel = null;
-            this.revealPanel = null;
-            this.revalidate();
-            this.repaint();
-        }
+        this.imageCount++;
 
         pickRandomImage();
 
@@ -147,62 +169,23 @@ public class Game extends JFrame {
         catch(Exception e){
             this.targetWord = imageFileName.substring(0, imageFileName.indexOf('.'));
         }
-        
 
-        switch (guessPanelID) {
-            case 0:
-                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES);
-                break;
+        // For cheating/debugging
+        System.out.println(this.targetWord);
 
-            default:
-                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES);
-                break;
+        try{
+            revealPanel.resetPanel(this.targetWord, this.image);
+            guessPanel.resetPanel(this.targetWord);
+        }
+        catch(Exception e){
+            if(imageCount!=1){
+                System.err.println(e);
+                System.exit(0);
+            }
+            initializePanels();
         }
 
-        switch (revealPanelID) {
-            case 0:
-                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS);
-                break;
-
-            case 1:
-                this.revealPanel = new ColorReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, true, MAX_REVEALS, 16);
-                break;
-
-            case 2:
-                this.revealPanel = new SpotlightReveal(targetWord, REVEAL_SWAP_THRESHOLD, true, image, MAX_REVEALS);
-                break;
-
-            default:
-                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS);
-                break;
-        }
-
-        this.guessPanel.setOtherPanel(revealPanel);
-        this.revealPanel.setOtherPanel(guessPanel);
-
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridy = 0; // Y position in the grid
-        constraints.fill = GridBagConstraints.BOTH; // Fill horizontally and vertically
-        constraints.weighty = 1; // All of the height
-
-        // Add the revealPanel
-        constraints.gridx = 0; // X position in the grid
-        constraints.gridwidth = 1; // Number of cells wide
-        constraints.weightx = this.revealPanel.getREVEAL_PANEL_SCREEN_PERCENTAGE(); // Fraction of the width
-        this.add(revealPanel,constraints);
-
-        // Add the guessPanel
-        constraints.gridx = 1; // X position in the grid
-        constraints.gridwidth = 1; // Number of cells wide
-        constraints.weightx = 1.0-this.revealPanel.getREVEAL_PANEL_SCREEN_PERCENTAGE(); // Fraction of the width
-        this.add(guessPanel,constraints);
-
-        revealPanel.setupContentArea();
-        guessPanel.setupContentArea();
-
-        // revealPanel.setBorder(new LineBorder(Color.blue, 10));
-
-        guessPanel.setPanelEnabled(false);
+        this.guessPanel.setPanelEnabled(false);
     }
 
     /**
@@ -234,18 +217,22 @@ public class Game extends JFrame {
             newFileName = imageFileName.substring(0,imageFileName.indexOf(' '))+" "+newAverageGuessPercentage+".jpg";
         }
 
+        double totalAverageDifficulty = calculateAverageDifficulty(this.targetWord, newAverageGuessPercentage);
+
         String difficulty;
-        if(newAverageGuessPercentage > 0.8){
+        if(newAverageGuessPercentage > 0.7 * totalAverageDifficulty){
             difficulty = "Hard";
         }
-        else if(newAverageGuessPercentage > 0.4){
+        else if(newAverageGuessPercentage > 0.3 * totalAverageDifficulty){
             difficulty = "Medium";
         }
         else{
             difficulty = "Easy";
         }
         String newFilePath = "Images"+File.separator+difficulty+File.separator;
+        System.out.println(totalAverageDifficulty+" "+0.7 * totalAverageDifficulty+" "+0.3 * totalAverageDifficulty);
 
+        System.exit(0);
         // Rename the file
         File newImageFile = new File(newFilePath+newFileName);
         if (imageFile.renameTo(newImageFile)) {
@@ -254,5 +241,166 @@ public class Game extends JFrame {
             System.err.println("Failed to rename the file.");
             System.exit(0);
         }
+    }
+
+    private void initializePanels(){
+        switch (guessPanelID) {
+            case 0:
+                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES, GUESS_COST);
+                break;
+
+            default:
+                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES, GUESS_COST);
+                break;
+        }
+
+        switch (revealPanelID) {
+            case 0:
+                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS, REVEAL_COST);
+                break;
+
+            case 1:
+                this.revealPanel = new ColorReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, true, MAX_REVEALS, REVEAL_COST, 16);
+                break;
+
+            case 2:
+                this.revealPanel = new SpotlightReveal(targetWord, REVEAL_SWAP_THRESHOLD, true, image, MAX_REVEALS, REVEAL_COST);
+                break;
+
+            default:
+                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS, REVEAL_COST);
+                break;
+        }
+
+        this.revealPanel.setOtherPanel(this.guessPanel);
+        this.guessPanel.setOtherPanel(this.revealPanel);
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridy = 0; // Y position in the grid
+        constraints.fill = GridBagConstraints.BOTH; // Fill horizontally and vertically
+        constraints.weighty = 1; // All of the height
+        constraints.gridwidth = 1; // All of the width
+
+        // Add the revealPanel
+        constraints.gridx = 0; // X position in the grid
+        constraints.weightx = this.revealPanel.getREVEAL_PANEL_SCREEN_PERCENTAGE(); // Fraction of the width
+        this.add(this.revealPanel,constraints);
+
+        // Add the guessPanel
+        constraints.gridx = 1; // X position in the grid
+        constraints.weightx = 1.0-this.revealPanel.getREVEAL_PANEL_SCREEN_PERCENTAGE(); // Fraction of the width
+        this.add(this.guessPanel,constraints);
+    }
+
+    /**
+     * Updates the difficulty database then finds the average.
+     * @param targetWord The name of the image to update the difficulty of within the database
+     * @param targetWordDifficulty The new difficulty of the image.
+     * @return The average of every stored image difficulty
+     */
+    private double calculateAverageDifficulty(String targetWord, double targetWordDifficulty){
+        targetWord = targetWord.toLowerCase();
+        double difficultySum = 0;
+        int difficultyCount = 0;
+        boolean isTargetWordPresent = false;
+        String fileName = "ImageDifficulties.txt";
+        File file = new File(fileName);
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("temp.txt"));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                difficultyCount++;
+                int separatorIndex = line.indexOf(" ");
+                String word = line.substring(0, separatorIndex);
+                double difficulty = Double.parseDouble(line.substring(separatorIndex + 1));
+
+                if (word.equals(targetWord)) {
+                    isTargetWordPresent = true;
+                    difficulty = targetWordDifficulty;
+                    line = targetWord + " " + targetWordDifficulty;
+                }
+
+                writer.write(line + System.lineSeparator());
+                difficultySum += difficulty;
+            }
+
+            if(!isTargetWordPresent){
+                line = targetWord + " " + targetWordDifficulty;
+                writer.write(line + System.lineSeparator());
+            }
+
+            reader.close();
+            writer.close();
+
+            if (!file.delete()) {
+                System.out.println("Could not delete file");
+                return -1;
+            }
+            
+            File tempFile = new File("temp.txt");
+            if (!tempFile.renameTo(file)) {
+                System.out.println("Could not rename file");
+                return -1;
+            }
+
+        } catch (IOException e) {
+            System.err.println("Error reading or writing file: " + e.getMessage());
+            return -1;
+        }
+
+        return difficultySum / difficultyCount;
+    }
+
+    /**
+     * Updates totalScore based on the score recieved from an image
+     * @param imageScore The score the player earned from an image
+     */
+    public void updateTotalScore(){
+        this.totalScore += this.guessPanel.scorePanel.getImageScore();
+    }
+
+    public int getTotalScore(){
+        return this.totalScore;
+    }
+
+    public int getImageLimit(){
+        return this.imageLimit;
+    }
+
+    public SkipActionPanel getSkipActionPanel(){
+        return this.guessPanel.skipActionPanel;
+    }
+
+    public static Game getCurrentGame(){
+        return game;
+    }
+
+    public int getDifficulty(){
+        return this.difficulty;
+    }
+
+    public ScorePanel getScorePanel(){
+        return this.guessPanel.scorePanel;
+    }
+
+    public static int getREVEAL_HINT_COST(){
+        return REVEAL_HINT_COST;
+    }
+
+    /**
+     * Sets the difficulty if it is valid
+     * @param newDifficulty Must be between 0 and 2 inclusive
+     * @return If the difficulty was set to newDifficulty 
+     */
+    public boolean setDifficulty(int newDifficulty){
+        if(newDifficulty < 0 || newDifficulty > 2){
+            return false;
+        }
+        
+        this.difficulty = newDifficulty;
+        return true;
     }
 }

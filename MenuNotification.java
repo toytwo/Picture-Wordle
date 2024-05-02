@@ -1,4 +1,4 @@
-import java.awt.BorderLayout;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -6,8 +6,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
-
 import javax.swing.DefaultListCellRenderer;
+import java.awt.BorderLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -15,6 +15,10 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+/**
+ * @author Jackson Alexman
+ * @version Updated: 4/30/2024
+ */
 public class MenuNotification extends FadingNotification {
     /**
      * The word the user was trying to guess
@@ -69,6 +73,8 @@ public class MenuNotification extends FadingNotification {
 
         this.add(headerPanel,BorderLayout.NORTH);
         this.add(bodyPanel,BorderLayout.CENTER);
+        this.add(new JPanel(), BorderLayout.EAST);
+        this.add(new JPanel(), BorderLayout.WEST);
     }
 
     /**
@@ -105,7 +111,7 @@ public class MenuNotification extends FadingNotification {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new PicturMenu(Main.defaultGuessPanel,Main.defaultRevealPanel,Main.defaultDifficulty,Main.defaultDoModularDifficulty);
-                Game.game.dispose();
+                Game.getCurrentGame().dispose();
             }
         });
         westPanel.add(mainMenuButton,BorderLayout.CENTER);
@@ -125,7 +131,7 @@ public class MenuNotification extends FadingNotification {
             @Override
             public void actionPerformed(ActionEvent e) {
                 fadeOut();
-                Game.game.resetGame();
+                Game.getCurrentGame().resetGame();
             }
             
         });
@@ -156,11 +162,11 @@ public class MenuNotification extends FadingNotification {
                 return label;
             }
         });
-        difficultySelector.setSelectedIndex(Game.game.difficulty);
+        difficultySelector.setSelectedIndex(Game.getCurrentGame().getDifficulty());
         difficultySelector.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Game.game.difficulty = difficultySelector.getSelectedIndex();
+                Game.getCurrentGame().setDifficulty(difficultySelector.getSelectedIndex());
             }
         });
         eastPanel.add(difficultySelector,BorderLayout.CENTER);
@@ -170,6 +176,15 @@ public class MenuNotification extends FadingNotification {
         // North
         JPanel northPanel = new JPanel();
         bodyPanel.add(northPanel, BorderLayout.NORTH);
+
+        // South
+        JPanel southPanel = new JPanel();
+        Game.getCurrentGame().updateTotalScore();
+        JLabel scoreLabel = new JLabel(String.valueOf("Score: "+Game.getCurrentGame().getTotalScore()));
+        scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        scoreLabel.setFont(new Font("Lexend", Font.BOLD, 20));
+        southPanel.add(scoreLabel);
+        bodyPanel.add(southPanel, BorderLayout.SOUTH);
 
         return bodyPanel;
     }
