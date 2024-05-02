@@ -104,34 +104,33 @@ public class PicturMenu extends JFrame implements ActionListener{
          menuArea = new JPanel(){
              //Draws the title of the game and it's credits
             @Override
-        protected void paintComponent(Graphics g){
-            super.paintComponent(g);
-            ImageIcon image = new ImageIcon("background.png");
-            g.drawImage( image.getImage(),0,0, getWidth(), getHeight(), this);
-            Graphics2D g2d = (Graphics2D) g;
+            protected void paintComponent(Graphics g){
+                super.paintComponent(g);
+                ImageIcon image = new ImageIcon("background.png");
+                g.drawImage(image.getImage(), 0, 0, getWidth(), getHeight(), this);
+                Graphics2D g2d = (Graphics2D) g;
+                
+                // Draw the title text with white color and black border
                 String text = "PICTUR";
                 Font font = new Font("sanSerif", Font.BOLD, 100);
                 g2d.setFont(font);
-                Stroke stroke = new BasicStroke(3.0f);
+                Stroke stroke = new BasicStroke(10.0f);
                 g2d.setStroke(stroke);
-                g2d.setColor(Color.BLACK);
+                g2d.setColor(Color.WHITE);
                 g2d.drawString(text, 335, 150);
-                g2d.setStroke(new BasicStroke());
-                g2d.setColor(Color.GREEN);
-                g2d.drawString(text, 335, 150 + 10);
+
                 
-                Graphics2D g2 = (Graphics2D) g;
+                // Draw the credits text with white color and black border
                 String credits = "Credits: Jackson,Damon, Babucarr, Gishe";
                 Font cred = new Font("sanSerif", Font.BOLD, 20);
-                g2.setFont(cred);
-                Stroke stro = new BasicStroke(3.0f);
-                g2.setStroke(stro);
-                g2.setColor(Color.BLACK);
-                g2.drawString(credits, 05, 550);
-                g2.setStroke(new BasicStroke());
-                g2.setColor(Color.YELLOW);
-                g2.drawString(credits, 05, 550 + 2);
-                
+                g2d.setFont(cred);
+                stroke = new BasicStroke(3.0f);
+                g2d.setStroke(stroke);
+                g2d.setColor(Color.BLACK);
+                g2d.drawString(credits, 05, 550);
+                g2d.setStroke(new BasicStroke());
+                g2d.setColor(Color.WHITE);
+                g2d.drawString(credits, 05, 550 + 2);
           }};
            menuArea.setPreferredSize(frame.getSize()); 
            menuArea.setLayout(null);
