@@ -29,7 +29,7 @@ public class HintLabel extends JLabel {
     private Timer revealTimer;
 
     public HintLabel(String hint, int revealAt) {
-        super("Reveals Automatically After Guess "+revealAt, SwingConstants.CENTER);
+        super("Reveals After Guess "+revealAt, SwingConstants.CENTER);
         this.setFont(new Font("Arial", Font.PLAIN, TEXT_SIZE));
         this.setForeground(textColor);
         this.hint = hint;
@@ -38,7 +38,7 @@ public class HintLabel extends JLabel {
     public void resetLabel(String hint, int revealAt){
         this.revealTimer.stop();
 
-        this.setText("Reveals Automatically After Guess "+revealAt);
+        this.setText("Reveals After Guess "+revealAt);
         this.setHorizontalAlignment(SwingConstants.CENTER);
         this.textColor = Color.WHITE;
         this.setForeground(textColor);

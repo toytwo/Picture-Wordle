@@ -47,7 +47,7 @@ public class ActionNotification extends FadingNotification {
         int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
         int dialogWidth = getWidth();
         int dialogHeight = getHeight();
-        int x = (screenWidth - dialogWidth) * 13/14; // Center horizontally
+        int x = (screenWidth - dialogWidth) * 12/14; // Center horizontally
         int y = screenHeight / 3 - dialogHeight / 2; // 2/3 of height, centered vertically
 
         // Set the dialog's location
