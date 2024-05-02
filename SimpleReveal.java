@@ -3,11 +3,11 @@ import java.awt.image.BufferedImage;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/24/2024
+ * @version Updated: 5/2/2024
  */
 public class SimpleReveal extends RevealPanel {
-    public SimpleReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int REVEAL_COST){
-        super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, MAX_REVEALS, REVEAL_COST);
+    public SimpleReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int REVEAL_COST, boolean pointsEnabled){
+        super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, MAX_REVEALS, REVEAL_COST, pointsEnabled);
 
         setupContentArea();
     }

@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/24/2024
+ * @version Updated: 5/2/2024
  */
 public class ColorReveal extends RevealPanel{
 
@@ -54,8 +54,8 @@ public class ColorReveal extends RevealPanel{
      * @param doSwapThreshold Whether or not the user swaps between guessing and revealing
      * @param NUMBER_OF_BUTTONS The number of reveal buttons
      */
-    public ColorReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int revealCost, int NUMBER_OF_BUTTONS){
-        super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, MAX_REVEALS, revealCost, new GridBagLayout());
+    public ColorReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int revealCost, int NUMBER_OF_BUTTONS, boolean pointsEnabled){
+        super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, MAX_REVEALS, revealCost, new GridBagLayout(), pointsEnabled);
 
         this.NUMBER_OF_BUTTONS = NUMBER_OF_BUTTONS;
         this.activeHueRanges = new boolean[NUMBER_OF_BUTTONS];
@@ -246,24 +246,17 @@ public class ColorReveal extends RevealPanel{
                 float hue = hsb[0];
                 // Check if the color is in any of the active ranges
                 boolean isInActiveRanges = false;
-                int index = -1; // We increment at the start of the for loop so the first index is actually 0
-                for(boolean activeRange : activeHueRanges){
-                    index++;
+                for(int i = 0; i < activeHueRanges.length; i++){
 
                     // Skip inactive ranges
-                    if(!activeRange){
+                    if(!activeHueRanges[i]){
                         continue;
                     }
-
-                    // Is it in the range 
-                    isInActiveRanges = hue >= hueRanges[index] && hue < hueRanges[index + 1];
                     
                     // If it's in one of the ranges, no need to check the others
-                    if (isInActiveRanges) {
+                    if (isInActiveRanges = hue >= hueRanges[i] && hue < hueRanges[i + 1]) {
                         break;
 
-                    } else {
-                        continue;
                     }
                 }
 
@@ -272,7 +265,7 @@ public class ColorReveal extends RevealPanel{
                     image.setRGB(x, y, new Color(pixelColor.getRed(), pixelColor.getGreen(), pixelColor.getBlue(), 255).getRGB());
 
                 } 
-                // Otherwise, set the pixel to black
+                // Otherwise, set the pixel to translucent
                 else {
                     image.setRGB(x, y, Color.TRANSLUCENT);
                 }
@@ -311,7 +304,7 @@ public class ColorReveal extends RevealPanel{
     private BufferedImage resizeImage(BufferedImage imageToResize){
         BufferedImage resizedImage = new BufferedImage(getHeight(), getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = resizedImage.createGraphics();
-        graphics2D.drawImage(image, 0, 0, getHeight(), getHeight(), null);
+        graphics2D.drawImage(imageToResize, 0, 0, getHeight(), getHeight(), null);
         graphics2D.dispose();
         return resizedImage;
     }

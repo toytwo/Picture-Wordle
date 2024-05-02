@@ -18,7 +18,7 @@ import javax.swing.SwingConstants;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/24/2024
+ * @version Updated: 5/2/2024
  */
 public class HintPanel extends InteractivePanel {
     /**
@@ -43,8 +43,8 @@ public class HintPanel extends InteractivePanel {
      * @param targetWord The word to be guessed
      * @param MAX_GUESSES The max number of guesses
      */
-    public HintPanel(String targetWord, int MAX_GUESSES, int REVEAL_HINT_COST){
-        super(new GridBagLayout(), targetWord.toLowerCase(), 0, false, MAX_GUESSES, REVEAL_HINT_COST);
+    public HintPanel(String targetWord, int MAX_GUESSES, int REVEAL_HINT_COST, boolean pointsEnabled){
+        super(new GridBagLayout(), targetWord.toLowerCase(), 0, false, MAX_GUESSES, REVEAL_HINT_COST, pointsEnabled);
 
         // Initialize Instance Variables
         this.hintLabels = new HintLabel[4];
@@ -79,7 +79,9 @@ public class HintPanel extends InteractivePanel {
             int revealAt = (int) (threshold*MAX_ACTIONS) + 1;
             hintLabels[i].resetLabel(hints[i], revealAt);
             
-            revealButtons[i].setEnabled(i==0);
+            if(pointsEnabled){
+                revealButtons[i].setEnabled(i==0);
+            }
         }
     }
 
@@ -117,24 +119,27 @@ public class HintPanel extends InteractivePanel {
             hintLabels[i] = new HintLabel(hints[i], revealAt);
             this.add(hintLabels[i],constraints);
 
-            constraints.gridx = 1;
-            revealButtons[i] = new JButton("Manual Reveal");
-            revealButtons[i].setFont(new Font("Arial", Font.BOLD, 15));
-            int index = i; // Variables must be relatively final within anonymous declaration
-            revealButtons[i].addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    hintLabels[interactionCount++].reveal();
-                    Game.getCurrentGame().getScorePanel().updateImageScore(-ACTION_COST);
-                    revealButtons[index].setEnabled(false);
-                    if(index+1 < hints.length){
-                        revealButtons[index+1].setEnabled(true);
-                    }
-                    
-                }    
-            });
-            revealButtons[i].setEnabled(i==0);
-            this.add(revealButtons[i],constraints);
+            if(pointsEnabled){
+                constraints.gridx = 1;
+                revealButtons[i] = new JButton("Manual Reveal");
+                revealButtons[i].setFont(new Font("Arial", Font.BOLD, 15));
+                int index = i; // Variables must be relatively final within anonymous declaration
+                revealButtons[i].addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        hintLabels[interactionCount++].reveal();
+                        
+                        Game.getCurrentGame().getScorePanel().updateImageScore(-ACTION_COST);
+                        revealButtons[index].setEnabled(false);
+                        if(index+1 < hints.length){
+                            revealButtons[index+1].setEnabled(true);
+                        }
+                        
+                    }    
+                });
+                revealButtons[i].setEnabled(i==0);
+                this.add(revealButtons[i],constraints);
+            }
         }
     }
 
@@ -152,11 +157,21 @@ public class HintPanel extends InteractivePanel {
          */
         double revealThreshold = (double) interactionCount * 0.2 + 0.1;
 
+        // Reveal the hint
         if(percentGuessed > revealThreshold){
-            // Reveal the hint
+            if(pointsEnabled){
+                revealButtons[interactionCount].setEnabled(false);
+            }
+            
             hintLabels[interactionCount++].reveal();
-            // Check if more than one hint needs to be revealed
-            checkReveal(guessNumber);
+            if(interactionCount < hintLabels.length){
+                if(pointsEnabled){
+                    revealButtons[interactionCount].setEnabled(true);
+                }
+                
+                // Check if more than one hint needs to be revealed
+                checkReveal(guessNumber);
+            }
         }
     }
 

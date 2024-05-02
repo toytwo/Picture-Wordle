@@ -10,7 +10,7 @@ import javax.swing.Timer;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/30/2024
+ * @version Updated: 5/2/2024
  */
 public class SkipActionPanel extends JPanel {
     private JButton skipNextActionButton;

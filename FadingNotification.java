@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/25/2024
+ * @version Updated: 5/2/2024
  */
 public abstract class FadingNotification extends JDialog {
     /**

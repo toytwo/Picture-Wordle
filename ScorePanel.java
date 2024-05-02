@@ -6,7 +6,7 @@ import java.awt.Font;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/30/2024
+ * @version Updated: 5/2/2024
  */
 public class ScorePanel extends InteractivePanel{
     /**
@@ -22,7 +22,7 @@ public class ScorePanel extends InteractivePanel{
     private int difficulty;
 
     public ScorePanel(int difficulty){
-        super(null,0,false,0,0);
+        super(null,0,false,0,0,true); // Uses Interactive Panels methods, not it's instance variables
 
         this.imageScore = 0;
         this.totalScore = 0;

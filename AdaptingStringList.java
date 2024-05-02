@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/24/2024
+ * @version Updated: 5/2/2024
  */
 public class AdaptingStringList {
     /**

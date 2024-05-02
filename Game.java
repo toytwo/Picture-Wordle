@@ -15,7 +15,7 @@ import javax.swing.JFrame;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/30/2024
+ * @version Updated: 5/2/2024
  */
 public class Game extends JFrame {
     private GuessPanel guessPanel;
@@ -71,8 +71,12 @@ public class Game extends JFrame {
      * How many images (rounds) have been started.
      */
     private int imageCount;
+    /**
+     * True if points are enabled. False otherwise.
+     */
+    private boolean pointsEnabled;
     
-    public Game(int guessPanelID, int revealPanelID, int difficulty, boolean doModularDifficulty, int imageLimit) {
+    public Game(int guessPanelID, int revealPanelID, int difficulty, boolean doModularDifficulty, int imageLimit, boolean pointsEnabled) {
         this.difficulty = difficulty;
         this.previousDifficulty = -1; // Ensure it's different from difficulty
         this.totalScore = 0;
@@ -80,6 +84,7 @@ public class Game extends JFrame {
         this.guessPanelID = guessPanelID;
         this.revealPanelID = revealPanelID;
         this.doModularDifficulty = doModularDifficulty;
+        this.pointsEnabled = pointsEnabled;
         this.imageLimit = imageLimit;
         this.unselectedImages = new HashMap<String,File>();
         this.random = new Random();
@@ -218,6 +223,7 @@ public class Game extends JFrame {
         }
 
         double totalAverageDifficulty = calculateAverageDifficulty(this.targetWord, newAverageGuessPercentage);
+        totalAverageDifficulty = 1; // Until more datapoints are in the txt file
 
         String difficulty;
         if(newAverageGuessPercentage > 0.7 * totalAverageDifficulty){
@@ -230,9 +236,7 @@ public class Game extends JFrame {
             difficulty = "Easy";
         }
         String newFilePath = "Images"+File.separator+difficulty+File.separator;
-        System.out.println(totalAverageDifficulty+" "+0.7 * totalAverageDifficulty+" "+0.3 * totalAverageDifficulty);
 
-        System.exit(0);
         // Rename the file
         File newImageFile = new File(newFilePath+newFileName);
         if (imageFile.renameTo(newImageFile)) {
@@ -246,29 +250,34 @@ public class Game extends JFrame {
     private void initializePanels(){
         switch (guessPanelID) {
             case 0:
-                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES, GUESS_COST);
+                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES, GUESS_COST, pointsEnabled);
                 break;
 
+            case 1:
+                this.guessPanel = new ScoreGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES, GUESS_COST, pointsEnabled);
+                break;
+
+
             default:
-                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES, GUESS_COST);
+                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES, GUESS_COST, pointsEnabled);
                 break;
         }
 
         switch (revealPanelID) {
             case 0:
-                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS, REVEAL_COST);
+                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS, REVEAL_COST, pointsEnabled);
                 break;
 
             case 1:
-                this.revealPanel = new ColorReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, true, MAX_REVEALS, REVEAL_COST, 16);
+                this.revealPanel = new ColorReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, true, MAX_REVEALS, REVEAL_COST, 16, pointsEnabled);
                 break;
 
             case 2:
-                this.revealPanel = new SpotlightReveal(targetWord, REVEAL_SWAP_THRESHOLD, true, image, MAX_REVEALS, REVEAL_COST);
+                this.revealPanel = new SpotlightReveal(targetWord, REVEAL_SWAP_THRESHOLD, true, image, MAX_REVEALS, REVEAL_COST, pointsEnabled);
                 break;
 
             default:
-                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS, REVEAL_COST);
+                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS, REVEAL_COST, pointsEnabled);
                 break;
         }
 
@@ -355,11 +364,16 @@ public class Game extends JFrame {
     }
 
     /**
-     * Updates totalScore based on the score recieved from an image
+     * Updates totalScore based on the score recieved from an image if doSubtractPoints is true.
      * @param imageScore The score the player earned from an image
      */
     public void updateTotalScore(){
-        this.totalScore += this.guessPanel.scorePanel.getImageScore();
+        try{
+            this.totalScore += this.guessPanel.scorePanel.getImageScore();
+        }
+        catch(Exception e){
+            /* GuessPanel is not ScoreGuess and therefore the score doesn't need to be updated */
+        }
     }
 
     public int getTotalScore(){
@@ -370,6 +384,9 @@ public class Game extends JFrame {
         return this.imageLimit;
     }
 
+    /**
+     * @return Null if doSubtractPoints is false.
+     */
     public SkipActionPanel getSkipActionPanel(){
         return this.guessPanel.skipActionPanel;
     }
@@ -382,6 +399,9 @@ public class Game extends JFrame {
         return this.difficulty;
     }
 
+    /**
+     * @return Null if doSubtractPoints is false.
+     */
     public ScorePanel getScorePanel(){
         return this.guessPanel.scorePanel;
     }

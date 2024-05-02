@@ -29,6 +29,7 @@ public class PicturMenu extends JFrame implements ActionListener{
     private int defaultRevealPanel;
     private int defaultDifficulty;
     private boolean defaultDoModularDifficulty;
+    private boolean defaultDoPoints;
        
       /**
        * @ this controls all events of the game menu
@@ -42,7 +43,7 @@ public class PicturMenu extends JFrame implements ActionListener{
         }
         
         if(comm.equals("START")){
-            new Game(guesscomboBox.getSelectedIndex(), revealcomboBox.getSelectedIndex(),comboBox.getSelectedIndex() , checkbox.isSelected(), 10);
+            new Game(guesscomboBox.getSelectedIndex(), revealcomboBox.getSelectedIndex(),comboBox.getSelectedIndex() , checkbox.isSelected(), 10, defaultDoPoints);
             this.dispose();
         }
         
@@ -256,12 +257,13 @@ public class PicturMenu extends JFrame implements ActionListener{
          * This is the methods default constructor
          * It calls setupMenu so we can achieve all the funtionalities we want the game menu to do
          */
-    public PicturMenu(int defaultGuessPanel, int defaultRevealPanel, int defaultDifficulty, boolean defaultDoModularDifficulty){
+    public PicturMenu(int defaultGuessPanel, int defaultRevealPanel, int defaultDifficulty, boolean defaultDoModularDifficulty, boolean defaultDoPoints){
         // Default settings
         this.defaultGuessPanel = defaultGuessPanel;
         this.defaultRevealPanel = defaultRevealPanel;
         this.defaultDifficulty = defaultDifficulty;
         this.defaultDoModularDifficulty = defaultDoModularDifficulty;
+        this.defaultDoPoints = defaultDoPoints;
 
         // Setup the frame
         frame = this;

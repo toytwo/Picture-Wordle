@@ -7,7 +7,7 @@ import java.awt.BorderLayout;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/25/2024
+ * @version Updated: 5/2/2024
  */
 public class ActionNotification extends FadingNotification {
     private String title;

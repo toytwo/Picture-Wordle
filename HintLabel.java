@@ -12,7 +12,7 @@ import java.awt.geom.RoundRectangle2D;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/24/2024
+ * @version Updated: 5/2/2024
  */
 public class HintLabel extends JLabel {
     private String hint;
@@ -22,7 +22,6 @@ public class HintLabel extends JLabel {
     private static final int OPACITY_DECREMENT = 2;
     public static final int TEXT_SIZE = 20;
     private static final Color BACKGROUND_COLOR = Color.BLACK;
-    private boolean isRevealed = false;
     /**
      * True if the label is being reset. False otherwise. Used to cancel any animations occuring when the reset is intitiated.
      */
@@ -36,13 +35,14 @@ public class HintLabel extends JLabel {
     }
 
     public void resetLabel(String hint, int revealAt){
-        this.revealTimer.stop();
+        if(this.revealTimer != null){
+            this.revealTimer.stop();
+        }
 
         this.setText("Reveals Automatically After Guess "+revealAt);
         this.setHorizontalAlignment(SwingConstants.CENTER);
         this.textColor = Color.WHITE;
         this.setForeground(textColor);
-        this.isRevealed = false;
         this.hint = hint;
         this.backgroundOpacity = 255;
         this.textOpacity = 255;
@@ -69,10 +69,6 @@ public class HintLabel extends JLabel {
      * Slowly reveals the label by decreasing the opacity of the background
      */
     public void reveal(){
-        if(isRevealed){
-            return;
-        }
-
         revealTimer = new Timer(10, new ActionListener() {
             int textOpacityModifier = 2;
             @Override
@@ -102,6 +98,5 @@ public class HintLabel extends JLabel {
         });
 
         revealTimer.start();
-        this.isRevealed = true;
     }
 }

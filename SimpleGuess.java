@@ -1,6 +1,6 @@
 /**
  * @author Jackson Alexman
- * @version Updated: 4/24/2024
+ * @version Updated: 5/2/2024
  */
 public class SimpleGuess extends GuessPanel {
     /**
@@ -8,8 +8,8 @@ public class SimpleGuess extends GuessPanel {
      * @param MAX_GUESSES The maximum number of guesses allowed for each image. Must be greater than 0..
      * @param targetWord The word the user is trying to guess. Must be in WordList.txt.
      */
-    public SimpleGuess(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_GUESSES, int GUESS_COST){
-        super(targetWord,SWAP_THRESHOLD,doSwapThreshold,MAX_GUESSES, GUESS_COST);
+    public SimpleGuess(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_GUESSES, int GUESS_COST, boolean pointsEnabled){
+        super(targetWord,SWAP_THRESHOLD,doSwapThreshold,MAX_GUESSES, GUESS_COST, pointsEnabled);
 
         setupContentArea();
     }

@@ -3,7 +3,7 @@ import javax.swing.JPanel;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/30/2024
+ * @version Updated: 5/2/2024
  */
 public abstract class InteractivePanel extends JPanel {
     /**
@@ -46,17 +46,22 @@ public abstract class InteractivePanel extends JPanel {
      * True if the panel is enabled. False otherwise.
      */
     protected boolean isEnabled;
+    /**
+     * True if points are being tracked. False otherwise.
+     */
+    protected boolean pointsEnabled;
 
-    public InteractivePanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS, int ACTION_COST){
+    public InteractivePanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS, int ACTION_COST, boolean pointsEnabled){
         this.SWAP_THRESHOLD = SWAP_THRESHOLD;
         this.targetWord = targetWord;
         this.doSwapThreshold = doSwapThreshold;
         this.MAX_ACTIONS = MAX_ACTIONS;
         this.interactionCount = 0;
         this.ACTION_COST = ACTION_COST;
+        this.pointsEnabled = pointsEnabled;
     }
 
-    public InteractivePanel(LayoutManager layout, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS, int ACTION_COST){
+    public InteractivePanel(LayoutManager layout, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS, int ACTION_COST, boolean pointsEnabled){
         super(layout);
         this.SWAP_THRESHOLD = SWAP_THRESHOLD;
         this.targetWord = targetWord;
@@ -64,6 +69,7 @@ public abstract class InteractivePanel extends JPanel {
         this.MAX_ACTIONS = MAX_ACTIONS;
         this.interactionCount = 0;
         this.ACTION_COST = ACTION_COST;
+        this.pointsEnabled = pointsEnabled;
     }
 
     /**
@@ -128,13 +134,14 @@ public abstract class InteractivePanel extends JPanel {
 
     /**
      * Called when an action is performed in this panel.
+     * @param doSubtractPoints If points should be subtracted for this action
      * @return If it's time to swap
      */
     protected boolean interactionPerformed(boolean doSubtractPoints){
         this.interactionCount++; // Increment the number of actions performed
         Boolean doSwap = this.swap(); // Check if it's time to swap
         this.sendNotification(doSwap); // Show the player the next action they should perform
-        if(doSubtractPoints){
+        if(this.pointsEnabled && doSubtractPoints){
             this.subtractPointCost();
         }
         return doSwap;

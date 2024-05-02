@@ -1,1 +1,2 @@
-can 0.0
+act 0.2
+lizard 0.6

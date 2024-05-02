@@ -1,6 +1,5 @@
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -25,7 +24,7 @@ import java.awt.Font;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 4/30/2024
+ * @version Updated: 5/2/2024
  */
 public abstract class GuessPanel extends InteractivePanel{
     /**
@@ -62,8 +61,8 @@ public abstract class GuessPanel extends InteractivePanel{
      * @param guessCost The amount of points to subtract for each guess.
      */
     @SuppressWarnings("unchecked")
-    public GuessPanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_GUESSES, int guessCost){
-        super(new BorderLayout(), targetWord, SWAP_THRESHOLD, doSwapThreshold, MAX_GUESSES, guessCost);
+    public GuessPanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_GUESSES, int guessCost, boolean pointsEnabled){
+        super(new BorderLayout(), targetWord, SWAP_THRESHOLD, doSwapThreshold, MAX_GUESSES, guessCost, pointsEnabled);
         // Initialize wordBank using an anonymous SwingWorker
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override
@@ -80,9 +79,9 @@ public abstract class GuessPanel extends InteractivePanel{
         // Initialize instance variables
         this.guessFields = new JComboBox[MAX_ACTIONS];
         this.updatingWordBank = false;
-        this.hintPanel = new HintPanel(this.targetWord, this.MAX_ACTIONS, Game.getREVEAL_HINT_COST());
         this.scorePanel = new ScorePanel(Game.getCurrentGame().getDifficulty());
         this.skipActionPanel = new SkipActionPanel();
+        this.hintPanel = new HintPanel(this.targetWord, this.MAX_ACTIONS, Game.getREVEAL_HINT_COST(), pointsEnabled);
         this.setPanelDescriptors("Guess", "Guesses");
     }
 
@@ -94,7 +93,7 @@ public abstract class GuessPanel extends InteractivePanel{
     @Override
     public void resetContentArea() {
         this.hintPanel.resetPanel(this.targetWord);
-        this.scorePanel.resetPanel(this.targetWord, Game.getCurrentGame().getDifficulty()); 
+        this.scorePanel.resetPanel(this.targetWord, Game.getCurrentGame().getDifficulty());
         for(JComboBox<String> guessField : guessFields){
             JTextField editor = (JTextField) guessField.getEditor().getEditorComponent();
             editor.setBackground(Color.WHITE);
@@ -120,22 +119,19 @@ public abstract class GuessPanel extends InteractivePanel{
         // Add the hintPanel
         centerPanel.add(this.hintPanel, BorderLayout.NORTH);
     
-        // Add the scorePanel
-        centerPanel.add(scorePanel, BorderLayout.SOUTH);
-    
         // Add the centerPanel
         this.add(centerPanel, BorderLayout.CENTER);
     
         // Setup the guessFieldPanel
         // General Constraints
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.HORIZONTAL; // Fill horizontally
+        GridBagConstraints guessFieldPanelConstraints = new GridBagConstraints();
+        guessFieldPanelConstraints.fill = GridBagConstraints.HORIZONTAL; // Fill horizontally
     
         // Customize the gridBagLayout
-        constraints.gridx = 0; // X position in the grid
-        constraints.gridwidth = 2; // Number of cells wide
-        constraints.weightx = 5.0/6.0; // 5/6 of the width
-        constraints.gridy = 0; // Y position in the grid (0 because we add 1 every time so first will be 0+1=1)]
+        guessFieldPanelConstraints.gridx = 0; // X position in the grid
+        guessFieldPanelConstraints.gridwidth = 2; // Number of cells wide
+        guessFieldPanelConstraints.weightx = 5.0/6.0; // 5/6 of the width
+        guessFieldPanelConstraints.gridy = 0; // Y position in the grid (0 because we add 1 every time so first will be 0+1=1)]
     
         // Create each guessField
         for(int i = 0; i < MAX_ACTIONS; i++){
@@ -146,8 +142,8 @@ public abstract class GuessPanel extends InteractivePanel{
             guessFields[i].setEditable(true);
             guessFields[i].setVisible(true);
     
-            constraints.gridy++;
-            guessFieldPanel.add(guessFields[i],constraints);
+            guessFieldPanelConstraints.gridy++;
+            guessFieldPanel.add(guessFields[i],guessFieldPanelConstraints);
 
             // Create a delay between adding the combobox and setting up the combobox to avoid errors
             int index = i;
@@ -161,11 +157,14 @@ public abstract class GuessPanel extends InteractivePanel{
             delay.setRepeats(false);
             delay.start();
         }
-    
-        if(this.doSwapThreshold){
+
+        if(pointsEnabled){
+            // Add the scorePanel
+            centerPanel.add(this.scorePanel, BorderLayout.SOUTH);
+
             // Add the SkipActionPanel
-            constraints.gridy++;
-            guessFieldPanel.add(this.skipActionPanel, constraints);
+            guessFieldPanelConstraints.gridy++;
+            guessFieldPanel.add(this.skipActionPanel, guessFieldPanelConstraints);
         }
         
         // Fix the size of every guessField
@@ -224,7 +223,7 @@ public abstract class GuessPanel extends InteractivePanel{
                 makeGuessButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    interactionPerformed(true);
+                    interactionPerformed(pointsEnabled);
                 }});
 
                 // Set the label of the button
@@ -267,7 +266,7 @@ public abstract class GuessPanel extends InteractivePanel{
             public void keyPressed(KeyEvent e) {
                 // Cycle to the next guessField
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    interactionPerformed(true);
+                    interactionPerformed(pointsEnabled);
                 }
                 else{
                     // Create a timer to delay retrieving the text. Without the delay, the last letter typed isn't recorded.
