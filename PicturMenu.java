@@ -42,7 +42,7 @@ public class PicturMenu extends JFrame implements ActionListener{
         }
         
         if(comm.equals("START")){
-            new Game(guesscomboBox.getSelectedIndex(), revealcomboBox.getSelectedIndex(),comboBox.getSelectedIndex() , checkbox.isSelected());
+            new Game(guesscomboBox.getSelectedIndex(), revealcomboBox.getSelectedIndex(),comboBox.getSelectedIndex() , checkbox.isSelected(), 10);
             this.dispose();
         }
         

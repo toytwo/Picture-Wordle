@@ -62,6 +62,39 @@ public class ColorReveal extends RevealPanel{
         this.hueRanges = new float[NUMBER_OF_BUTTONS + 1];
         this.REVEAL_PANEL_SCREEN_PERCENTAGE = 3.0 / 4.0;
         this.imageCopy = image;
+
+        setupContentArea();
+    }
+
+    @Override
+    public void resetInstanceVariables() {
+        this.imageCopy = resizeImage(image);
+        this.activeHueRanges = new boolean[NUMBER_OF_BUTTONS];
+    }
+
+    @Override
+    public void resetContentArea() {
+        // Cover the image
+        reveal();
+
+        // Reset the colorSelector buttons
+        for(int i=0; i<NUMBER_OF_BUTTONS; i++){
+            colorSelectors[i].setEnabled(true);
+
+            // Make the first and last button black and white
+            if(i == 0){
+                colorSelectors[i].setBackground(Color.WHITE);
+            }
+            else if(i == colorSelectors.length-1){
+                colorSelectors[i].setBackground(Color.BLACK);
+            }
+            // Make all the other buttons colorful
+            else{
+                colorSelectors[i].setBackground(Color.getHSBColor(hueRanges[i], 1.0f, 1.0f));
+            }
+        }
+
+        repaint();
     }
     
     @Override
@@ -112,12 +145,7 @@ public class ColorReveal extends RevealPanel{
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                // Resize the image to fit the panel
-                BufferedImage resizedImage = new BufferedImage(getHeight(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-                Graphics2D graphics2D = resizedImage.createGraphics();
-                graphics2D.drawImage(image, 0, 0, getHeight(), getHeight(), null);
-                graphics2D.dispose();
-                imageCopy = resizedImage;
+                imageCopy = resizeImage(image);
 
                 // Cover the image
                 reveal();
@@ -273,6 +301,19 @@ public class ColorReveal extends RevealPanel{
         g2d.dispose();
 
         return copy;
+    }
+
+    /**
+     * Resize the image to fit the panel
+     * @param imageToResize The image to be resized
+     * @return The resized image
+     */
+    private BufferedImage resizeImage(BufferedImage imageToResize){
+        BufferedImage resizedImage = new BufferedImage(getHeight(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = resizedImage.createGraphics();
+        graphics2D.drawImage(image, 0, 0, getHeight(), getHeight(), null);
+        graphics2D.dispose();
+        return resizedImage;
     }
 
     @Override

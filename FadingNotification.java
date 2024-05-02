@@ -25,7 +25,7 @@ public abstract class FadingNotification extends JDialog {
     protected int FADE_OUT_DURATION_MILLISECONDS = 100;
 
     public FadingNotification(boolean doFadeOutDelay, boolean doManualFadeOut) {
-        super(Game.game, ModalityType.MODELESS);
+        super(Game.getCurrentGame(), ModalityType.MODELESS);
 
         // Default JDialog Customization
         setUndecorated(true); // No bar at top

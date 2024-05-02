@@ -32,4 +32,15 @@ public abstract class RevealPanel extends InteractivePanel{
     }
 
     public abstract void revealEntireImage();
+
+    /**
+     * Resets the components in and instance variables in the panel.
+     * @param newImage
+     * @param newTargetWord
+     */
+    public void resetPanel(String newTargetWord, BufferedImage newImage){
+        super.resetPanel(newTargetWord);
+
+        this.image = newImage;
+    }
 }

@@ -23,6 +23,8 @@ public class SkipActionPanel extends JPanel {
 
     public SkipActionPanel(){
         canSkip = true;
+
+        setupContentArea();
     }
 
     public void setupContentArea(){

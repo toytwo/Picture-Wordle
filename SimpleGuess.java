@@ -10,5 +10,7 @@ public class SimpleGuess extends GuessPanel {
      */
     public SimpleGuess(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_GUESSES, int GUESS_COST){
         super(targetWord,SWAP_THRESHOLD,doSwapThreshold,MAX_GUESSES, GUESS_COST);
+
+        setupContentArea();
     }
 }

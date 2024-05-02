@@ -43,10 +43,6 @@ public abstract class InteractivePanel extends JPanel {
      */
     protected int ACTION_COST;
     /**
-     * The panel that contains the total and image score displays
-     */
-    protected ScorePanel scorePanel;
-    /**
      * True if the panel is enabled. False otherwise.
      */
     protected boolean isEnabled;
@@ -71,9 +67,31 @@ public abstract class InteractivePanel extends JPanel {
     }
 
     /**
+     * Resets the instance variables of the interactive panel. DO NOT CALL THIS METHOD FROM GAME.
+     * @param newTargetWord
+     */
+    protected void resetPanel(String newTargetWord){
+        this.targetWord = newTargetWord;
+        this.interactionCount = 0;
+        this.isEnabled = true;
+
+        resetInstanceVariables();
+        resetContentArea();
+    }
+
+    /**
+     * Resets instance variables specific to the panel.
+     */
+    public abstract void resetInstanceVariables();
+    /**
+     * Resets any components in the panel.
+     */
+    public abstract void resetContentArea();
+
+    /**
      * Sets up the components in the panel.
      */
-    public abstract void setupContentArea();
+    protected abstract void setupContentArea();
 
     /**
      * Sends a notification to the player based on the number of guesses or reveals remaining
@@ -126,7 +144,7 @@ public abstract class InteractivePanel extends JPanel {
      * Subtract the ACTION_COST from the image score
      */
     final protected void subtractPointCost(){
-        this.scorePanel.updateImageScore(-ACTION_COST);
+        Game.getCurrentGame().getScorePanel().updateImageScore(-ACTION_COST);
     }
 
     /**
@@ -142,7 +160,7 @@ public abstract class InteractivePanel extends JPanel {
         if(interactionCount%SWAP_THRESHOLD == 0){
             this.setPanelEnabled(false);
             otherPanel.setPanelEnabled(true);
-            Game.game.skipActionPanel.setEnabledPanel(otherPanel);
+            Game.getCurrentGame().getSkipActionPanel().setEnabledPanel(otherPanel);
             return true;
         }
         else{
@@ -154,7 +172,7 @@ public abstract class InteractivePanel extends JPanel {
      * Sets the instance variable otherPanel
      * @param otherPanel the other interactive panel in Game
      */
-    final public void setOtherPanel(InteractivePanel otherPanel){
+    public void setOtherPanel(InteractivePanel otherPanel){
         this.otherPanel = otherPanel;
     }
 
@@ -173,9 +191,5 @@ public abstract class InteractivePanel extends JPanel {
     final public void setPanelDescriptors(String panelName, String panelPluralAction){
         this.panelName = panelName;
         this.panelPluralAction = panelPluralAction;
-    }
-
-    final public void setScorePanel(ScorePanel scorePanel){
-        this.scorePanel = scorePanel;
     }
 }

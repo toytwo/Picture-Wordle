@@ -19,7 +19,6 @@ import java.awt.event.MouseMotionListener;
  * @version Integrated into program by Jackson on 4/24/2024. Updated: 4/30/2024 (Jackson)
  */
 public class SpotlightReveal extends RevealPanel {
-    private BufferedImage image;
     private int radius;
     private int x, y;
     private Ellipse2D oval;
@@ -38,16 +37,25 @@ public class SpotlightReveal extends RevealPanel {
      */
     public SpotlightReveal(String n, int i, boolean b, BufferedImage g, int MAX_REVEALS, int REVEAL_COST) {
         super(n,i,b,g, MAX_REVEALS, REVEAL_COST, new GridBagLayout());
-        image = g;
         radius = 70;
         x = -1;
         y = -1;
-        revealedAreas = new Area[MAX_REVEALS];
+        revealedAreas = new Area[MAX_ACTIONS];
         this.isEnabled = true;
         this.focused = false;
+
+        setupContentArea();
+    }   
+
+    @Override
+    public void resetInstanceVariables() {
+        revealedAreas = new Area[MAX_ACTIONS];
     }
 
-    
+    @Override
+    public void resetContentArea() {
+        repaint();
+    }
 
     @Override
     public void setupContentArea() {

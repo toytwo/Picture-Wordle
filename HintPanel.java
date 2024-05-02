@@ -20,19 +20,7 @@ import javax.swing.SwingConstants;
  * @author Jackson Alexman
  * @version Updated: 4/24/2024
  */
-public class HintPanel extends JPanel {
-    /**
-     * The word to be guessed
-     */
-    private String targetWord;
-    /**
-     * The max number of guesses
-     */
-    private int MAX_GUESSES;
-    /**
-     * The number of hints that have been revealed
-     */
-    private int hintsRevealed;
+public class HintPanel extends InteractivePanel {
     /**
      * The hints to be given based on targetWord
      */
@@ -56,13 +44,9 @@ public class HintPanel extends JPanel {
      * @param MAX_GUESSES The max number of guesses
      */
     public HintPanel(String targetWord, int MAX_GUESSES, int REVEAL_HINT_COST){
-        // Use a GridBagLayout
-        super(new GridBagLayout());
+        super(new GridBagLayout(), targetWord.toLowerCase(), 0, false, MAX_GUESSES, REVEAL_HINT_COST);
 
         // Initialize Instance Variables
-        this.targetWord = targetWord.toLowerCase();
-        this.MAX_GUESSES = MAX_GUESSES;
-        this.hintsRevealed = 0;
         this.hintLabels = new HintLabel[4];
         this.revealButtons = new JButton[4];
 
@@ -74,6 +58,33 @@ public class HintPanel extends JPanel {
         // Create the hints
         this.hints = generateHints();
 
+        setupContentArea();
+    }
+
+    @Override
+    protected void resetPanel(String newTargetWord) {
+        super.resetPanel(newTargetWord.toLowerCase());
+    }
+
+    @Override
+    public void resetInstanceVariables() {
+        this.hints = generateHints();
+    }
+
+    @Override
+    public void resetContentArea() {
+        for (int i = 0; i < hints.length; i++) {
+            
+            double threshold = ((double) i) * 0.2 + 0.1;
+            int revealAt = (int) (threshold*MAX_ACTIONS) + 1;
+            hintLabels[i].resetLabel(hints[i], revealAt);
+            
+            revealButtons[i].setEnabled(i==0);
+        }
+    }
+
+    @Override
+    public void setupContentArea() {
         // Adjust the layout
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL; // Fill horizontally
@@ -100,7 +111,7 @@ public class HintPanel extends JPanel {
 
             // Determine when it will reveal
             double threshold = ((double) i) * 0.2 + 0.1;
-            int revealAt = (int) (threshold*MAX_GUESSES) + 1;
+            int revealAt = (int) (threshold*MAX_ACTIONS) + 1;
 
             constraints.gridx = 0;
             hintLabels[i] = new HintLabel(hints[i], revealAt);
@@ -113,8 +124,8 @@ public class HintPanel extends JPanel {
             revealButtons[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    hintLabels[hintsRevealed++].reveal();
-                    Game.game.scorePanel.updateImageScore(-REVEAL_HINT_COST);
+                    hintLabels[interactionCount++].reveal();
+                    Game.getCurrentGame().getScorePanel().updateImageScore(-ACTION_COST);
                     revealButtons[index].setEnabled(false);
                     if(index+1 < hints.length){
                         revealButtons[index+1].setEnabled(true);
@@ -135,15 +146,15 @@ public class HintPanel extends JPanel {
         /**
          * What percentage of their guesses have they used
          */
-        double percentGuessed = (double) guessNumber / MAX_GUESSES;
+        double percentGuessed = (double) guessNumber / MAX_ACTIONS;
         /**
          * The percent needed to reveal the next hint.
          */
-        double revealThreshold = (double) hintsRevealed * 0.2 + 0.1;
+        double revealThreshold = (double) interactionCount * 0.2 + 0.1;
 
         if(percentGuessed > revealThreshold){
             // Reveal the hint
-            hintLabels[hintsRevealed++].reveal();
+            hintLabels[interactionCount++].reveal();
             // Check if more than one hint needs to be revealed
             checkReveal(guessNumber);
         }
@@ -168,7 +179,6 @@ public class HintPanel extends JPanel {
         hintsArray[0] = "The first letter of this word is a "+firstLetterType+".";
 
         String article = null;
-        System.out.println(this.targetWord);
         String wordType = targetWordTypes.get(this.targetWord);
         if(wordType.equals("adjective")){
             article = "an";

@@ -8,6 +8,8 @@ import java.awt.image.BufferedImage;
 public class SimpleReveal extends RevealPanel {
     public SimpleReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int REVEAL_COST){
         super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, MAX_REVEALS, REVEAL_COST);
+
+        setupContentArea();
     }
 
     @Override
@@ -29,4 +31,10 @@ public class SimpleReveal extends RevealPanel {
 
     @Override
     public void revealEntireImage() {/* Do Nothing */}
+
+    @Override
+    public void resetInstanceVariables() {/* Do Nothing */}
+
+    @Override
+    public void resetContentArea() {/* Do Nothing */}
 }

@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
         if(skipMenu){
-            new Game(defaultGuessPanel, defaultRevealPanel, defaultDifficulty, defaultDoModularDifficulty);
+            new Game(defaultGuessPanel, defaultRevealPanel, defaultDifficulty, defaultDoModularDifficulty, 10);
         }
         else{
             new PicturMenu(defaultGuessPanel, defaultRevealPanel, defaultDifficulty, defaultDoModularDifficulty);

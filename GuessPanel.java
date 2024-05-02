@@ -1,5 +1,6 @@
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -47,6 +48,10 @@ public abstract class GuessPanel extends InteractivePanel{
      * Allows the user to skip the next action(s) for the enabled panel
      */
     protected SkipActionPanel skipActionPanel;
+    /**
+     * The panel that contains the total and image score displays
+     */
+    protected ScorePanel scorePanel;
 
 
     /** 
@@ -75,8 +80,26 @@ public abstract class GuessPanel extends InteractivePanel{
         // Initialize instance variables
         this.guessFields = new JComboBox[MAX_ACTIONS];
         this.updatingWordBank = false;
-        this.hintPanel = new HintPanel(this.targetWord, this.MAX_ACTIONS, Game.REVEAL_HINT_COST);
+        this.hintPanel = new HintPanel(this.targetWord, this.MAX_ACTIONS, Game.getREVEAL_HINT_COST());
+        this.scorePanel = new ScorePanel(Game.getCurrentGame().getDifficulty());
+        this.skipActionPanel = new SkipActionPanel();
         this.setPanelDescriptors("Guess", "Guesses");
+    }
+
+    @Override
+    public void resetInstanceVariables() {
+        /* Do Nothing */
+    }
+
+    @Override
+    public void resetContentArea() {
+        this.hintPanel.resetPanel(this.targetWord);
+        this.scorePanel.resetPanel(this.targetWord, Game.getCurrentGame().getDifficulty()); 
+        for(JComboBox<String> guessField : guessFields){
+            JTextField editor = (JTextField) guessField.getEditor().getEditorComponent();
+            editor.setBackground(Color.WHITE);
+            editor.setText("");
+        }
     }
 
     @Override
@@ -149,6 +172,7 @@ public abstract class GuessPanel extends InteractivePanel{
         for(JComboBox<String> guessField : guessFields){
             guessField.setPreferredSize(new Dimension(250,30));
         }
+        
     }    
 
     /**
@@ -207,6 +231,8 @@ public abstract class GuessPanel extends InteractivePanel{
                 makeGuessButton.setText("Guess");
 
                 makeGuessButton.setFont(new Font("Arial", Font.BOLD, 20));
+
+                makeGuessButton.setBackground(Color.WHITE);
 
                 // Make the button visible
                 makeGuessButton.setVisible(true);
@@ -291,10 +317,10 @@ public abstract class GuessPanel extends InteractivePanel{
         // Correct Guess or The user has run out of guesses
         if(wasCorrectGuess || interactionCount+1 >= MAX_ACTIONS){ // Intentionally don't increment interactionCount to differentiate between winning on the last guess and losing on the last guess
             // Reset game
-            Game.game.updateImageDifficulty(interactionCount, MAX_ACTIONS, wasCorrectGuess);
+            Game.getCurrentGame().updateImageDifficulty(interactionCount, MAX_ACTIONS, wasCorrectGuess);
             interactionCount++; //Increment after difficulty set
             this.setPanelEnabled(false);
-            this.hintPanel.checkReveal(MAX_ACTIONS);
+            this.hintPanel.checkReveal(MAX_ACTIONS-1);
             ((RevealPanel) otherPanel).revealEntireImage();
             (new MenuNotification(targetWord, wasCorrectGuess, interactionCount)).setVisible(true);            
             return false;
@@ -346,7 +372,10 @@ public abstract class GuessPanel extends InteractivePanel{
         guessFields[interactionCount].requestFocus();
     }
 
-    public void setSkipActionPanel(SkipActionPanel skipActionPanel){
-        this.skipActionPanel = skipActionPanel;
+    @Override
+    public void setOtherPanel(InteractivePanel otherPanel){
+        super.setOtherPanel(otherPanel);
+
+        skipActionPanel.setEnabledPanel(otherPanel);   
     }
 }
