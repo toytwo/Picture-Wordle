@@ -307,6 +307,10 @@ public abstract class GuessPanel extends InteractivePanel{
                 return false;
             }
 
+            if(this.wordBank.getPart() != ""){
+                updateWordBank("");
+            }
+
             boolean doSwap = super.interactionPerformed(false);
             this.hintPanel.checkReveal(interactionCount);
             return doSwap;

@@ -37,6 +37,7 @@ public class PicturMenu extends JFrame implements ActionListener{
     private JComboBox<String> comboBox;
     private JComboBox<String> imageModecomboBox;
     private JCheckBox checkbox;
+    private JCheckBox scoreCheckbox;
     private int defaultImageMode;
 
        
@@ -52,7 +53,7 @@ public class PicturMenu extends JFrame implements ActionListener{
         }
         
         if(comm.equals("START")){
-            new Game(guesscomboBox.getSelectedIndex(), revealcomboBox.getSelectedIndex(),comboBox.getSelectedIndex() , checkbox.isSelected(), 10, defaultDoPoints, imageModecomboBox.getSelectedIndex());
+            new Game(guesscomboBox.getSelectedIndex(), revealcomboBox.getSelectedIndex(),comboBox.getSelectedIndex() , checkbox.isSelected(), 10, scoreCheckbox.isSelected(), imageModecomboBox.getSelectedIndex());
             this.dispose();
         }
         
@@ -184,6 +185,19 @@ public class PicturMenu extends JFrame implements ActionListener{
         checkbox.setBorderPainted(false);
         checkbox.setSelected(defaultDoModularDifficulty);
         settingsPanel.add( checkbox);
+
+        scoreCheckbox = new JCheckBox ("Score");
+        scoreCheckbox.setFont(new Font("Arial", Font.BOLD, 15));
+        scoreCheckbox.setBounds(620,150,150,15);
+        scoreCheckbox.setCursor(new Cursor(Cursor.HAND_CURSOR)); //This puts the pointing finger cursor when we hover over 
+                                                            //the checkbox coordinates
+        scoreCheckbox.setForeground(Color.BLACK);
+        scoreCheckbox.addActionListener(this);
+        scoreCheckbox.setOpaque(false);
+        scoreCheckbox.setContentAreaFilled(false);
+        scoreCheckbox.setBorderPainted(false);
+        scoreCheckbox.setSelected(defaultDoPoints);
+        settingsPanel.add( scoreCheckbox);
           
         backButton = new JButton("BACK");
         backButton.addActionListener(this);

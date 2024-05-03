@@ -42,7 +42,7 @@ public class MenuNotification extends FadingNotification {
     public MenuNotification(String targetWord, boolean wasCorrectGuess, int GUESSES_USED) {
         super(false,true);
         
-        this.targetWord = targetWord;
+        this.targetWord = targetWord.substring(0,1).toUpperCase()+targetWord.substring(1).toLowerCase();
         this.GUESSES_USED = GUESSES_USED;
         this.wasCorrectGuess = wasCorrectGuess;
 

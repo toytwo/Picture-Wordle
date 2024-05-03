@@ -15,7 +15,6 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 /**
  * @author Jackson Alexman
@@ -130,7 +129,7 @@ public class Game extends JFrame {
     }
 
     private void pickRandomImage() {
-        updateImagePool();
+        updateImagePool(this.difficulty);
 
         try {
             // Pick a random image from the list of unselected images
@@ -150,14 +149,15 @@ public class Game extends JFrame {
 
     /**
      * Determines the pool of images to pick from for revealing. Prioritizes unsorted images if there are unsorted images left to sort.
+     * @param difficulty Used to track if the recursive loop has checked all difficulties
      */
-    private void updateImagePool(){
-        if(this.previousDifficulty != this.difficulty){
+    private void updateImagePool(int difficulty){
+        if(this.previousDifficulty != difficulty){
             String filePath = imageMode+File.separator;
-            if(this.difficulty == 0){
+            if(difficulty == 0){
                 filePath+="Easy";
             }
-            else if (this.difficulty == 1){
+            else if (difficulty == 1){
                 filePath+="Medium";
             }
             else{
@@ -167,13 +167,26 @@ public class Game extends JFrame {
             this.images = new File(filePath+File.separator).listFiles();
             this.imagePool = new File(imageMode+File.separator+"Unsorted").listFiles();
 
-            this.previousDifficulty = this.difficulty;
+            this.previousDifficulty = difficulty;
         }
         
         // No unsorted images to sort
         if(this.imagePool.length == 0){
             this.imagePool = this.images;
+            // This difficulty has no images
+            if(this.imagePool.length == 0){
+                difficulty = (difficulty + 1)%3;
+                if(difficulty == this.difficulty){
+                    System.err.println("No Images Found");
+                    System.exit(0);
+                }
+                // Check other difficulties
+                updateImagePool(difficulty);
+                return; // Prevent the code below from activating multiple times
+            } 
         }
+
+        this.difficulty = difficulty; // In case the difficulty was changed from the above code
 
         // Guessed all images in folder
         if(unselectedImages.size() == 0){
