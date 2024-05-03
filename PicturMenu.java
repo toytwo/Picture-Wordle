@@ -1,18 +1,24 @@
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.BasicStroke;
+import java.awt.Stroke;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * @author Babucarr
- * @version ( 04/13/2024)
+ * @version ( 04/13/2024) | Integrated by Jackson (4/29/2024) | Reintegrated by Jackson (5/2/2024)
  */
 public class PicturMenu extends JFrame implements ActionListener{
       private JFrame frame;
@@ -26,6 +32,13 @@ public class PicturMenu extends JFrame implements ActionListener{
     private int defaultDifficulty;
     private boolean defaultDoModularDifficulty;
     private boolean defaultDoPoints;
+    private JComboBox<String> guesscomboBox;
+    private JComboBox<String> revealcomboBox;
+    private JComboBox<String> comboBox;
+    private JComboBox<String> imageModecomboBox;
+    private JCheckBox checkbox;
+    private int defaultImageMode;
+
        
       /**
        * @ this controls all events of the game menu
@@ -39,7 +52,7 @@ public class PicturMenu extends JFrame implements ActionListener{
         }
         
         if(comm.equals("START")){
-            new Game(guesscomboBox.getSelectedIndex(), revealcomboBox.getSelectedIndex(),comboBox.getSelectedIndex() , checkbox.isSelected(), 10, defaultDoPoints);
+            new Game(guesscomboBox.getSelectedIndex(), revealcomboBox.getSelectedIndex(),comboBox.getSelectedIndex() , checkbox.isSelected(), 10, defaultDoPoints, imageModecomboBox.getSelectedIndex());
             this.dispose();
         }
         
@@ -159,7 +172,7 @@ public class PicturMenu extends JFrame implements ActionListener{
         settingsPanel.setPreferredSize(frame.getSize()); 
         settingsPanel.setLayout(null);
           
-        JCheckBox checkbox = new JCheckBox ("Modular Difficulty");
+        checkbox = new JCheckBox ("Modular Difficulty");
         checkbox.setFont(new Font("Arial", Font.BOLD, 15));
         checkbox.setBounds(620,110,150,15);
         checkbox.setCursor(new Cursor(Cursor.HAND_CURSOR)); //This puts the pointing finger cursor when we hover over 
@@ -221,7 +234,7 @@ public class PicturMenu extends JFrame implements ActionListener{
         menuArea.add(exitButton);
         
         String[] difficulty = {"EASY", "MEDIUM", "HARD"};
-        JComboBox<String> comboBox = new JComboBox<>(difficulty);//This implements a dropdown box for the various game levels
+        comboBox = new JComboBox<>(difficulty);//This implements a dropdown box for the various game levels
         String selectedOption = (String) comboBox.getSelectedItem();
         comboBox.setBounds(450,200,70,26);
         comboBox.setFont(new Font("Arial", Font.BOLD, 15));
@@ -232,8 +245,8 @@ public class PicturMenu extends JFrame implements ActionListener{
         settingsPanel.add(comboBox);
         
         //This creates the guess types the user can choose.
-        String[] guess = {"SIMPLE GUESS","WORD TYPE","LOGO"};
-        JComboBox<String> guesscomboBox = new JComboBox<>(guess);
+        String[] guess = {"SIMPLE GUESS","SCORE GUESS"};
+        guesscomboBox = new JComboBox<>(guess);
         guesscomboBox.setForeground(Color.BLACK);
         guesscomboBox.setCursor(new Cursor(Cursor.HAND_CURSOR));
         String selectedguess = (String) comboBox.getSelectedItem();
@@ -243,18 +256,18 @@ public class PicturMenu extends JFrame implements ActionListener{
         settingsPanel.add(guesscomboBox);
 
         String[] imageMode = { "NORMAL", "ICON"};
-        JComboBox<String> imageModecomboBox = new JComboBox<> (imageMode);
+        imageModecomboBox = new JComboBox<> (imageMode);
         imageModecomboBox.setForeground(Color.RED);
         imageModecomboBox.setCursor(new Cursor(Cursor.HAND_CURSOR));
         String selectedImageMode = (String) comboBox.getSelectedItem();
         imageModecomboBox.setBounds(673,320,90,26);
         imageModecomboBox.setFont(new Font("Arial", Font.BOLD, 15));
-        imageModecomboBox.setSelectedItem("NORMAL");
+        imageModecomboBox.setSelectedIndex(defaultImageMode);
         settingsPanel.add(imageModecomboBox);
         
         //This creates the options for reveal types in a dropdown box style.
-        String[] reveal = {"SIMPLE REVEAL", "BY COLOR", "BY ICON"};
-        JComboBox<String> revealcomboBox = new JComboBox<>(reveal);
+        String[] reveal = {"SIMPLE REVEAL", "COLOR REVEAL", "SPOTLIGHT REVEAL"};
+        revealcomboBox = new JComboBox<>(reveal);
         revealcomboBox.setForeground(Color.BLACK);
         revealcomboBox.setCursor(new Cursor(Cursor.HAND_CURSOR));
         String selectedreveal = (String) comboBox.getSelectedItem();
@@ -272,13 +285,14 @@ public class PicturMenu extends JFrame implements ActionListener{
          * This is the PicturMenu default constructor.
          * It calls setupMenu so we can achieve all the funtionalities we want the game menu to do.
          */
-    public PicturMenu(int defaultGuessPanel, int defaultRevealPanel, int defaultDifficulty, boolean defaultDoModularDifficulty, boolean defaultDoPoints){
+    public PicturMenu(int defaultGuessPanel, int defaultRevealPanel, int defaultDifficulty, boolean defaultDoModularDifficulty, boolean defaultDoPoints, int defaultImageMode){
         // Default settings
         this.defaultGuessPanel = defaultGuessPanel;
         this.defaultRevealPanel = defaultRevealPanel;
         this.defaultDifficulty = defaultDifficulty;
         this.defaultDoModularDifficulty = defaultDoModularDifficulty;
         this.defaultDoPoints = defaultDoPoints;
+        this.defaultImageMode = defaultImageMode;
 
         // Setup the frame
         frame = this;
@@ -289,10 +303,5 @@ public class PicturMenu extends JFrame implements ActionListener{
         setLocationRelativeTo(null);
         setVisible(true);
         repaint();
-    }
-    
-    public static void main(String[] args){
-        PicturMenu menuPanel = new PicturMenu();
-       menuPanel.setVisible(true);  
     }
 }

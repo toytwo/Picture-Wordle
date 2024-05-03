@@ -102,7 +102,7 @@ public class HintPanel extends InteractivePanel {
         this.add(emptyPanel, constraints);
 
         // Add a header
-        JLabel header = new JLabel("                              Hints                              ", SwingConstants.CENTER);
+        JLabel header = new JLabel("Hints", SwingConstants.CENTER);
         header.setFont(new Font("Arial", Font.PLAIN, HintLabel.TEXT_SIZE));
         constraints.gridy++;
         this.add(header,constraints);

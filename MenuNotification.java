@@ -110,7 +110,7 @@ public class MenuNotification extends FadingNotification {
         mainMenuButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new PicturMenu(Main.defaultGuessPanel,Main.defaultRevealPanel,Main.defaultDifficulty,Main.defaultDoModularDifficulty, Main.defaultPointsEnabled);
+                new PicturMenu(Main.defaultGuessPanel,Main.defaultRevealPanel,Main.defaultDifficulty,Main.defaultDoModularDifficulty, Main.defaultPointsEnabled, Main.defaultImageMode);
                 Game.getCurrentGame().dispose();
             }
         });

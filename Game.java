@@ -75,8 +75,12 @@ public class Game extends JFrame {
      * True if points are enabled. False otherwise.
      */
     private boolean pointsEnabled;
+    /**
+     * The types of images used
+     */
+    private String imageMode;
     
-    public Game(int guessPanelID, int revealPanelID, int difficulty, boolean doModularDifficulty, int imageLimit, boolean pointsEnabled) {
+    public Game(int guessPanelID, int revealPanelID, int difficulty, boolean doModularDifficulty, int imageLimit, boolean pointsEnabled, int imageMode) {
         this.difficulty = difficulty;
         this.previousDifficulty = -1; // Ensure it's different from difficulty
         this.totalScore = 0;
@@ -102,6 +106,18 @@ public class Game extends JFrame {
         this.setIconImage(iconImage);
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        switch (imageMode) {
+            case 0:
+                this.imageMode = "Images";
+                break;
+            case 1:
+                this.imageMode = "Icon_Images";
+                break;
+            default:
+                this.imageMode = "Images";
+                break;
+        }
 
         game = this;
 
@@ -132,7 +148,7 @@ public class Game extends JFrame {
      */
     private void updateImagePool(){
         if(this.previousDifficulty != this.difficulty){
-            String filePath = "Images"+File.separator;
+            String filePath = imageMode+File.separator;
             if(this.difficulty == 0){
                 filePath+="Easy";
             }
@@ -144,7 +160,7 @@ public class Game extends JFrame {
             }
             
             this.images = new File(filePath+File.separator).listFiles();
-            this.imagePool = new File("Images"+File.separator+"Unsorted").listFiles();
+            this.imagePool = new File(imageMode+File.separator+"Unsorted").listFiles();
 
             this.previousDifficulty = this.difficulty;
         }
@@ -235,7 +251,7 @@ public class Game extends JFrame {
         else{
             difficulty = "Easy";
         }
-        String newFilePath = "Images"+File.separator+difficulty+File.separator;
+        String newFilePath = imageMode+File.separator+difficulty+File.separator;
 
         // Rename the file
         File newImageFile = new File(newFilePath+newFileName);
