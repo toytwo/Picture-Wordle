@@ -101,8 +101,8 @@ public class HintPanel extends InteractivePanel {
         this.add(emptyPanel, constraints);
 
         // Add a header
-        JLabel header = new JLabel("Hints", SwingConstants.CENTER);
-        header.setFont(new Font("Arial", Font.PLAIN, HintLabel.TEXT_SIZE));
+        JLabel header = new JLabel("                           Hints                           ", SwingConstants.CENTER);
+        header.setFont(new Font("Arial", Font.BOLD, HintLabel.TEXT_SIZE+10));
         constraints.gridwidth = 2;
         constraints.gridy++;
         this.add(header,constraints);
@@ -122,9 +122,9 @@ public class HintPanel extends InteractivePanel {
 
             if(pointsEnabled){
                 constraints.gridx = 1;
+                constraints.weightx = 0;
                 revealButtons[i] = new JButton("Manual Reveal");
-                revealButtons[i].setFont(new Font("Arial", Font.BOLD, 16
-                ));
+                revealButtons[i].setFont(new Font("Arial", Font.BOLD, 16));
                 int index = i; // Variables must be relatively final within anonymous declaration
                 revealButtons[i].addActionListener(new ActionListener() {
                     @Override
@@ -141,6 +141,7 @@ public class HintPanel extends InteractivePanel {
                 });
                 revealButtons[i].setEnabled(i==0);
                 this.add(revealButtons[i],constraints);
+                constraints.weightx = 1;
             }
         }
     }
