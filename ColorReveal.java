@@ -68,7 +68,7 @@ public class ColorReveal extends RevealPanel{
 
     @Override
     public void resetInstanceVariables() {
-        this.imageCopy = resizeImage(image);
+        this.imageCopy = copyImage(image);
         this.activeHueRanges = new boolean[NUMBER_OF_BUTTONS];
     }
 
@@ -294,19 +294,6 @@ public class ColorReveal extends RevealPanel{
         g2d.dispose();
 
         return copy;
-    }
-
-    /**
-     * Resize the image to fit the panel
-     * @param imageToResize The image to be resized
-     * @return The resized image
-     */
-    private BufferedImage resizeImage(BufferedImage imageToResize){
-        BufferedImage resizedImage = new BufferedImage(getHeight(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphics2D = resizedImage.createGraphics();
-        graphics2D.drawImage(imageToResize, 0, 0, getHeight(), getHeight(), null);
-        graphics2D.dispose();
-        return resizedImage;
     }
 
     @Override

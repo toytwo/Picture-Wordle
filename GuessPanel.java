@@ -223,7 +223,7 @@ public abstract class GuessPanel extends InteractivePanel{
                 makeGuessButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    interactionPerformed(pointsEnabled);
+                    interactionPerformed(true);
                 }});
 
                 // Set the label of the button
@@ -266,7 +266,7 @@ public abstract class GuessPanel extends InteractivePanel{
             public void keyPressed(KeyEvent e) {
                 // Cycle to the next guessField
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    interactionPerformed(pointsEnabled);
+                    interactionPerformed(true);
                 }
                 else{
                     // Create a timer to delay retrieving the text. Without the delay, the last letter typed isn't recorded.
