@@ -62,8 +62,8 @@ public class MenuNotification extends FadingNotification {
         int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
         int dialogWidth = getWidth();
         int dialogHeight = getHeight();
-        int x = (screenWidth - dialogWidth) / 2; // Center horizontally
-        int y = screenHeight / 3 - dialogHeight / 2; // 2/3 of height, centered vertically
+        int x = (80 * screenWidth / 100 - dialogWidth / 2);
+        int y = screenHeight / 2 - dialogHeight / 2;
 
         // Set the dialog's location
         setLocation(x, y);

@@ -12,7 +12,6 @@ import java.awt.BorderLayout;
 public class ActionNotification extends FadingNotification {
     private String title;
     private String subtitle;
-    private static ActionNotification[] displayedNotifications = new ActionNotification[5];
 
     /**
      * @param title The main text
@@ -23,13 +22,6 @@ public class ActionNotification extends FadingNotification {
         
         this.title = title;
         this.subtitle = subtitle;
-
-        for(int i = 0; i < displayedNotifications.length; i++){
-            if(displayedNotifications[i] != null){
-                displayedNotifications[i].dispose();
-            }
-        }
-        displayedNotifications[0] = this;
 
         // Must be called here and not in superclass in order to properly add elements (I don't know why)
         setupContentArea();
@@ -47,8 +39,8 @@ public class ActionNotification extends FadingNotification {
         int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
         int dialogWidth = getWidth();
         int dialogHeight = getHeight();
-        int x = (screenWidth - dialogWidth) * 13/14; // Center horizontally
-        int y = screenHeight / 3 - dialogHeight / 2; // 2/3 of height, centered vertically
+        int x = (screenWidth - dialogWidth / 2) * 55/70;
+        int y = (screenHeight / 3 - dialogHeight / 2) * 59/70;
 
         // Set the dialog's location
         this.setLocation(x, y);

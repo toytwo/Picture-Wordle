@@ -92,6 +92,7 @@ public abstract class GuessPanel extends InteractivePanel{
 
     @Override
     public void resetContentArea() {
+        Game.getCurrentGame().swapGuessPanel(true);
         this.hintPanel.resetPanel(this.targetWord);
         
         for(JComboBox<String> guessField : guessFields){
@@ -329,7 +330,8 @@ public abstract class GuessPanel extends InteractivePanel{
                 this.scorePanel.setTotalScore(Game.getCurrentGame().getTotalScore());
             }
             ((RevealPanel) otherPanel).revealEntireImage();
-            (new MenuNotification(targetWord, wasCorrectGuess, interactionCount)).setVisible(true);            
+            (new MenuNotification(targetWord, wasCorrectGuess, interactionCount)).setVisible(true);      
+            Game.getCurrentGame().swapGuessPanel(false);      
             return false;
         }
 

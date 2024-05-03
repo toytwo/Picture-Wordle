@@ -1,3 +1,5 @@
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.image.BufferedImage;
@@ -11,13 +13,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import javax.imageio.ImageIO;
+import javax.swing.Box;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 /**
  * @author Jackson Alexman
  * @version Updated: 5/2/2024
  */
 public class Game extends JFrame {
+    private Component placeholderSpace;
     private GuessPanel guessPanel;
     private RevealPanel revealPanel;
     private int difficulty;
@@ -389,6 +394,29 @@ public class Game extends JFrame {
         }
         catch(Exception e){
             /* GuessPanel is not ScoreGuess and therefore the score doesn't need to be updated */
+        }
+    }
+
+    public void swapGuessPanel(boolean showGuessPanel){
+        if(placeholderSpace == null){
+            placeholderSpace = Box.createRigidArea(new Dimension(this.guessPanel.getSize()));
+        }
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridy = 0;
+        constraints.fill = GridBagConstraints.BOTH; 
+        constraints.weighty = 1; 
+        constraints.gridwidth = 1;
+        constraints.gridx = 1;
+        constraints.weightx = 1.0-this.revealPanel.getREVEAL_PANEL_SCREEN_PERCENTAGE();
+
+        if(showGuessPanel){
+            this.remove(placeholderSpace);
+            this.add(this.guessPanel,constraints);
+        }
+        else{
+            this.remove(this.guessPanel);
+            this.add(placeholderSpace, constraints);
         }
     }
 
