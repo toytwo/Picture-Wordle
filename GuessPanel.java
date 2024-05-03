@@ -79,7 +79,7 @@ public abstract class GuessPanel extends InteractivePanel{
         // Initialize instance variables
         this.guessFields = new JComboBox[MAX_ACTIONS];
         this.updatingWordBank = false;
-        this.scorePanel = new ScorePanel(Game.getCurrentGame().getDifficulty());
+        this.scorePanel = new ScorePanel();
         this.skipActionPanel = new SkipActionPanel();
         this.hintPanel = new HintPanel(this.targetWord, this.MAX_ACTIONS, Game.getREVEAL_HINT_COST(), pointsEnabled);
         this.setPanelDescriptors("Guess", "Guesses");
@@ -87,17 +87,21 @@ public abstract class GuessPanel extends InteractivePanel{
 
     @Override
     public void resetInstanceVariables() {
-        /* Do Nothing */
+        skipActionPanel.setEnabledPanel(otherPanel);
     }
 
     @Override
     public void resetContentArea() {
         this.hintPanel.resetPanel(this.targetWord);
-        this.scorePanel.resetPanel(this.targetWord, Game.getCurrentGame().getDifficulty());
+        
         for(JComboBox<String> guessField : guessFields){
             JTextField editor = (JTextField) guessField.getEditor().getEditorComponent();
             editor.setBackground(Color.WHITE);
             editor.setText("");
+        }
+
+        if(pointsEnabled){
+            this.scorePanel.resetPanel(this.targetWord);
         }
     }
 
@@ -320,6 +324,10 @@ public abstract class GuessPanel extends InteractivePanel{
             interactionCount++; //Increment after difficulty set
             this.setPanelEnabled(false);
             this.hintPanel.checkReveal(MAX_ACTIONS-1);
+            if(pointsEnabled){
+                Game.getCurrentGame().updateTotalScore();
+                this.scorePanel.setTotalScore(Game.getCurrentGame().getTotalScore());
+            }
             ((RevealPanel) otherPanel).revealEntireImage();
             (new MenuNotification(targetWord, wasCorrectGuess, interactionCount)).setVisible(true);            
             return false;

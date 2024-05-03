@@ -178,13 +178,14 @@ public class MenuNotification extends FadingNotification {
         bodyPanel.add(northPanel, BorderLayout.NORTH);
 
         // South
-        JPanel southPanel = new JPanel();
-        Game.getCurrentGame().updateTotalScore();
-        JLabel scoreLabel = new JLabel(String.valueOf("Score: "+Game.getCurrentGame().getTotalScore()));
-        scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        scoreLabel.setFont(new Font("Lexend", Font.BOLD, 20));
-        southPanel.add(scoreLabel);
-        bodyPanel.add(southPanel, BorderLayout.SOUTH);
+        if(Game.getCurrentGame().isPointsEnabled()){
+            JPanel southPanel = new JPanel();
+            JLabel scoreLabel = new JLabel(String.valueOf("Score: "+Game.getCurrentGame().getTotalScore()));
+            scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            scoreLabel.setFont(new Font("Lexend", Font.BOLD, 20));
+            southPanel.add(scoreLabel);
+            bodyPanel.add(southPanel, BorderLayout.SOUTH);
+        }
 
         return bodyPanel;
     }

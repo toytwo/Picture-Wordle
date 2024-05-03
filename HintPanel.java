@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -104,9 +103,11 @@ public class HintPanel extends InteractivePanel {
         // Add a header
         JLabel header = new JLabel("                              Hints                              ", SwingConstants.CENTER);
         header.setFont(new Font("Arial", Font.PLAIN, HintLabel.TEXT_SIZE));
+        constraints.gridwidth = 2;
         constraints.gridy++;
         this.add(header,constraints);
         
+        constraints.gridwidth = 1;
         // Create a JLabel and JButton for each hint
         for (int i = 0; i < hints.length; i++) {
             constraints.gridy++;

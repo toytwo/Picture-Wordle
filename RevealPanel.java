@@ -14,7 +14,7 @@ public abstract class RevealPanel extends InteractivePanel{
     /**
      * How much of the screen width the revealPanel occupies. guessPanel will occupy the other part (1-this).
      */
-    protected double REVEAL_PANEL_SCREEN_PERCENTAGE = 5.0/6.0;
+    protected double REVEAL_PANEL_SCREEN_PERCENTAGE = 2.0/3.0;
 
     public RevealPanel(String targetWord, int swapThreshold, boolean doSwapThreshold, BufferedImage image, int MAX_REVEALS, int revealCost, LayoutManager layout, boolean pointsEnabled){
         super(layout, targetWord, swapThreshold, doSwapThreshold, MAX_REVEALS, revealCost, pointsEnabled);
