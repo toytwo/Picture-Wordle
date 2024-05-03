@@ -19,23 +19,20 @@ public class ScorePanel extends InteractivePanel{
     private int totalScore;
     private JLabel totalScoreLabel;
     private JLabel imageScoreLabel;
-    private int difficulty;
 
-    public ScorePanel(int difficulty){
+    public ScorePanel(){
         super(null,0,false,0,0,true); // Uses Interactive Panels methods, not it's instance variables
 
         this.imageScore = 0;
         this.totalScore = 0;
-        this.difficulty = difficulty;
-        newImage(this.difficulty);
 
         setupContentArea();
+
+        newImage();
     }
 
-    protected void resetPanel(String newTargetWord, int difficulty) {
+    protected void resetPanel(String newTargetWord) {
         super.resetPanel(newTargetWord);
-
-        this.difficulty = difficulty;
     }
 
     @Override
@@ -45,9 +42,7 @@ public class ScorePanel extends InteractivePanel{
 
     @Override
     public void resetContentArea() {
-        newImage(difficulty);
-        updateImageScore(-this.imageScore); // Reset to 0
-        updateImageScore(0);
+        newImage();
     }
 
     /**
@@ -74,8 +69,8 @@ public class ScorePanel extends InteractivePanel{
      * Sets the starting value for imageScore. Called once per image.
      * @param difficulty The difficulty of the image.
      */
-    public void newImage(int difficulty){
-        switch(difficulty){
+    public void newImage(){
+        switch(Game.getCurrentGame().getDifficulty()){
             // Easy
             case 0: this.imageScore = 500; break;
             // Medium
@@ -86,6 +81,7 @@ public class ScorePanel extends InteractivePanel{
             case 3: this.imageScore = 500; break;
             default: System.err.println("Invalid Difficulty"); System.exit(0); break;
         }
+        updateImageScore(0);
     }
 
     /**
@@ -97,12 +93,12 @@ public class ScorePanel extends InteractivePanel{
     }
 
     /**
-     * Updates the total score display
-     * @param newTotalScore
+     * Updates the total score display.
+     * @param newTotalScore Sets the display to this number.
      */
-    public void updateTotalScore(int newTotalScore){
+    public void setTotalScore(int newTotalScore){
         this.totalScore = newTotalScore;
-        this.totalScoreLabel.setText("Total ScoreL "+this.totalScore);
+        this.totalScoreLabel.setText("Total Score: "+this.totalScore);
     }
 
     /**

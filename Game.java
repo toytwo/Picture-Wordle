@@ -400,6 +400,10 @@ public class Game extends JFrame {
         return this.imageLimit;
     }
 
+    public boolean isPointsEnabled(){
+        return this.pointsEnabled;
+    }
+
     /**
      * @return Null if doSubtractPoints is false.
      */

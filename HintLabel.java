@@ -80,9 +80,10 @@ public class HintLabel extends JLabel {
                 // Start fading in the new text when the old text is faded out
                 if(textOpacity <= 0){
                     textOpacityModifier *= -1;
-                    setHorizontalAlignment(SwingConstants.LEFT); // Left align
                     textColor = Color.BLACK; // Text Color
+                    setHorizontalAlignment(SwingConstants.LEFT); // Left align
                     setText(" "+hint); // Blank space for formatting
+                    
                 }
                 
                 setForeground(new Color(textColor.getRed(),textColor.getGreen(),textColor.getBlue(),Math.max(0,textOpacity)));
