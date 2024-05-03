@@ -123,7 +123,8 @@ public class HintPanel extends InteractivePanel {
             if(pointsEnabled){
                 constraints.gridx = 1;
                 revealButtons[i] = new JButton("Manual Reveal");
-                revealButtons[i].setFont(new Font("Arial", Font.BOLD, 15));
+                revealButtons[i].setFont(new Font("Arial", Font.BOLD, 16
+                ));
                 int index = i; // Variables must be relatively final within anonymous declaration
                 revealButtons[i].addActionListener(new ActionListener() {
                     @Override

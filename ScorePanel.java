@@ -54,12 +54,12 @@ public class ScorePanel extends InteractivePanel{
 
         this.totalScoreLabel = new JLabel("Total Score: "+totalScore);
         totalScoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        totalScoreLabel.setFont(new Font("Lexend", Font.BOLD, 15));
+        totalScoreLabel.setFont(new Font("Lexend", Font.BOLD, 25));
         this.add(this.totalScoreLabel,BorderLayout.WEST);
 
         this.imageScoreLabel = new JLabel("Image Score: "+imageScore);
         imageScoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        imageScoreLabel.setFont(new Font("Lexend", Font.BOLD, 15));
+        imageScoreLabel.setFont(new Font("Lexend", Font.BOLD, 25));
         this.add(this.imageScoreLabel,BorderLayout.CENTER);
 
         this.add(new JPanel(), BorderLayout.SOUTH);

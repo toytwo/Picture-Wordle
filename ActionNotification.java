@@ -54,7 +54,7 @@ public class ActionNotification extends FadingNotification {
         // Add the subtitle
         JLabel subtitleLabel = new JLabel(this.subtitle);
         subtitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        subtitleLabel.setFont(new Font("Arial", Font.PLAIN, 15));
+        subtitleLabel.setFont(new Font("Arial", Font.PLAIN, 25));
         this.add(subtitleLabel, BorderLayout.SOUTH);
     }
 }
