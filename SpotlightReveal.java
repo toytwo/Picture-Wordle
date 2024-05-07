@@ -35,8 +35,8 @@ public class SpotlightReveal extends RevealPanel {
      * @param g
      * @param MAX_REVEALS The maximum number of times that the player can reveal part of the image
      */
-    public SpotlightReveal(String n, int i, boolean b, BufferedImage g, int MAX_REVEALS, int REVEAL_COST, boolean pointsEnabled) {
-        super(n,i,b,g, MAX_REVEALS, REVEAL_COST, new GridBagLayout(), pointsEnabled);
+    public SpotlightReveal(String n, int i, BufferedImage g, int MAX_REVEALS, int REVEAL_COST, boolean pointsEnabled) {
+        super(n,i,g, MAX_REVEALS, REVEAL_COST, new GridBagLayout(), pointsEnabled);
         radius = 70;
         x = -1;
         y = -1;

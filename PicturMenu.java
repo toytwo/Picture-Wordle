@@ -18,7 +18,7 @@ import java.awt.event.ActionListener;
 
 /**
  * @author Babucarr
- * @version ( 04/13/2024) | Integrated by Jackson (4/29/2024) | Reintegrated by Jackson (5/2/2024)
+ * @version ( 04/13/2024) | Integrated by Jackson (4/29/2024) | Reintegrated by Jackson (5/2/2024) | Updated by Jackson (5/6/2024)
  */
 public class PicturMenu extends JFrame implements ActionListener{
       private JFrame frame;
@@ -53,6 +53,14 @@ public class PicturMenu extends JFrame implements ActionListener{
         }
         
         if(comm.equals("START")){
+            // Score must be enabled for score guess
+            if(guesscomboBox.getSelectedIndex() == 1){
+                scoreCheckbox.setSelected(true);
+            }
+            if(revealcomboBox.getSelectedIndex() == 0){
+                guesscomboBox.setSelectedIndex(0);
+                scoreCheckbox.setSelected(false);
+            }
             new Game(guesscomboBox.getSelectedIndex(), revealcomboBox.getSelectedIndex(),comboBox.getSelectedIndex() , checkbox.isSelected(), 10, scoreCheckbox.isSelected(), imageModecomboBox.getSelectedIndex());
             this.dispose();
         }
@@ -138,7 +146,7 @@ public class PicturMenu extends JFrame implements ActionListener{
                 g2d.drawString(text, 320, 150);
                 
                 Graphics2D g2 = (Graphics2D) g;
-                String credits = "Credits: Jackson,Dammon, Babucarr, Gishe";
+                String credits = "Credits: Jackson, Damon, Babucarr, Gishe";
                 Font cred = new Font("sanSerif", Font.BOLD, 20);
                 g2.setFont(cred);
                 Stroke stro = new BasicStroke(3.0f);

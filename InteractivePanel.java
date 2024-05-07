@@ -51,21 +51,21 @@ public abstract class InteractivePanel extends JPanel {
      */
     protected boolean pointsEnabled;
 
-    public InteractivePanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS, int ACTION_COST, boolean pointsEnabled){
+    public InteractivePanel(String targetWord, int SWAP_THRESHOLD, int MAX_ACTIONS, int ACTION_COST, boolean pointsEnabled){
         this.SWAP_THRESHOLD = SWAP_THRESHOLD;
         this.targetWord = targetWord;
-        this.doSwapThreshold = doSwapThreshold;
+        this.doSwapThreshold = true;
         this.MAX_ACTIONS = MAX_ACTIONS;
         this.interactionCount = 0;
         this.ACTION_COST = ACTION_COST;
         this.pointsEnabled = pointsEnabled;
     }
 
-    public InteractivePanel(LayoutManager layout, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_ACTIONS, int ACTION_COST, boolean pointsEnabled){
+    public InteractivePanel(LayoutManager layout, String targetWord, int SWAP_THRESHOLD, int MAX_ACTIONS, int ACTION_COST, boolean pointsEnabled){
         super(layout);
         this.SWAP_THRESHOLD = SWAP_THRESHOLD;
         this.targetWord = targetWord;
-        this.doSwapThreshold = doSwapThreshold;
+        this.doSwapThreshold = true;
         this.MAX_ACTIONS = MAX_ACTIONS;
         this.interactionCount = 0;
         this.ACTION_COST = ACTION_COST;
@@ -138,12 +138,19 @@ public abstract class InteractivePanel extends JPanel {
      * @return If it's time to swap
      */
     protected boolean interactionPerformed(boolean doSubtractPoints){
+        boolean doSwap = false;
+
         this.interactionCount++; // Increment the number of actions performed
-        Boolean doSwap = this.swap(); // Check if it's time to swap
-        this.sendNotification(doSwap); // Show the player the next action they should perform
+
+        if(doSwapThreshold){
+            doSwap = this.swap(); // Check if it's time to swap
+            this.sendNotification(doSwap); // Show the player the next action they should perform
+        }
+
         if(this.pointsEnabled && doSubtractPoints){
             this.subtractPointCost();
         }
+
         return doSwap;
     }
 
@@ -158,11 +165,7 @@ public abstract class InteractivePanel extends JPanel {
      * Check if the actionCount meets the swapThreshold. If so, swap panels.
      * @return If enough actions have been performed and it is time to swap to the other panel
      */
-    final protected boolean swap(){
-        if(!doSwapThreshold){
-            return false;
-        }
-
+    final private boolean swap(){
         // If the swap threshold has been met, deactivate this panel and activate otherPanel
         if(interactionCount%SWAP_THRESHOLD == 0){
             this.setPanelEnabled(false);

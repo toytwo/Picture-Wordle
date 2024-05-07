@@ -1,13 +1,18 @@
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 5/2/2024
+ * @version Updated: 5/6/2024
  */
 public class SimpleReveal extends RevealPanel {
-    public SimpleReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_REVEALS, int REVEAL_COST, boolean pointsEnabled){
-        super(targetWord, SWAP_THRESHOLD, doSwapThreshold, image, MAX_REVEALS, REVEAL_COST, pointsEnabled);
+    public SimpleReveal(BufferedImage image, String targetWord, int SWAP_THRESHOLD, int MAX_REVEALS, int REVEAL_COST, boolean pointsEnabled){
+        super(targetWord, SWAP_THRESHOLD, image, MAX_REVEALS, REVEAL_COST, pointsEnabled);
+
+        this.doSwapThreshold = false;
 
         setupContentArea();
     }
@@ -16,18 +21,31 @@ public class SimpleReveal extends RevealPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (image != null) {
-            // Calculate the position to center the image horizontally
-            int panelWidth = getWidth();
-            int panelHeight = getHeight();
-            int x = (panelWidth-panelHeight) / 2;
-            
             // Draw the scaled image with the height matching the panel height
-            g.drawImage(image, x, 0, panelHeight, panelHeight, this);
+            g.drawImage(image,0,0, this);
         }
     }
 
     @Override
-    public void setupContentArea() {/* Do Nothing */}
+    public void setupContentArea() {
+        this.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                // Resize the image to fit the panel
+                image = resizeImage(image);
+
+                // Resize the imagePanel to fit the image
+                setPreferredSize(new Dimension(getHeight(),getHeight()));
+                setMaximumSize(new Dimension(getHeight(),getHeight()));
+                revalidate();
+                repaint();
+
+                // Remove the listener so it is only called once
+                removeComponentListener(getComponentListeners()[0]);
+            }
+        });
+        
+    }
 
     @Override
     public void revealEntireImage() {/* Do Nothing */}

@@ -11,8 +11,8 @@ public class ScoreGuess extends GuessPanel {
      * @param targetWord The word the user is trying to guess. Must be in WordList.txt.
      * @param GUESS_COST The amount of points lost for a guess
      */
-    public ScoreGuess(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_GUESSES, int GUESS_COST, boolean pointsEnabled){
-        super(targetWord,SWAP_THRESHOLD,doSwapThreshold,MAX_GUESSES, GUESS_COST, pointsEnabled);
+    public ScoreGuess(String targetWord, int SWAP_THRESHOLD, int MAX_GUESSES, int GUESS_COST, boolean pointsEnabled){
+        super(targetWord,SWAP_THRESHOLD,MAX_GUESSES, GUESS_COST, pointsEnabled);
 
         if(!doSwapThreshold){
             System.err.println("doSwapThreshold must be True for this panel.");

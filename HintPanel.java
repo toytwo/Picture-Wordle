@@ -43,11 +43,12 @@ public class HintPanel extends InteractivePanel {
      * @param MAX_GUESSES The max number of guesses
      */
     public HintPanel(String targetWord, int MAX_GUESSES, int REVEAL_HINT_COST, boolean pointsEnabled){
-        super(new GridBagLayout(), targetWord.toLowerCase(), 0, false, MAX_GUESSES, REVEAL_HINT_COST, pointsEnabled);
+        super(new GridBagLayout(), targetWord.toLowerCase(), 0, MAX_GUESSES, REVEAL_HINT_COST, pointsEnabled);
 
         // Initialize Instance Variables
         this.hintLabels = new HintLabel[4];
         this.revealButtons = new JButton[4];
+        this.doSwapThreshold = false;
 
         // If targetWordTypes is uninitialized
         if(targetWordTypes == null){

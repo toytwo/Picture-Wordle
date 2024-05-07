@@ -3,14 +3,13 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 5/2/2024
+ * @version Updated: 5/6/2024
  */
 public class SkipActionPanel extends JPanel {
     private JButton skipNextActionButton;
@@ -50,6 +49,7 @@ public class SkipActionPanel extends JPanel {
                 startSkipCooldown();
             }
         });
+        
         constraints.gridx = 0;
         this.add(skipNextActionButton, constraints);
 
@@ -75,9 +75,14 @@ public class SkipActionPanel extends JPanel {
     }
 
     public void setEnabledPanel(InteractivePanel enabledPanel){
+        if(!enabledPanel.doSwapThreshold && enabledPanel instanceof RevealPanel){
+            enabledPanel = enabledPanel.otherPanel;
+            this.skipActionsTillSwapButton.setVisible(false);
+        }
+
         this.enabledPanel = enabledPanel;
-        this.skipNextActionButton.setText("Skip "+this.enabledPanel.panelName);
-        this.skipActionsTillSwapButton.setText("Skip To Next "+this.enabledPanel.otherPanel.panelName);
+        this.skipNextActionButton.setText("Skip "+enabledPanel.panelName);
+        this.skipActionsTillSwapButton.setText("Skip To Next "+enabledPanel.otherPanel.panelName);
     }
 
     private void startSkipCooldown(){

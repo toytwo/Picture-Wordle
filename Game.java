@@ -15,10 +15,11 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 5/2/2024
+ * @version Updated: 5/6/2024
  */
 public class Game extends JFrame {
     private Component placeholderSpace;
@@ -40,6 +41,7 @@ public class Game extends JFrame {
     private File[] images;
     private int guessPanelID;
     private int revealPanelID;
+    private int imageModeID;
     private static Game game;
     private Random random;
     private boolean doModularDifficulty;
@@ -84,13 +86,14 @@ public class Game extends JFrame {
      */
     private String imageMode;
     
-    public Game(int guessPanelID, int revealPanelID, int difficulty, boolean doModularDifficulty, int imageLimit, boolean pointsEnabled, int imageMode) {
+    public Game(int guessPanelID, int revealPanelID, int difficulty, boolean doModularDifficulty, int imageLimit, boolean pointsEnabled, int imageModeID) {
         this.difficulty = difficulty;
         this.previousDifficulty = -1; // Ensure it's different from difficulty
         this.totalScore = 0;
         this.imageCount = 0;
         this.guessPanelID = guessPanelID;
         this.revealPanelID = revealPanelID;
+        this.imageModeID = imageModeID;
         this.doModularDifficulty = doModularDifficulty;
         this.pointsEnabled = pointsEnabled;
         this.imageLimit = imageLimit;
@@ -111,7 +114,7 @@ public class Game extends JFrame {
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        switch (imageMode) {
+        switch (imageModeID) {
             case 0:
                 this.imageMode = "Images";
                 break;
@@ -224,7 +227,16 @@ public class Game extends JFrame {
             initializePanels();
         }
 
-        this.guessPanel.setPanelEnabled(false);
+        if(this.revealPanel.doSwapThreshold && this.guessPanel.doSwapThreshold){
+            this.guessPanel.setPanelEnabled(false);
+        }
+
+        else{
+            SwingUtilities.invokeLater(() -> {this.guessPanel.setPanelEnabled(true);});
+            this.revealPanel.doSwapThreshold = false;
+            this.guessPanel.doSwapThreshold = false;
+        }
+        
     }
 
     /**
@@ -284,34 +296,34 @@ public class Game extends JFrame {
     private void initializePanels(){
         switch (guessPanelID) {
             case 0:
-                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES, GUESS_COST, pointsEnabled);
+                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, MAX_GUESSES, GUESS_COST, pointsEnabled);
                 break;
 
             case 1:
-                this.guessPanel = new ScoreGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES, GUESS_COST, pointsEnabled);
+                this.guessPanel = new ScoreGuess(this.targetWord, GUESS_SWAP_THRESHOLD, MAX_GUESSES, GUESS_COST, pointsEnabled);
                 break;
 
 
             default:
-                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, true, MAX_GUESSES, GUESS_COST, pointsEnabled);
+                this.guessPanel = new SimpleGuess(this.targetWord, GUESS_SWAP_THRESHOLD, MAX_GUESSES, GUESS_COST, pointsEnabled);
                 break;
         }
 
         switch (revealPanelID) {
             case 0:
-                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS, REVEAL_COST, pointsEnabled);
+                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, MAX_REVEALS, REVEAL_COST, pointsEnabled);
                 break;
 
             case 1:
-                this.revealPanel = new ColorReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, true, MAX_REVEALS, REVEAL_COST, 16, pointsEnabled);
+                this.revealPanel = new ColorReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, MAX_REVEALS, REVEAL_COST, 16, pointsEnabled);
                 break;
 
             case 2:
-                this.revealPanel = new SpotlightReveal(targetWord, REVEAL_SWAP_THRESHOLD, true, image, MAX_REVEALS, REVEAL_COST, pointsEnabled);
+                this.revealPanel = new SpotlightReveal(targetWord, REVEAL_SWAP_THRESHOLD, image, MAX_REVEALS, REVEAL_COST, pointsEnabled);
                 break;
 
             default:
-                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, false, MAX_REVEALS, REVEAL_COST, pointsEnabled);
+                this.revealPanel = new SimpleReveal(image, targetWord, REVEAL_SWAP_THRESHOLD, MAX_REVEALS, REVEAL_COST, pointsEnabled);
                 break;
         }
 
@@ -402,11 +414,8 @@ public class Game extends JFrame {
      * @param imageScore The score the player earned from an image
      */
     public void updateTotalScore(){
-        try{
+        if(pointsEnabled){
             this.totalScore += this.guessPanel.scorePanel.getImageScore();
-        }
-        catch(Exception e){
-            /* GuessPanel is not ScoreGuess and therefore the score doesn't need to be updated */
         }
     }
 
@@ -431,6 +440,8 @@ public class Game extends JFrame {
             this.remove(this.guessPanel);
             this.add(placeholderSpace, constraints);
         }
+
+        repaint();
     }
 
     public int getTotalScore(){
@@ -469,6 +480,22 @@ public class Game extends JFrame {
 
     public static int getREVEAL_HINT_COST(){
         return REVEAL_HINT_COST;
+    }
+
+    public int getGuessPanelID(){
+        return this.guessPanelID;
+    }
+
+    public int getRevealPanelID(){
+        return this.revealPanelID;
+    }
+
+    public boolean getDoModularDifficulty(){
+        return this.doModularDifficulty;
+    }
+
+    public int getImageMode(){
+        return this.imageModeID;
     }
 
     /**

@@ -21,7 +21,7 @@ public class ScorePanel extends InteractivePanel{
     private JLabel imageScoreLabel;
 
     public ScorePanel(){
-        super(null,0,false,0,0,true); // Uses Interactive Panels methods, not it's instance variables
+        super(null,0,0,0,true); // Uses Interactive Panels methods, not it's instance variables
 
         this.imageScore = 0;
         this.totalScore = 0;

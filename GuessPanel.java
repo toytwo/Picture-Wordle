@@ -24,7 +24,7 @@ import java.awt.Font;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 5/2/2024
+ * @version Updated: 5/6/2024
  */
 public abstract class GuessPanel extends InteractivePanel{
     /**
@@ -61,8 +61,8 @@ public abstract class GuessPanel extends InteractivePanel{
      * @param guessCost The amount of points to subtract for each guess.
      */
     @SuppressWarnings("unchecked")
-    public GuessPanel(String targetWord, int SWAP_THRESHOLD, boolean doSwapThreshold, int MAX_GUESSES, int guessCost, boolean pointsEnabled){
-        super(new BorderLayout(), targetWord, SWAP_THRESHOLD, doSwapThreshold, MAX_GUESSES, guessCost, pointsEnabled);
+    public GuessPanel(String targetWord, int SWAP_THRESHOLD, int MAX_GUESSES, int guessCost, boolean pointsEnabled){
+        super(new BorderLayout(), targetWord, SWAP_THRESHOLD, MAX_GUESSES, guessCost, pointsEnabled);
         // Initialize wordBank using an anonymous SwingWorker
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override
@@ -307,39 +307,36 @@ public abstract class GuessPanel extends InteractivePanel{
                 return false;
             }
 
+            // Ensure guessfield is empty
             if(this.wordBank.getPart() != ""){
                 updateWordBank("");
             }
+        }
+        else{
+            // Invalid Guess
+            if(!this.wordBank.isPartInWordList()){
+                return false;
+            }
+        }
 
-            boolean doSwap = super.interactionPerformed(false);
-            this.hintPanel.checkReveal(interactionCount);
-            return doSwap;
-        }
-        // Invalid Guess
-        if(!this.wordBank.isPartInWordList()){
-            return false;
-        }
-        
         boolean wasCorrectGuess = this.targetWord.toLowerCase().equals(this.wordBank.getPart());
 
         // Correct Guess or The user has run out of guesses
         if(wasCorrectGuess || interactionCount+1 >= MAX_ACTIONS){ // Intentionally don't increment interactionCount to differentiate between winning on the last guess and losing on the last guess
-            // Reset game
             Game.getCurrentGame().updateImageDifficulty(interactionCount, MAX_ACTIONS, wasCorrectGuess);
             interactionCount++; //Increment after difficulty set
-            this.setPanelEnabled(false);
             this.hintPanel.checkReveal(MAX_ACTIONS-1);
             if(pointsEnabled){
                 Game.getCurrentGame().updateTotalScore();
                 this.scorePanel.setTotalScore(Game.getCurrentGame().getTotalScore());
             }
             ((RevealPanel) otherPanel).revealEntireImage();
-            (new MenuNotification(targetWord, wasCorrectGuess, interactionCount)).setVisible(true);      
-            Game.getCurrentGame().swapGuessPanel(false);      
+            Game.getCurrentGame().swapGuessPanel(false);  
+            (new MenuNotification(targetWord, wasCorrectGuess, interactionCount)).setVisible(true);
             return false;
         }
 
-        boolean doSwap = super.interactionPerformed(true);
+        boolean doSwap = super.interactionPerformed(doSubtractPoints);
 
         // Potentially reveal a hint
         this.hintPanel.checkReveal(interactionCount);
@@ -364,17 +361,22 @@ public abstract class GuessPanel extends InteractivePanel{
         }
         // Disable panel
         else{
-            if(interactionCount <= 0){
-                return;
-            }
-
-            int PREVIOUS_GUESSFIELD = interactionCount-1; 
-            guessFields[PREVIOUS_GUESSFIELD].getEditor().getEditorComponent().setBackground(Color.GRAY);
-            guessFields[PREVIOUS_GUESSFIELD].setEnabled(false);
+            disablePreviousGuess();
         }
     }
 
+    private void disablePreviousGuess(){
+        if(interactionCount <= 0){
+            return;
+        }
+
+        int PREVIOUS_GUESSFIELD = interactionCount-1; 
+        guessFields[PREVIOUS_GUESSFIELD].getEditor().getEditorComponent().setBackground(Color.GRAY);
+        guessFields[PREVIOUS_GUESSFIELD].setEnabled(false);
+    }
+
     private void nextGuess(){
+        disablePreviousGuess();
         // Update the wordbank
         updateWordBank("");
         // Enable the new guessField

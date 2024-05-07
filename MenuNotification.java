@@ -17,7 +17,7 @@ import javax.swing.SwingConstants;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 5/2/2024
+ * @version Updated: 5/6/2024
  */
 public class MenuNotification extends FadingNotification {
     /**
@@ -110,7 +110,7 @@ public class MenuNotification extends FadingNotification {
         mainMenuButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new PicturMenu(Main.defaultGuessPanel,Main.defaultRevealPanel,Main.defaultDifficulty,Main.defaultDoModularDifficulty, Main.defaultPointsEnabled, Main.defaultImageMode);
+                new PicturMenu(Game.getCurrentGame().getGuessPanelID(),Game.getCurrentGame().getRevealPanelID(),Game.getCurrentGame().getDifficulty(),Game.getCurrentGame().getDoModularDifficulty(), Game.getCurrentGame().isPointsEnabled(), Game.getCurrentGame().getImageMode());
                 Game.getCurrentGame().dispose();
             }
         });
