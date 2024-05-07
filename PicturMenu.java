@@ -1,3 +1,4 @@
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -15,6 +16,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Babucarr
@@ -320,7 +324,14 @@ public class PicturMenu extends JFrame implements ActionListener{
         frame = this;
         setSize(1000,600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Picture-Wordle");
+        this.setTitle("Pictur");
+        BufferedImage iconImage = null;
+        try {
+            iconImage = ImageIO.read(new File("PicturLogo.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.setIconImage(iconImage);
         setupMenu();
         setLocationRelativeTo(null);
         setVisible(true);
