@@ -213,7 +213,9 @@ public class Game extends JFrame {
         }
 
         // For cheating/debugging
-        System.out.println(this.targetWord);
+        if(Main.skipMenu){
+            System.out.println(this.targetWord);
+        }
 
         try{
             revealPanel.resetPanel(this.targetWord, this.image);
