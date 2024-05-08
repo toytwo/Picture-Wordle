@@ -2,6 +2,8 @@ import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
+import javax.swing.Timer;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -9,6 +11,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
@@ -162,26 +166,7 @@ public class SpotlightReveal extends RevealPanel {
             }
         };
 
-        this.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                // Resize the image to fit the panel
-                BufferedImage resizedImage = new BufferedImage(getHeight(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-                Graphics2D graphics2D = resizedImage.createGraphics();
-                graphics2D.drawImage(image, 0, 0, getHeight(), getHeight(), null);
-                graphics2D.dispose();
-                image = resizedImage;
-
-                // Resize the imagePanel to fit the image
-                imagePanel.setPreferredSize(new Dimension(getHeight(),getHeight()));
-                imagePanel.setMaximumSize(new Dimension(getHeight(),getHeight()));
-                imagePanel.revalidate();
-                imagePanel.repaint();
-
-                // Remove the listener so it is only called once
-                removeComponentListener(getComponentListeners()[0]);
-            }
-        });
+        this.delayedResize(imagePanel);
 
         // Add an empty panel to the right for spacing
         JPanel emptyPanel = new JPanel();

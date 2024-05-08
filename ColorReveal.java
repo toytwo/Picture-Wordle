@@ -11,6 +11,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 /**
  * @author Jackson Alexman
@@ -142,30 +143,7 @@ public class ColorReveal extends RevealPanel{
         constraints.weightx = 1.0/8.0;
         add(new JPanel(),constraints);
 
-        this.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                imageCopy = resizeImage(image);
-
-                // Cover the image
-                reveal();
-
-                // Resize the imagePanel to fit the image
-                imagePanel.setPreferredSize(new Dimension(getHeight(),getHeight()));
-                imagePanel.setMinimumSize(new Dimension(getHeight(),getHeight()));
-                imagePanel.revalidate();
-                imagePanel.repaint();
-
-                // Resize the buttonPanel to fit the height of imagePanel
-                buttonPanel.setPreferredSize(new Dimension(getHeight()/16,getHeight()));
-                buttonPanel.setMaximumSize(new Dimension(getHeight()/16,getHeight()));
-                buttonPanel.revalidate();
-                buttonPanel.repaint();
-
-                // Remove the listener so it is only called once
-                removeComponentListener(getComponentListeners()[0]);
-            }
-        });    
+        delayedResize(null); // Parameter not used in the overrided version   
     }
 
     private void setupButtonPanel(JPanel imagePanel){
@@ -317,5 +295,33 @@ public class ColorReveal extends RevealPanel{
     public void revealEntireImage() {
         this.image = imageCopy;
         repaint();
+    }
+
+    @Override
+    protected void delayedResize(JPanel panel) {
+        // Use a delay to get the actual height instead of 0
+        Timer getHeightDelayTimer = new Timer(50, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                imageCopy = resizeImage(image);
+
+                // Cover the image
+                reveal();
+
+                // Resize the imagePanel to fit the image
+                imagePanel.setPreferredSize(new Dimension(getHeight(),getHeight()));
+                imagePanel.setMinimumSize(new Dimension(getHeight(),getHeight()));
+                imagePanel.revalidate();
+                imagePanel.repaint();
+
+                // Resize the buttonPanel to fit the height of imagePanel
+                buttonPanel.setPreferredSize(new Dimension(getHeight()/16,getHeight()));
+                buttonPanel.setMaximumSize(new Dimension(getHeight()/16,getHeight()));
+                buttonPanel.revalidate();
+                buttonPanel.repaint();
+            }
+        }); 
+        getHeightDelayTimer.setRepeats(false);
+        getHeightDelayTimer.start();
     }
 }

@@ -1,6 +1,12 @@
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.LayoutManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+
+import javax.swing.JPanel;
+import javax.swing.Timer;
 
 /**
  * @author Jackson Alexman
@@ -56,5 +62,24 @@ public abstract class RevealPanel extends InteractivePanel{
         graphics2D.drawImage(imageToResize, 0, 0, getHeight(), getHeight(), null);
         graphics2D.dispose();
         return resizedImage;
+    }
+
+    protected void delayedResize(JPanel panel){
+        // Use a delay to get the actual height instead of 0
+        Timer getHeightDelayTimer = new Timer(50, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Resize the image to fit the panel
+                image = resizeImage(image);
+
+                // Resize the imagePanel to fit the image
+                panel.setPreferredSize(new Dimension(getHeight(),getHeight()));
+                panel.setMaximumSize(new Dimension(getHeight(),getHeight()));
+                panel.revalidate();
+                panel.repaint();
+            }
+        }); 
+        getHeightDelayTimer.setRepeats(false);
+        getHeightDelayTimer.start();
     }
 }

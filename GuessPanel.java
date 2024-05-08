@@ -184,8 +184,10 @@ public abstract class GuessPanel extends InteractivePanel{
      * @param newPart The String to pare the WordBank list with
      */
     public void updateWordBank(String newPart){
+        if(this.wordBank == null){
+            return;
+        }
         this.updatingWordBank = true;
-
         // Update the word bank
         this.wordBank.updateLetters(newPart);
         // Update the guessField popup list

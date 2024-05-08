@@ -19,7 +19,7 @@ import javax.swing.SwingUtilities;
 
 /**
  * @author Jackson Alexman
- * @version Updated: 5/6/2024
+ * @version Updated: 5/8/2024
  */
 public class Game extends JFrame {
     private Component placeholderSpace;
@@ -271,7 +271,6 @@ public class Game extends JFrame {
         }
 
         double totalAverageDifficulty = calculateAverageDifficulty(this.targetWord, newAverageGuessPercentage);
-        totalAverageDifficulty = 1; // Until more datapoints are in the txt file
 
         String difficulty;
         if(newAverageGuessPercentage > 0.7 * totalAverageDifficulty){

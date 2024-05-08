@@ -1,9 +1,9 @@
 /**
  * @author Jackson Alexman
- * @version Updated: 5/6/2024
+ * @version Updated: 5/8/2024
  */
 public class Main {
-    public final static boolean skipMenu = false; // Developer tool for skipping the main menu
+    public final static boolean skipMenu = true; // Developer tool for skipping the main menu
     public final static int defaultGuessPanel = 1; // 0 - SimpleGuess | 1 - ScoreGuess
     public final static int defaultRevealPanel = 2; // 0 - SimpleReveal | 1 - ColorReveal | 2 - SpotlightReveal
     public final static int defaultDifficulty = 1; // 0 - EASY | 1 - MEDIUM | 2 - HARD
